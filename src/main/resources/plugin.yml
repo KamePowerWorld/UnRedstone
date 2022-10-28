@@ -1,0 +1,4 @@
+name: UnRedstone
+version: '${version}'
+main: quarri6343.unredstone.UnRedstone
+api-version: 1.19
