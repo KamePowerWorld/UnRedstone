@@ -17,17 +17,21 @@ public class Config {
         FileConfiguration config = plugin.getConfig();
 
         data = new UnRedstoneData();
-        data.startLocation = config.getLocation("data.startLocation");
-        data.endLocation = config.getLocation("data.endLocation");
+        for (int i = 0; i < UnRedstone.maxLoadableTeams; i++) {
+            data.startLocation[i] = config.getLocation("data.startLocation." + i);
+            data.endLocation[i] = config.getLocation("data.endLocation." + i);
+        }
     }
 
     public void saveConfig() {
         JavaPlugin plugin = UnRedstone.getInstance();
         FileConfiguration config = plugin.getConfig();
 
-        config.set("data.startLocation", data.startLocation);
-        config.set("data.endLocation", data.endLocation);
-
+        for (int i = 0; i < UnRedstone.maxLoadableTeams; i++) {
+            config.set("data.startLocation." + i, data.startLocation[i]);
+            config.set("data.endLocation." + i, data.endLocation[i]);
+        }
+        
         plugin.saveConfig();
     }
 }

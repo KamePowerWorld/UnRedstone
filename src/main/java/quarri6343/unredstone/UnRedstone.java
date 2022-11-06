@@ -7,6 +7,8 @@ public final class UnRedstone extends JavaPlugin {
 
     public Config config;
     public UnRedstoneLogic logic;
+
+    public static final int maxLoadableTeams = 27;
     
     /**
      * シングルトンで管理されているこのクラスのインスタンス

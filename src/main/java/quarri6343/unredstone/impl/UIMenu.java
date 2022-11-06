@@ -10,6 +10,7 @@ import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import quarri6343.unredstone.UnRedstone;
 import quarri6343.unredstone.UnRedstoneData;
 import quarri6343.unredstone.UnRedstoneLogic;
@@ -20,22 +21,38 @@ public class UIMenu {
     
     public static void openUI(Player player) {
         UnRedstoneData data = UnRedstone.getInstance().config.data;
+        UnRedstoneLogic logic = UnRedstone.getInstance().logic;
         
         PaginatedGui gui = Gui.paginated()
-                .title(Component.text("管理メニュー"))
+                .title(Component.text("管理メニュー").color(NamedTextColor.GRAY))
                 .rows(3)
                 .pageSize(27)
                 .disableAllInteractions()
                 .create();
-        
-        GuiItem setStartButton = new GuiItem(new ItemCreator(Material.FURNACE_MINECART).setName(Component.text("開始地点を設定"))
-                .setLore(getLocDisc(data.startLocation)).create(),
+
+        GuiItem selectTeamButton = new GuiItem(new ItemCreator(Material.RESPAWN_ANCHOR).setName(Component.text("設定するチームを変更"))
+                .setLore(getSelectedTeamDesc()).create(),
                 event -> {
-                    data.startLocation = event.getWhoClicked().getLocation();
+                    if(event.getClick() == ClickType.LEFT){
+                        if(logic.selectedTeam < UnRedstone.maxLoadableTeams)
+                            logic.selectedTeam++;
+                    }
+                    else if(event.getClick() == ClickType.RIGHT){
+                        if(logic.selectedTeam > 0)
+                            logic.selectedTeam--;
+                    }
+                    openUI((Player)event.getWhoClicked());
+                });
+        gui.setItem(1, selectTeamButton);
+        
+        GuiItem setStartButton = new GuiItem(new ItemCreator(Material.FURNACE_MINECART).setName(Component.text("チーム" + logic.selectedTeam + "の開始地点を設定"))
+                .setLore(getLocDesc(data.startLocation[logic.selectedTeam])).create(),
+                event -> {
+                    data.startLocation[logic.selectedTeam] = event.getWhoClicked().getLocation();
                     event.getWhoClicked().sendMessage(Component.text("開始地点を" + UnRedstoneUtils.locationBlockPostoString(event.getWhoClicked().getLocation()) + "に設定しました"));
                     openUI((Player)event.getWhoClicked());
                 });
-        gui.setItem(1, setStartButton);
+        gui.setItem(4, setStartButton);
 //        GuiItem setRelay1Button = new GuiItem(new ItemCreator(Material.BEACON).setName(Component.text("中継地点1を設定")).create(),
 //                event -> {
 //                    data.relayLocation1 = event.getWhoClicked().getLocation();
@@ -48,22 +65,22 @@ public class UIMenu {
 //                    event.getWhoClicked().sendMessage(Component.text("中継地点2を" + UnRedstoneUtils.locationBlockPostoString(event.getWhoClicked().getLocation()) + "に設定しました"));
 //                });
 //        gui.setItem(5, setRelay2Button);
-        GuiItem setEndButton = new GuiItem(new ItemCreator(Material.DETECTOR_RAIL).setName(Component.text("終了地点を設定"))
-                .setLore(getLocDisc(data.endLocation)).create(),
+        GuiItem setEndButton = new GuiItem(new ItemCreator(Material.DETECTOR_RAIL).setName(Component.text("チーム" + logic.selectedTeam + "の終了地点を設定"))
+                .setLore(getLocDesc(data.endLocation[logic.selectedTeam])).create(),
                 event -> {
-                    data.endLocation = event.getWhoClicked().getLocation();
+                    data.endLocation[logic.selectedTeam] = event.getWhoClicked().getLocation();
                     event.getWhoClicked().sendMessage(Component.text("終了地点を" + UnRedstoneUtils.locationBlockPostoString(event.getWhoClicked().getLocation()) + "に設定しました"));
                     openUI((Player)event.getWhoClicked());
                 });
         gui.setItem(7, setEndButton);
 
-        GuiItem startButton = new GuiItem(new ItemCreator(Material.GREEN_WOOL).setName(Component.text("ゲームを開始")).setLore(getCanStartGameDisc()).create(),
+        GuiItem startButton = new GuiItem(new ItemCreator(Material.GREEN_WOOL).setName(Component.text("ゲームを開始(未実装につきチーム0のみプレイできます)")).setLore(getCanStartGameDesc()).create(),
                 event -> {
                     UnRedstone.getInstance().logic.startGame((Player)event.getWhoClicked());
                     openUI((Player)event.getWhoClicked());
                 });
         gui.setItem(11, startButton);
-        GuiItem endButton = new GuiItem(new ItemCreator(Material.RED_WOOL).setName(Component.text("ゲームを強制終了")).setLore(getCanTerminateGameDisc()).create(),
+        GuiItem endButton = new GuiItem(new ItemCreator(Material.RED_WOOL).setName(Component.text("ゲームを強制終了")).setLore(getCanTerminateGameDesc()).create(),
                 event -> {
                     UnRedstone.getInstance().logic.endGame((Player)event.getWhoClicked(), UnRedstoneLogic.GameResult.FAIL);
                     openUI((Player)event.getWhoClicked());
@@ -79,20 +96,25 @@ public class UIMenu {
         gui.open(player);
     }
     
-    public static TextComponent getLocDisc(Location location){
+    public static TextComponent getLocDesc(Location location){
         return Component.text(location != null? "現在：" + UnRedstoneUtils.locationBlockPostoString(location) : "未設定です")
                 .color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false);
     }
 
-    public static TextComponent getCanStartGameDisc(){
+    public static TextComponent getCanStartGameDesc(){
         return UnRedstone.getInstance().logic.gameStatus == UnRedstoneLogic.GameStatus.INACTIVE ?
                 Component.text("開始可能" ).color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false)
                 : Component.text("ゲームが進行中です!" ).color(NamedTextColor.RED).decoration(TextDecoration.ITALIC, false);
     }
 
-    public static TextComponent getCanTerminateGameDisc(){
+    public static TextComponent getCanTerminateGameDesc(){
         return UnRedstone.getInstance().logic.gameStatus == UnRedstoneLogic.GameStatus.ACTIVE ?
                 Component.text("強制終了可能" ).color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false)
                 : Component.text("進行中のゲームはありません" ).color(NamedTextColor.RED).decoration(TextDecoration.ITALIC, false);
+    }
+
+    public static TextComponent getSelectedTeamDesc(){
+        return Component.text("選択中のチーム:" + UnRedstone.getInstance().logic.selectedTeam + "\n" + "左クリックで次のチーム"+ "\n" + "右クリックで前のチーム")
+                .color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false);
     }
 }

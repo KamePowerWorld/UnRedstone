@@ -26,7 +26,7 @@ public class EventHandler implements Listener {
     public void onVehicleDestroy(VehicleDestroyEvent event){
         if(event.getVehicle().getUniqueId().equals(UnRedstone.getInstance().logic.locomotiveID)){
             event.setCancelled(true);
-            event.getVehicle().teleport(UnRedstone.getInstance().config.data.startLocation.clone().add(0,1,0));
+            event.getVehicle().teleport(UnRedstone.getInstance().config.data.startLocation[0].clone().add(0,1,0));
         }
     }
 }

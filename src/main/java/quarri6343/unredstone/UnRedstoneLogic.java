@@ -24,6 +24,8 @@ import java.util.UUID;
 
 public class UnRedstoneLogic {
     
+    public int selectedTeam = 0;
+    
     public GameStatus gameStatus = GameStatus.INACTIVE;
     public World gameWorld = null;
     public UUID locomotiveID;
@@ -48,10 +50,10 @@ public class UnRedstoneLogic {
         
         gameWorld = gameMaster.getWorld();
         gameStatus = GameStatus.ACTIVE;
-        setUpRail(data.startLocation);
-        setUpRail(data.endLocation);
-        Entity locomotive = gameWorld.spawnEntity(data.startLocation.clone().add(0,1,0), EntityType.MINECART_CHEST);
-        locomotive.customName(Component.text("原木x2 + 丸石x2 = 線路").color(NamedTextColor.WHITE));
+        setUpRail(data.startLocation[0]);
+        setUpRail(data.endLocation[0]);
+        Entity locomotive = gameWorld.spawnEntity(data.startLocation[0].clone().add(0,1,0), EntityType.MINECART_CHEST);
+        locomotive.customName(Component.text("原木x2 + 丸石x2 = 線路").color(NamedTextColor.GRAY));
         locomotiveID = locomotive.getUniqueId();
         Bukkit.getOnlinePlayers().forEach(player -> player.showTitle(Title.title(Component.text("ゲームスタート"), Component.empty())));
 
@@ -61,7 +63,7 @@ public class UnRedstoneLogic {
             public void run() {
                 Entity locomotive = gameWorld.getEntity(locomotiveID);
                 if(locomotive != null){
-                    if(locomotive.getLocation().distance(data.endLocation.clone().add(0,1,0)) < 1){
+                    if(locomotive.getLocation().distance(data.endLocation[0].clone().add(0,1,0)) < 1){
                         endGame(null, GameResult.SUCCESS);
                         return;
                     }
