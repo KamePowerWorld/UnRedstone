@@ -5,6 +5,9 @@ import quarri6343.unredstone.impl.CommandUnRedstone;
 
 public final class UnRedstone extends JavaPlugin {
 
+    public Config config;
+    public UnRedstoneLogic logic;
+    
     /**
      * シングルトンで管理されているこのクラスのインスタンス
      */
@@ -21,6 +24,9 @@ public final class UnRedstone extends JavaPlugin {
     @Override
     public void onEnable() {
         // Plugin startup logic
+        config = new Config();
+        config.loadConfig();
+        logic = new UnRedstoneLogic();
         new CommandUnRedstone();
         new EventHandler();
     }
@@ -28,5 +34,6 @@ public final class UnRedstone extends JavaPlugin {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+        config.saveConfig();
     }
 }

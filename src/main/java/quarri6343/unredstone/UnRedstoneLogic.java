@@ -1,6 +1,7 @@
 package quarri6343.unredstone;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -23,36 +24,35 @@ import java.util.UUID;
 
 public class UnRedstoneLogic {
     
-    public static Location startLocation = null;
-    public static Location relayLocation1 = null;
-    public static Location relayLocation2 = null;
-    public static Location endLocation = null;
-    
-    public static GameStatus gameStatus = GameStatus.INACTIVE;
-    public static World gameWorld = null;
-    public static UUID locomotiveID;
+    public GameStatus gameStatus = GameStatus.INACTIVE;
+    public World gameWorld = null;
+    public UUID locomotiveID;
 
-    private static BukkitTask gameRunnable;
+    private BukkitTask gameRunnable;
     
-    public static void startGame(@NotNull Player gameMaster){
+    public void startGame(@NotNull Player gameMaster){
         if(gameStatus == GameStatus.ACTIVE){
             gameMaster.sendMessage("ゲームが進行中です！");
             return;
         }
-        if(startLocation == null){
+        
+        UnRedstoneData data = UnRedstone.getInstance().config.data;        
+        if(data.startLocation == null){
             gameMaster.sendMessage("開始地点を設定してください");
             return;
         }
-        if(endLocation == null){
+        if(data.endLocation == null){
             gameMaster.sendMessage("終了地点を設定してください");
             return;
         }
         
         gameWorld = gameMaster.getWorld();
         gameStatus = GameStatus.ACTIVE;
-        setUpRail(startLocation);
-        setUpRail(endLocation);
-        locomotiveID = gameWorld.spawnEntity(startLocation.clone().add(0,1,0), EntityType.MINECART_CHEST).getUniqueId();
+        setUpRail(data.startLocation);
+        setUpRail(data.endLocation);
+        Entity locomotive = gameWorld.spawnEntity(data.startLocation.clone().add(0,1,0), EntityType.MINECART_CHEST);
+        locomotive.customName(Component.text("原木x2 + 丸石x2 = 線路").color(NamedTextColor.WHITE));
+        locomotiveID = locomotive.getUniqueId();
         Bukkit.getOnlinePlayers().forEach(player -> player.showTitle(Title.title(Component.text("ゲームスタート"), Component.empty())));
 
         gameRunnable =  new BukkitRunnable() {
@@ -61,7 +61,7 @@ public class UnRedstoneLogic {
             public void run() {
                 Entity locomotive = gameWorld.getEntity(locomotiveID);
                 if(locomotive != null){
-                    if(locomotive.getLocation().distance(endLocation.clone().add(0,1,0)) < 1){
+                    if(locomotive.getLocation().distance(data.endLocation.clone().add(0,1,0)) < 1){
                         endGame(null, GameResult.SUCCESS);
                         return;
                     }
@@ -72,19 +72,20 @@ public class UnRedstoneLogic {
                 }
                 
                 count++;
-                if(count % 4 == 0){
+                if(count % 40 == 0){
                     Inventory chestInMinecart = ((InventoryHolder)locomotive).getInventory();
-                    if(chestInMinecart.containsAtLeast(new ItemStack(Material.LEGACY_LOG),2) 
+                    if(chestInMinecart.containsAtLeast(new ItemStack(Material.OAK_WOOD),2) 
                             && chestInMinecart.containsAtLeast(new ItemStack(Material.COBBLESTONE),2)){
-                        chestInMinecart.removeItemAnySlot(new ItemStack(Material.LEGACY_LOG,2));
+                        chestInMinecart.removeItemAnySlot(new ItemStack(Material.OAK_WOOD,2));
                         chestInMinecart.removeItemAnySlot(new ItemStack(Material.COBBLESTONE,2));
+                        chestInMinecart.addItem(new ItemStack(Material.RAIL,1));
                     }
                 }
             }
-        }.runTaskTimer(UnRedstone.getInstance(), 0, 10);
+        }.runTaskTimer(UnRedstone.getInstance(), 0, 1);
     }
     
-    private static void setUpRail(Location location){
+    private void setUpRail(Location location){
         gameWorld.setType(location, Material.RAIL);
         Rail rail = (Rail) (gameWorld.getBlockAt(location).getBlockData());
         rail.setShape(UnRedstoneUtils.yawToRailShape(location.getYaw()));
@@ -92,7 +93,7 @@ public class UnRedstoneLogic {
         gameWorld.setType(location.clone().subtract(0,1,0),Material.DIRT);
     }
     
-    public static void endGame(@Nullable Player sender, GameResult gameResult){
+    public void endGame(@Nullable Player sender, GameResult gameResult){
         if(gameStatus == GameStatus.INACTIVE){
             if(sender != null)
                 sender.sendMessage("ゲームが始まっていません！");
@@ -102,6 +103,8 @@ public class UnRedstoneLogic {
         gameStatus = GameStatus.INACTIVE;
         gameRunnable.cancel();
         
+        if(gameWorld.getEntity(locomotiveID) != null)
+            gameWorld.getEntity(locomotiveID).remove();
         if(gameResult == GameResult.SUCCESS){
             Bukkit.getOnlinePlayers().forEach(player -> player.showTitle(Title.title(Component.text("ゲームクリア"), Component.empty())));
         }
