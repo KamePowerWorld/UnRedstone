@@ -23,6 +23,10 @@ public class UIMenu {
     private static final TextComponent gameRunningText = Component.text("ゲームが進行中です！").color(NamedTextColor.RED).decoration(TextDecoration.ITALIC, false);
     private static final TextComponent teamNotSelectedText = Component.text("チームが選択されていません")
             .color(NamedTextColor.RED).decoration(TextDecoration.ITALIC, false);
+    private static final TextComponent setStartButtonGuide = Component.text("現在立っている場所が開始地点になります")
+            .color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false);
+    private static final TextComponent setEndButtonGuide = Component.text("現在立っている場所が終了地点になります")
+            .color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false);
     
     private static UnRedstoneData getData(){
         return UnRedstone.getInstance().data;
@@ -39,24 +43,36 @@ public class UIMenu {
                 .pageSize(27)
                 .disableAllInteractions()
                 .create();
+        
+        ItemStack createTeamItem = new ItemCreator(Material.WHITE_BANNER).setName(Component.text("新しいチームを作成"))
+                .create();
+        GuiItem createTeamButton = new GuiItem(createTeamItem,
+                event -> UICreateTeam.openUI(player));
+        gui.setItem(0, createTeamButton);
 
         ItemStack selectTeamItem = new ItemCreator(Material.RESPAWN_ANCHOR).setName(Component.text("設定するチームを変更"))
-                .setLore(getSelectedTeamDesc()).create();
+                .create();
         GuiItem selectTeamButton = new GuiItem(selectTeamItem,
                 event -> UITeamSelect.openUI(player));
-        gui.setItem(1, selectTeamButton);
+        gui.setItem(2, selectTeamButton);
 
         GuiItem setStartButton;
         ItemStack setStartItem = new ItemCreator(Material.FURNACE_MINECART).setName(Component.text("チーム" + getData().selectedTeam + "の開始地点を設定"))
-                .setLore(getSetStartButtonDesc()).create();
+                .addLore(getSetStartButtonStats()).addLore(setStartButtonGuide).create();
         setStartButton = new GuiItem(setStartItem, UIMenu::onSetStartButton);
         gui.setItem(4, setStartButton);
 
         GuiItem setEndButton;
         ItemStack setEndItem = new ItemCreator(Material.DETECTOR_RAIL).setName(Component.text("チーム" + getData().selectedTeam + "の終了地点を設定"))
-                .setLore(getSetEndButtonDesc()).create();
+                .addLore(getSetEndButtonStats()).addLore(setEndButtonGuide).create();
         setEndButton = new GuiItem(setEndItem, UIMenu::onSetEndButton);
-        gui.setItem(7, setEndButton);
+        gui.setItem(6, setEndButton);
+
+        GuiItem removeTeamButton;
+        ItemStack removeTeamItem = new ItemCreator(Material.BLACK_BANNER).setName(Component.text("選択中のチームを削除"))
+                .setLore(getSelectedTeamDesc()).create();
+        removeTeamButton = new GuiItem(removeTeamItem, UIMenu::onRemoveTeamButton);
+        gui.setItem(8, removeTeamButton);
 
         GuiItem startButton = new GuiItem(new ItemCreator(Material.GREEN_WOOL).setName(Component.text("ゲームを開始(未実装につき1チームのみプレイできます)")).setLore(getCanStartGameDesc()).create(),
                 event -> {
@@ -80,9 +96,9 @@ public class UIMenu {
 
 
     /**
-     * @return 初期位置を設定するボタンの説明文
+     * @return 初期位置を設定するボタンに表示する現在の状況
      */
-    public static TextComponent getSetStartButtonDesc(){
+    private static TextComponent getSetStartButtonStats(){
         if(getData().getTeambyName(getData().selectedTeam) == null){
             return teamNotSelectedText;
         }
@@ -95,9 +111,9 @@ public class UIMenu {
     }
     
     /**
-     * @return ゴール位置を設定するボタンの説明文
+     * @return ゴール位置を設定するボタンに表示する現在の状況
      */
-    public static TextComponent getSetEndButtonDesc(){
+    private static TextComponent getSetEndButtonStats(){
         if(getData().getTeambyName(getData().selectedTeam) == null){
             return teamNotSelectedText;
         }
@@ -113,7 +129,7 @@ public class UIMenu {
     /**
      * 初期位置を設定するボタンを押したときのイベント
      */
-    public static void onSetStartButton(InventoryClickEvent event){
+    private static void onSetStartButton(InventoryClickEvent event){
         if(getData().getTeambyName(getData().selectedTeam) == null){
             event.getWhoClicked().sendMessage(teamNotSelectedText);
             return;
@@ -132,7 +148,7 @@ public class UIMenu {
     /**
      * 終了位置を設定するボタンを押したときのイベント
      */
-    public static void onSetEndButton(InventoryClickEvent event){
+    private static void onSetEndButton(InventoryClickEvent event){
         if(getData().getTeambyName(getData().selectedTeam) == null){
             event.getWhoClicked().sendMessage(teamNotSelectedText);
             return;
@@ -147,12 +163,27 @@ public class UIMenu {
         event.getWhoClicked().sendMessage(Component.text("終了地点を" + UnRedstoneUtils.locationBlockPostoString(event.getWhoClicked().getLocation()) + "に設定しました"));
         openUI((Player) event.getWhoClicked());
     }
+
+    /**
+     * チームを削除するボタンを押したときのイベント
+     */
+    private static void onRemoveTeamButton(InventoryClickEvent event){
+        UnRedstoneData data = UnRedstone.getInstance().data;
+        if(data.selectedTeam.equals("")){
+            event.getWhoClicked().sendMessage(teamNotSelectedText);
+            return;
+        }
+
+        data.removeTeam(data.selectedTeam);
+        event.getWhoClicked().sendMessage(Component.text("チーム" + data.selectedTeam + "を削除しました").color(NamedTextColor.WHITE));
+        data.selectedTeam = "";
+    }
     
     /**
      * @param location 文章にしたいLocation
      * @return 渡されたLocationの情報を表す文
      */
-    public static TextComponent getLocDesc(Location location) {
+    private static TextComponent getLocDesc(Location location) {
         return Component.text(location != null ? "現在：" + UnRedstoneUtils.locationBlockPostoString(location) : "未設定です")
                 .color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false);
     }
@@ -160,7 +191,7 @@ public class UIMenu {
     /**
      * @return 現在ゲームを開始できるかどうかを示した文
      */
-    public static TextComponent getCanStartGameDesc() {
+    private static TextComponent getCanStartGameDesc() {
         return getLogic().gameStatus == UnRedstoneLogic.GameStatus.INACTIVE ?
                 Component.text("開始可能").color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false)
                 : Component.text("ゲームが進行中です!").color(NamedTextColor.RED).decoration(TextDecoration.ITALIC, false);
@@ -169,7 +200,7 @@ public class UIMenu {
     /**
      * @return 現在ゲームを終了できるかどうかを示した文
      */
-    public static TextComponent getCanTerminateGameDesc() {
+    private static TextComponent getCanTerminateGameDesc() {
         return getLogic().gameStatus == UnRedstoneLogic.GameStatus.ACTIVE ?
                 Component.text("強制終了可能").color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false)
                 : Component.text("進行中のゲームはありません").color(NamedTextColor.RED).decoration(TextDecoration.ITALIC, false);
@@ -178,8 +209,9 @@ public class UIMenu {
     /**
      * @return 現在選択中のチームの情報を表す文
      */
-    public static TextComponent getSelectedTeamDesc() {
-        return Component.text("選択中のチーム:" + UnRedstone.getInstance().data.selectedTeam)
-                .color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false);
+    private static TextComponent getSelectedTeamDesc() {
+        return !getData().selectedTeam.equals("") ? Component.text("選択中のチーム:" + UnRedstone.getInstance().data.selectedTeam)
+                .color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false)
+                : teamNotSelectedText;
     }
 }

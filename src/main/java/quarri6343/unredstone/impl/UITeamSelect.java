@@ -33,7 +33,7 @@ public class UITeamSelect {
         else{
             for(int i = 0; i < data.getTeamsLength(); i++){
                 GuiItem teamSelectButton = new GuiItem(new ItemCreator(Material.WHITE_WOOL)
-                        .setName(Component.text("チーム「" + data.getTeam(i).name + "」を選択")).create(),
+                        .setName(Component.text("チーム" + data.getTeam(i).name + "を選択")).create(),
                         event -> {
                             data.selectedTeam = data.getTeam(event.getSlot()).name;
                             UIMenu.openUI((Player) event.getWhoClicked());

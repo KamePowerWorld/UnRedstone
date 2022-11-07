@@ -3,6 +3,7 @@ package quarri6343.unredstone.utils;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Rail;
 import org.bukkit.command.CommandMap;
