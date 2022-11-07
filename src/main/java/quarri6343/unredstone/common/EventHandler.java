@@ -1,9 +1,10 @@
-package quarri6343.unredstone;
+package quarri6343.unredstone.common;
 
 import org.bukkit.Material;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.vehicle.VehicleDestroyEvent;
+import quarri6343.unredstone.UnRedstone;
 import quarri6343.unredstone.impl.UIMenu;
 
 public class EventHandler implements Listener {
@@ -26,7 +27,7 @@ public class EventHandler implements Listener {
     public void onVehicleDestroy(VehicleDestroyEvent event){
         if(event.getVehicle().getUniqueId().equals(UnRedstone.getInstance().logic.locomotiveID)){
             event.setCancelled(true);
-            event.getVehicle().teleport(UnRedstone.getInstance().config.data.startLocation[0].clone().add(0,1,0));
+            event.getVehicle().teleport(UnRedstone.getInstance().data.getTeam(0).startLocation.clone().add(0,1,0));
         }
     }
 }

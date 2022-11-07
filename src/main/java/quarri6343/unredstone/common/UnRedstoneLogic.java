@@ -1,4 +1,4 @@
-package quarri6343.unredstone;
+package quarri6343.unredstone.common;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -18,13 +18,12 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import quarri6343.unredstone.UnRedstone;
 import quarri6343.unredstone.utils.UnRedstoneUtils;
 
 import java.util.UUID;
 
 public class UnRedstoneLogic {
-    
-    public int selectedTeam = 0;
     
     public GameStatus gameStatus = GameStatus.INACTIVE;
     public World gameWorld = null;
@@ -38,21 +37,25 @@ public class UnRedstoneLogic {
             return;
         }
         
-        UnRedstoneData data = UnRedstone.getInstance().config.data;        
-        if(data.startLocation == null){
+        UnRedstoneData data = UnRedstone.getInstance().data;
+        if(data.getTeamsLength() == 0){
+            gameMaster.sendMessage("チームが存在しません!");
+            return;
+        }
+        if(data.getTeam(0).startLocation == null){
             gameMaster.sendMessage("開始地点を設定してください");
             return;
         }
-        if(data.endLocation == null){
+        if(data.getTeam(0) == null){
             gameMaster.sendMessage("終了地点を設定してください");
             return;
         }
         
         gameWorld = gameMaster.getWorld();
         gameStatus = GameStatus.ACTIVE;
-        setUpRail(data.startLocation[0]);
-        setUpRail(data.endLocation[0]);
-        Entity locomotive = gameWorld.spawnEntity(data.startLocation[0].clone().add(0,1,0), EntityType.MINECART_CHEST);
+        setUpRail(data.getTeam(0).startLocation);
+        setUpRail(data.getTeam(0).endLocation);
+        Entity locomotive = gameWorld.spawnEntity(data.getTeam(0).startLocation.clone().add(0,1,0), EntityType.MINECART_CHEST);
         locomotive.customName(Component.text("原木x2 + 丸石x2 = 線路").color(NamedTextColor.GRAY));
         locomotiveID = locomotive.getUniqueId();
         Bukkit.getOnlinePlayers().forEach(player -> player.showTitle(Title.title(Component.text("ゲームスタート"), Component.empty())));
@@ -63,7 +66,7 @@ public class UnRedstoneLogic {
             public void run() {
                 Entity locomotive = gameWorld.getEntity(locomotiveID);
                 if(locomotive != null){
-                    if(locomotive.getLocation().distance(data.endLocation[0].clone().add(0,1,0)) < 1){
+                    if(locomotive.getLocation().distance(data.getTeam(0).endLocation.clone().add(0,1,0)) < 1){
                         endGame(null, GameResult.SUCCESS);
                         return;
                     }

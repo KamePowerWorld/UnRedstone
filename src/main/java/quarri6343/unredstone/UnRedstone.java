@@ -1,14 +1,19 @@
 package quarri6343.unredstone;
 
 import org.bukkit.plugin.java.JavaPlugin;
+import quarri6343.unredstone.common.Config;
+import quarri6343.unredstone.common.EventHandler;
+import quarri6343.unredstone.common.UnRedstoneData;
+import quarri6343.unredstone.common.UnRedstoneLogic;
+import quarri6343.unredstone.impl.CommandCreateTeam;
+import quarri6343.unredstone.impl.CommandRemoveTeam;
 import quarri6343.unredstone.impl.CommandUnRedstone;
 
 public final class UnRedstone extends JavaPlugin {
 
+    public UnRedstoneData data;
     public Config config;
     public UnRedstoneLogic logic;
-
-    public static final int maxLoadableTeams = 27;
     
     /**
      * シングルトンで管理されているこのクラスのインスタンス
@@ -26,10 +31,13 @@ public final class UnRedstone extends JavaPlugin {
     @Override
     public void onEnable() {
         // Plugin startup logic
+        data = new UnRedstoneData();
         config = new Config();
         config.loadConfig();
         logic = new UnRedstoneLogic();
         new CommandUnRedstone();
+        new CommandCreateTeam();
+        new CommandRemoveTeam();
         new EventHandler();
     }
 

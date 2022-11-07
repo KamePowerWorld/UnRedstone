@@ -87,11 +87,11 @@ public abstract class CommandBase extends BukkitCommand implements CommandExecut
         this.minArguments = minArguments;
         this.maxArguments = maxArguments;
         this.playerOnly = playerOnly;
-        setPermission("mmplugin." + command);
+        setPermission("unredstone." + command);
 
         CommandMap commandMap = UnRedstoneUtils.getCommandMap();
         if (commandMap != null) {
-            if(!commandMap.register(command, "MMPlugin", this))
+            if(!commandMap.register(command, "UnRedstone", this))
                 commandMap.getKnownCommands().replace(command, this);
         }
     }

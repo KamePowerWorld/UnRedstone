@@ -5,7 +5,7 @@ import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
-import quarri6343.unredstone.EventHandler;
+import quarri6343.unredstone.common.EventHandler;
 import quarri6343.unredstone.api.CommandBase;
 import quarri6343.unredstone.utils.ItemCreator;
 
