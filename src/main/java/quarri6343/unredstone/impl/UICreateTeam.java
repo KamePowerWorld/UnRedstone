@@ -14,7 +14,7 @@ public class UICreateTeam {
     private static String inputtedTeamColor = "";
     
     public static void openUI(Player player) {
-        new AnvilGUI.Builder().onComplete(UICreateTeam::onTeamNameInputted).text("").title("チームの名前を入力").plugin(UnRedstone.getInstance()).open(player);
+        new AnvilGUI.Builder().onComplete(UICreateTeam::onTeamNameInputted).text("name").title("チームの名前を入力").plugin(UnRedstone.getInstance()).open(player);
     }
 
     private static AnvilGUI.Response onTeamNameInputted(Player player, String text){
@@ -30,7 +30,7 @@ public class UICreateTeam {
     }
     
     private static void openColorUI(Player player){
-        new AnvilGUI.Builder().onComplete(UICreateTeam::onTeamColorInputted).text("").title("チームの色を入力。例：red").plugin(UnRedstone.getInstance()).open(player);
+        new AnvilGUI.Builder().onComplete(UICreateTeam::onTeamColorInputted).text("color").title("チームの色を入力。例：red").plugin(UnRedstone.getInstance()).open(player);
     }
     
     private static AnvilGUI.Response onTeamColorInputted(Player player, String text){

@@ -27,6 +27,10 @@ public class UIMenu {
             .color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false);
     private static final TextComponent setEndButtonGuide = Component.text("現在立っている場所が終了地点になります")
             .color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false);
+    private static final TextComponent joinTeamButtonGuide = Component.text("コマンド/forcejoin {プレイヤー名}を使用してください")
+            .color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false);
+    private static final TextComponent leaveTeamButtonGuide = Component.text("コマンド/forceleave {プレイヤー名}を使用してください")
+            .color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false);
     
     private static UnRedstoneData getData(){
         return UnRedstone.getInstance().data;
@@ -50,10 +54,10 @@ public class UIMenu {
                 event -> UICreateTeam.openUI(player));
         gui.setItem(0, createTeamButton);
 
-        ItemStack selectTeamItem = new ItemCreator(Material.RESPAWN_ANCHOR).setName(Component.text("設定するチームを変更"))
+        ItemStack selectTeamItem = new ItemCreator(Material.RESPAWN_ANCHOR).setName(Component.text("設定するチームを選択"))
                 .create();
         GuiItem selectTeamButton = new GuiItem(selectTeamItem,
-                event -> UITeamSelect.openUI(player));
+                event -> UISelectTeam.openUI(player));
         gui.setItem(2, selectTeamButton);
 
         GuiItem setStartButton;
@@ -70,27 +74,36 @@ public class UIMenu {
 
         GuiItem removeTeamButton;
         ItemStack removeTeamItem = new ItemCreator(Material.BLACK_BANNER).setName(Component.text("選択中のチームを削除"))
-                .setLore(getSelectedTeamDesc()).create();
+                .setLore(getRemoveTeamDesc()).create();
         removeTeamButton = new GuiItem(removeTeamItem, UIMenu::onRemoveTeamButton);
         gui.setItem(8, removeTeamButton);
-
+        
+        ItemStack forceJoinItem = new ItemCreator(Material.GREEN_BANNER).setName(Component.text("選択中のチームにプレイヤーを入れる"))
+                .setLore(joinTeamButtonGuide).create();
+        GuiItem forceJoinButton = new GuiItem(forceJoinItem, event -> {});
+        gui.setItem(11, forceJoinButton);
+        ItemStack forceLeaveItem = new ItemCreator(Material.RED_BANNER).setName(Component.text("プレイヤーをチームから外す"))
+                .setLore(leaveTeamButtonGuide).create();
+        GuiItem forceLeaveButton = new GuiItem(forceLeaveItem, event -> {});
+        gui.setItem(15, forceLeaveButton);
+        
         GuiItem startButton = new GuiItem(new ItemCreator(Material.GREEN_WOOL).setName(Component.text("ゲームを開始(未実装につき1チームのみプレイできます)")).setLore(getCanStartGameDesc()).create(),
                 event -> {
                     getLogic().startGame((Player) event.getWhoClicked());
                     openUI((Player) event.getWhoClicked());
                 });
-        gui.setItem(11, startButton);
+        gui.setItem(20, startButton);
         GuiItem endButton = new GuiItem(new ItemCreator(Material.RED_WOOL).setName(Component.text("ゲームを強制終了")).setLore(getCanTerminateGameDesc()).create(),
                 event -> {
                     getLogic().endGame((Player) event.getWhoClicked(), UnRedstoneLogic.GameResult.FAIL);
                     openUI((Player) event.getWhoClicked());
                 });
-        gui.setItem(15, endButton);
+        gui.setItem(24, endButton);
 
         GuiItem closeButton = new GuiItem(new ItemCreator(Material.BARRIER).setName(Component.text("閉じる")).create(),
                 event -> gui.close(event.getWhoClicked()));
         gui.setItem(22, closeButton);
-
+        
         gui.open(player);
     }
 
@@ -168,15 +181,19 @@ public class UIMenu {
      * チームを削除するボタンを押したときのイベント
      */
     private static void onRemoveTeamButton(InventoryClickEvent event){
-        UnRedstoneData data = UnRedstone.getInstance().data;
-        if(data.selectedTeam.equals("")){
+        if(getLogic().gameStatus == UnRedstoneLogic.GameStatus.ACTIVE){
+            event.getWhoClicked().sendMessage(gameRunningText);
+            return;
+        }
+        
+        if(getData().selectedTeam.equals("")){
             event.getWhoClicked().sendMessage(teamNotSelectedText);
             return;
         }
 
-        data.removeTeam(data.selectedTeam);
-        event.getWhoClicked().sendMessage(Component.text("チーム" + data.selectedTeam + "を削除しました").color(NamedTextColor.WHITE));
-        data.selectedTeam = "";
+        getData().removeTeam(getData().selectedTeam);
+        event.getWhoClicked().sendMessage(Component.text("チーム" + getData().selectedTeam + "を削除しました").color(NamedTextColor.WHITE));
+        getData().selectedTeam = "";
     }
     
     /**
@@ -207,11 +224,18 @@ public class UIMenu {
     }
 
     /**
-     * @return 現在選択中のチームの情報を表す文
+     * @return チーム削除ボタンの説明文
      */
-    private static TextComponent getSelectedTeamDesc() {
-        return !getData().selectedTeam.equals("") ? Component.text("選択中のチーム:" + UnRedstone.getInstance().data.selectedTeam)
-                .color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false)
-                : teamNotSelectedText;
+    private static TextComponent getRemoveTeamDesc() {
+        if(getLogic().gameStatus == UnRedstoneLogic.GameStatus.ACTIVE){
+            return gameRunningText;
+        }
+        
+        if(getData().selectedTeam.equals("")){
+            return teamNotSelectedText;
+        }
+        
+        return Component.text("選択中のチーム:" + UnRedstone.getInstance().data.selectedTeam)
+                .color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false);
     }
 }
