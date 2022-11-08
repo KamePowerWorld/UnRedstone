@@ -7,18 +7,20 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import quarri6343.unredstone.UnRedstone;
+import quarri6343.unredstone.common.EventHandler;
 import quarri6343.unredstone.common.UnRedstoneData;
 import quarri6343.unredstone.common.UnRedstoneLogic;
 import quarri6343.unredstone.utils.ItemCreator;
 import quarri6343.unredstone.utils.UnRedstoneUtils;
 
-public class UIMenu {
+public class UIAdminMenu {
 
     private static final TextComponent gameRunningText = Component.text("ゲームが進行中です！").color(NamedTextColor.RED).decoration(TextDecoration.ITALIC, false);
     private static final TextComponent teamNotSelectedText = Component.text("チームが選択されていません")
@@ -31,6 +33,8 @@ public class UIMenu {
             .color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false);
     private static final TextComponent leaveTeamButtonGuide = Component.text("コマンド/forceleave {プレイヤー名}を使用してください")
             .color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false);
+    private static final TextComponent giveTeamSelectorButtonGuide = Component.text("全てのプレイヤーがGUIを通じて自由にチームに入れるようになります")
+            .color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false);
     
     private static UnRedstoneData getData(){
         return UnRedstone.getInstance().data;
@@ -54,38 +58,48 @@ public class UIMenu {
                 event -> UICreateTeam.openUI(player));
         gui.setItem(0, createTeamButton);
 
-        ItemStack selectTeamItem = new ItemCreator(Material.RESPAWN_ANCHOR).setName(Component.text("設定するチームを選択"))
+        ItemStack selectTeamItem = new ItemCreator(Material.RESPAWN_ANCHOR).setName(Component.text("設定変更するチームを選択"))
                 .create();
         GuiItem selectTeamButton = new GuiItem(selectTeamItem,
-                event -> UISelectTeam.openUI(player));
+                event -> UIAdminSelectTeam.openUI(player));
         gui.setItem(2, selectTeamButton);
 
         GuiItem setStartButton;
         ItemStack setStartItem = new ItemCreator(Material.FURNACE_MINECART).setName(Component.text("チーム" + getData().selectedTeam + "の開始地点を設定"))
                 .addLore(getSetStartButtonStats()).addLore(setStartButtonGuide).create();
-        setStartButton = new GuiItem(setStartItem, UIMenu::onSetStartButton);
+        setStartButton = new GuiItem(setStartItem, UIAdminMenu::onSetStartButton);
         gui.setItem(4, setStartButton);
 
         GuiItem setEndButton;
         ItemStack setEndItem = new ItemCreator(Material.DETECTOR_RAIL).setName(Component.text("チーム" + getData().selectedTeam + "の終了地点を設定"))
                 .addLore(getSetEndButtonStats()).addLore(setEndButtonGuide).create();
-        setEndButton = new GuiItem(setEndItem, UIMenu::onSetEndButton);
+        setEndButton = new GuiItem(setEndItem, UIAdminMenu::onSetEndButton);
         gui.setItem(6, setEndButton);
 
         GuiItem removeTeamButton;
         ItemStack removeTeamItem = new ItemCreator(Material.BLACK_BANNER).setName(Component.text("選択中のチームを削除"))
                 .setLore(getRemoveTeamDesc()).create();
-        removeTeamButton = new GuiItem(removeTeamItem, UIMenu::onRemoveTeamButton);
+        removeTeamButton = new GuiItem(removeTeamItem, UIAdminMenu::onRemoveTeamButton);
         gui.setItem(8, removeTeamButton);
         
-        ItemStack forceJoinItem = new ItemCreator(Material.GREEN_BANNER).setName(Component.text("選択中のチームにプレイヤーを入れる"))
+        ItemStack forceJoinItem = new ItemCreator(Material.GREEN_BANNER).setName(Component.text("選択中のチームにプレイヤーを加入させる"))
                 .setLore(joinTeamButtonGuide).create();
         GuiItem forceJoinButton = new GuiItem(forceJoinItem, event -> {});
         gui.setItem(11, forceJoinButton);
+        
         ItemStack forceLeaveItem = new ItemCreator(Material.RED_BANNER).setName(Component.text("プレイヤーをチームから外す"))
                 .setLore(leaveTeamButtonGuide).create();
         GuiItem forceLeaveButton = new GuiItem(forceLeaveItem, event -> {});
-        gui.setItem(15, forceLeaveButton);
+        gui.setItem(13, forceLeaveButton);
+        
+        ItemStack giveTeamSelectorItem = new ItemCreator(Material.RED_BANNER).setName(Component.text("全てのプレイヤーにチームセレクタを配布する"))
+                .setLore(giveTeamSelectorButtonGuide).create();
+        GuiItem giveTeamSelectorButton = new GuiItem(giveTeamSelectorItem, event -> {
+            for (Player onlinePlayer: Bukkit.getOnlinePlayers()) {
+                onlinePlayer.getInventory().addItem(new ItemCreator(Material.NETHER_STAR).setName(Component.text(EventHandler.teamSelectorItemName)).create());
+            }
+        });
+        gui.setItem(15, giveTeamSelectorButton);
         
         GuiItem startButton = new GuiItem(new ItemCreator(Material.GREEN_WOOL).setName(Component.text("ゲームを開始(未実装につき1チームのみプレイできます)")).setLore(getCanStartGameDesc()).create(),
                 event -> {
