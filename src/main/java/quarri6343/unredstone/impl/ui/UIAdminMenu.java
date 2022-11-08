@@ -1,4 +1,4 @@
-package quarri6343.unredstone.impl;
+package quarri6343.unredstone.impl.ui;
 
 import dev.triumphteam.gui.guis.Gui;
 import dev.triumphteam.gui.guis.GuiItem;
@@ -20,6 +20,9 @@ import quarri6343.unredstone.common.UnRedstoneLogic;
 import quarri6343.unredstone.utils.ItemCreator;
 import quarri6343.unredstone.utils.UnRedstoneUtils;
 
+/**
+ * プラグインの管理パネル
+ */
 public class UIAdminMenu {
 
     private static final TextComponent gameRunningText = Component.text("ゲームが進行中です！").color(NamedTextColor.RED).decoration(TextDecoration.ITALIC, false);
@@ -65,13 +68,13 @@ public class UIAdminMenu {
         gui.setItem(2, selectTeamButton);
 
         GuiItem setStartButton;
-        ItemStack setStartItem = new ItemCreator(Material.FURNACE_MINECART).setName(Component.text("チーム" + getData().selectedTeam + "の開始地点を設定"))
+        ItemStack setStartItem = new ItemCreator(Material.FURNACE_MINECART).setName(Component.text("チーム" + getData().adminSelectedTeam + "の開始地点を設定"))
                 .addLore(getSetStartButtonStats()).addLore(setStartButtonGuide).create();
         setStartButton = new GuiItem(setStartItem, UIAdminMenu::onSetStartButton);
         gui.setItem(4, setStartButton);
 
         GuiItem setEndButton;
-        ItemStack setEndItem = new ItemCreator(Material.DETECTOR_RAIL).setName(Component.text("チーム" + getData().selectedTeam + "の終了地点を設定"))
+        ItemStack setEndItem = new ItemCreator(Material.DETECTOR_RAIL).setName(Component.text("チーム" + getData().adminSelectedTeam + "の終了地点を設定"))
                 .addLore(getSetEndButtonStats()).addLore(setEndButtonGuide).create();
         setEndButton = new GuiItem(setEndItem, UIAdminMenu::onSetEndButton);
         gui.setItem(6, setEndButton);
@@ -126,7 +129,7 @@ public class UIAdminMenu {
      * @return 初期位置を設定するボタンに表示する現在の状況
      */
     private static TextComponent getSetStartButtonStats(){
-        if(getData().getTeambyName(getData().selectedTeam) == null){
+        if(getData().getTeambyName(getData().adminSelectedTeam) == null){
             return teamNotSelectedText;
         }
 
@@ -134,14 +137,14 @@ public class UIAdminMenu {
             return gameRunningText;
         }
 
-        return getLocDesc(getData().getTeambyName(getData().selectedTeam).startLocation);
+        return getLocDesc(getData().getTeambyName(getData().adminSelectedTeam).startLocation);
     }
     
     /**
      * @return ゴール位置を設定するボタンに表示する現在の状況
      */
     private static TextComponent getSetEndButtonStats(){
-        if(getData().getTeambyName(getData().selectedTeam) == null){
+        if(getData().getTeambyName(getData().adminSelectedTeam) == null){
             return teamNotSelectedText;
         }
 
@@ -149,7 +152,7 @@ public class UIAdminMenu {
             return gameRunningText;
         }
 
-        return getLocDesc(getData().getTeambyName(getData().selectedTeam).endLocation);
+        return getLocDesc(getData().getTeambyName(getData().adminSelectedTeam).endLocation);
     }
 
 
@@ -157,7 +160,7 @@ public class UIAdminMenu {
      * 初期位置を設定するボタンを押したときのイベント
      */
     private static void onSetStartButton(InventoryClickEvent event){
-        if(getData().getTeambyName(getData().selectedTeam) == null){
+        if(getData().getTeambyName(getData().adminSelectedTeam) == null){
             event.getWhoClicked().sendMessage(teamNotSelectedText);
             return;
         }
@@ -167,7 +170,7 @@ public class UIAdminMenu {
             return;
         }
 
-        getData().getTeambyName(getData().selectedTeam).startLocation = event.getWhoClicked().getLocation();
+        getData().getTeambyName(getData().adminSelectedTeam).startLocation = event.getWhoClicked().getLocation();
         event.getWhoClicked().sendMessage(Component.text("開始地点を" + UnRedstoneUtils.locationBlockPostoString(event.getWhoClicked().getLocation()) + "に設定しました"));
         openUI((Player) event.getWhoClicked());
     }
@@ -176,7 +179,7 @@ public class UIAdminMenu {
      * 終了位置を設定するボタンを押したときのイベント
      */
     private static void onSetEndButton(InventoryClickEvent event){
-        if(getData().getTeambyName(getData().selectedTeam) == null){
+        if(getData().getTeambyName(getData().adminSelectedTeam) == null){
             event.getWhoClicked().sendMessage(teamNotSelectedText);
             return;
         }
@@ -186,7 +189,7 @@ public class UIAdminMenu {
             return;
         }
 
-        getData().getTeambyName(getData().selectedTeam).endLocation = event.getWhoClicked().getLocation();
+        getData().getTeambyName(getData().adminSelectedTeam).endLocation = event.getWhoClicked().getLocation();
         event.getWhoClicked().sendMessage(Component.text("終了地点を" + UnRedstoneUtils.locationBlockPostoString(event.getWhoClicked().getLocation()) + "に設定しました"));
         openUI((Player) event.getWhoClicked());
     }
@@ -200,14 +203,14 @@ public class UIAdminMenu {
             return;
         }
         
-        if(getData().selectedTeam.equals("")){
+        if(getData().adminSelectedTeam.equals("")){
             event.getWhoClicked().sendMessage(teamNotSelectedText);
             return;
         }
 
-        getData().removeTeam(getData().selectedTeam);
-        event.getWhoClicked().sendMessage(Component.text("チーム" + getData().selectedTeam + "を削除しました").color(NamedTextColor.WHITE));
-        getData().selectedTeam = "";
+        getData().removeTeam(getData().adminSelectedTeam);
+        event.getWhoClicked().sendMessage(Component.text("チーム" + getData().adminSelectedTeam + "を削除しました").color(NamedTextColor.WHITE));
+        getData().adminSelectedTeam = "";
     }
     
     /**
@@ -245,11 +248,11 @@ public class UIAdminMenu {
             return gameRunningText;
         }
         
-        if(getData().selectedTeam.equals("")){
+        if(getData().adminSelectedTeam.equals("")){
             return teamNotSelectedText;
         }
         
-        return Component.text("選択中のチーム:" + UnRedstone.getInstance().data.selectedTeam)
+        return Component.text("選択中のチーム:" + UnRedstone.getInstance().data.adminSelectedTeam)
                 .color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false);
     }
 }

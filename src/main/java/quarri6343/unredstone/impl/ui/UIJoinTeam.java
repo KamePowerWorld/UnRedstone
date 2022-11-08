@@ -1,4 +1,4 @@
-package quarri6343.unredstone.impl;
+package quarri6343.unredstone.impl.ui;
 
 import dev.triumphteam.gui.guis.Gui;
 import dev.triumphteam.gui.guis.GuiItem;
@@ -18,7 +18,10 @@ import quarri6343.unredstone.utils.ItemCreator;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UISelectTeam {
+/**
+ * プレイヤーがチームに参加できるGUI
+ */
+public class UIJoinTeam {
     
     public static void openUI(Player player) {
         
@@ -59,6 +62,9 @@ public class UISelectTeam {
         gui.open(player);
     }
 
+    /**
+     * プレイヤーが参加したいチームを選択した時の挙動
+     */
     private static void onTeamSelected(InventoryClickEvent event, UnRedStoneTeam team) {
         if(UnRedstone.getInstance().logic.gameStatus == UnRedstoneLogic.GameStatus.ACTIVE){
             event.getWhoClicked().sendMessage(Component.text("ゲーム中はチームに加入できません").color(NamedTextColor.RED));

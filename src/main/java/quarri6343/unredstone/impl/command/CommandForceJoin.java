@@ -1,18 +1,16 @@
-package quarri6343.unredstone.impl;
+package quarri6343.unredstone.impl.command;
 
-import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 import quarri6343.unredstone.UnRedstone;
 import quarri6343.unredstone.api.CommandBase;
-import quarri6343.unredstone.common.EventHandler;
-import quarri6343.unredstone.common.UnRedStoneTeam;
 import quarri6343.unredstone.common.UnRedstoneData;
-import quarri6343.unredstone.utils.ItemCreator;
 
+/**
+ * プレイヤーを強制的にチームに参加させるコマンド
+ */
 public class CommandForceJoin extends CommandBase {
     
     private static final String commandName="forcejoin";
@@ -24,7 +22,7 @@ public class CommandForceJoin extends CommandBase {
     @Override
     public boolean onCommand(CommandSender sender, @Nullable String[] arguments) {
         UnRedstoneData data = UnRedstone.getInstance().data;
-        if(data.selectedTeam.equals("")){
+        if(data.adminSelectedTeam.equals("")){
             sender.sendMessage("まずGUIで加入させたいチームを選択してください");
             return true;
         }
@@ -43,8 +41,8 @@ public class CommandForceJoin extends CommandBase {
             }
         }
         
-        data.getTeambyName(data.selectedTeam).players.add(player);
-        sender.sendMessage(arguments[0] + "をチーム" + data.selectedTeam + "に加入させました");
+        data.getTeambyName(data.adminSelectedTeam).players.add(player);
+        sender.sendMessage(arguments[0] + "をチーム" + data.adminSelectedTeam + "に加入させました");
         return true;
     }
 }

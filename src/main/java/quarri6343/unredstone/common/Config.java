@@ -6,11 +6,17 @@ import quarri6343.unredstone.UnRedstone;
 
 import java.io.File;
 
+/**
+ * コンフィグファイルを読み書きする
+ */
 public class Config {
 
     public Config() {
     }
 
+    /**
+     * コンフィグファイル内のデータをデータクラスにコピーする
+     */
     public void loadConfig() {
         JavaPlugin plugin = UnRedstone.getInstance();
         plugin.saveDefaultConfig();
@@ -28,8 +34,11 @@ public class Config {
         }
     }
 
+    /**
+     * データクラスの中身をコンフィグにセーブする
+     */
     public void saveConfig() {
-        resetConfig();//reset to stop messing with old data
+        resetConfig();//古いデータが混在しないように一旦コンフィグを消す
         
         JavaPlugin plugin = UnRedstone.getInstance();
         FileConfiguration config = plugin.getConfig();
@@ -44,7 +53,10 @@ public class Config {
 
         plugin.saveConfig();
     }
-    
+
+    /**
+     * コンフィグを全て削除する
+     */
     public void resetConfig(){
         JavaPlugin plugin = UnRedstone.getInstance();
         File configFile = new File(plugin.getDataFolder(), "config.yml");

@@ -1,4 +1,4 @@
-package quarri6343.unredstone.impl;
+package quarri6343.unredstone.impl.command;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
@@ -9,6 +9,9 @@ import quarri6343.unredstone.common.EventHandler;
 import quarri6343.unredstone.api.CommandBase;
 import quarri6343.unredstone.utils.ItemCreator;
 
+/**
+ * 管理者に管理用メニューを配布するコマンド
+ */
 public class CommandUnRedstone extends CommandBase {
     
     private static final String commandName="unredstone";

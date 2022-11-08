@@ -5,9 +5,9 @@ import quarri6343.unredstone.common.Config;
 import quarri6343.unredstone.common.EventHandler;
 import quarri6343.unredstone.common.UnRedstoneData;
 import quarri6343.unredstone.common.UnRedstoneLogic;
-import quarri6343.unredstone.impl.CommandForceJoin;
-import quarri6343.unredstone.impl.CommandForceLeave;
-import quarri6343.unredstone.impl.CommandUnRedstone;
+import quarri6343.unredstone.impl.command.CommandForceJoin;
+import quarri6343.unredstone.impl.command.CommandForceLeave;
+import quarri6343.unredstone.impl.command.CommandUnRedstone;
 
 public final class UnRedstone extends JavaPlugin {
 

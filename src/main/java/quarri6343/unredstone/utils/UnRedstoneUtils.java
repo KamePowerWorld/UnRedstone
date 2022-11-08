@@ -10,6 +10,7 @@ import org.bukkit.command.CommandMap;
 import org.bukkit.plugin.SimplePluginManager;
 
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.lang.reflect.Field;
 
 public class UnRedstoneUtils {
@@ -35,11 +36,18 @@ public class UnRedstoneUtils {
 
         return null;
     }
-    
+
+    /**
+     * Locationのブロック座標を文字列に変換する
+     */
+    @ParametersAreNonnullByDefault
     public static String locationBlockPostoString(Location location){
         return "x=" + location.getBlockX() + ",y=" + location.getBlockY() + ",z=" + location.getBlockZ();
     }
-    
+
+    /**
+     * プレイヤーの向きをレールの向きに変換する
+     */
     public static Rail.Shape yawToRailShape(float yaw) {
         BlockFace face = axis[Math.round(yaw / 90f) & 0x3];
         if(face == BlockFace.NORTH || face == BlockFace.SOUTH)

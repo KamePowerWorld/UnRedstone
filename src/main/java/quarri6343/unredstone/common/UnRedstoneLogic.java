@@ -21,8 +21,12 @@ import org.jetbrains.annotations.Nullable;
 import quarri6343.unredstone.UnRedstone;
 import quarri6343.unredstone.utils.UnRedstoneUtils;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.UUID;
 
+/**
+ * ゲームの進行を司るクラス
+ */
 public class UnRedstoneLogic {
     
     public GameStatus gameStatus = GameStatus.INACTIVE;
@@ -30,7 +34,11 @@ public class UnRedstoneLogic {
     public UUID locomotiveID;
 
     private BukkitTask gameRunnable;
-    
+
+    /**
+     * ゲームを開始する
+     * @param gameMaster ゲームを開始した人
+     */
     public void startGame(@NotNull Player gameMaster){
         if(gameStatus == GameStatus.ACTIVE){
             gameMaster.sendMessage("ゲームが進行中です！");
@@ -89,7 +97,12 @@ public class UnRedstoneLogic {
             }
         }.runTaskTimer(UnRedstone.getInstance(), 0, 1);
     }
-    
+
+    /**
+     * 指定した場所と向きにレールを設置する
+     * @param location レールを置きたい場所と向き
+     */
+    @ParametersAreNonnullByDefault
     private void setUpRail(Location location){
         gameWorld.setType(location, Material.RAIL);
         Rail rail = (Rail) (gameWorld.getBlockAt(location).getBlockData());
@@ -97,7 +110,12 @@ public class UnRedstoneLogic {
         gameWorld.setBlockData(location, rail);
         gameWorld.setType(location.clone().subtract(0,1,0),Material.DIRT);
     }
-    
+
+    /**
+     * ゲームを終了する
+     * @param sender ゲームを終了した人
+     * @param gameResult ゲームの結果
+     */
     public void endGame(@Nullable Player sender, GameResult gameResult){
         if(gameStatus == GameStatus.INACTIVE){
             if(sender != null)
@@ -118,11 +136,17 @@ public class UnRedstoneLogic {
         }
     }
 
+    /**
+     * ゲームの状態(進行中/始まっていない)
+     */
     public enum GameStatus{
         ACTIVE,
         INACTIVE
     }
 
+    /**
+     * ゲームの結果(成功/失敗)
+     */
     public enum GameResult
     {
         SUCCESS,

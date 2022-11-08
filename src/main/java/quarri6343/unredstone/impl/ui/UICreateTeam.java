@@ -1,4 +1,4 @@
-package quarri6343.unredstone.impl;
+package quarri6343.unredstone.impl.ui;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -8,15 +8,24 @@ import org.bukkit.entity.Player;
 import quarri6343.unredstone.UnRedstone;
 import quarri6343.unredstone.common.UnRedstoneData;
 
+/**
+ * 管理者がチームを作成するときのGUI
+ */
 public class UICreateTeam {
 
     private static String inputtedTeamName = "";
     private static String inputtedTeamColor = "";
-    
+
+    /**
+     * チーム名入力フォームを開く
+     */
     public static void openUI(Player player) {
         new AnvilGUI.Builder().onComplete(UICreateTeam::onTeamNameInputted).text("name").title("チームの名前を入力").plugin(UnRedstone.getInstance()).open(player);
     }
 
+    /**
+     * チーム名が入力された時の挙動
+     */
     private static AnvilGUI.Response onTeamNameInputted(Player player, String text){
         UnRedstoneData data = UnRedstone.getInstance().data;
         if(data.getTeambyName(text) != null){
@@ -28,11 +37,17 @@ public class UICreateTeam {
         openColorUI(player);
         return AnvilGUI.Response.close();
     }
-    
+
+    /**
+     * チームカラー入力フォームを開く
+     */
     private static void openColorUI(Player player){
         new AnvilGUI.Builder().onComplete(UICreateTeam::onTeamColorInputted).text("color").title("チームの色を入力。例：red").plugin(UnRedstone.getInstance()).open(player);
     }
-    
+
+    /**
+     *チームカラーが入力された時の挙動
+     */
     private static AnvilGUI.Response onTeamColorInputted(Player player, String text){
         if(NamedTextColor.NAMES.value(text) == null){
             player.sendMessage(Component.text("チームカラーが不正です。redやgreenのように半角小文字で指定してください").color(NamedTextColor.RED));

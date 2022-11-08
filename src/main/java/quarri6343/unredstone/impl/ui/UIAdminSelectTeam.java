@@ -1,4 +1,4 @@
-package quarri6343.unredstone.impl;
+package quarri6343.unredstone.impl.ui;
 
 import dev.triumphteam.gui.guis.Gui;
 import dev.triumphteam.gui.guis.GuiItem;
@@ -15,6 +15,9 @@ import quarri6343.unredstone.utils.ItemCreator;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 管理者が設定したいチームを選択する用のGUI
+ */
 public class UIAdminSelectTeam {
 
     public static void openUI(Player player) {
@@ -46,8 +49,8 @@ public class UIAdminSelectTeam {
                         .setLores(lores).create();
                 GuiItem teamSelectButton = new GuiItem(teamSelectItem,
                         event -> {
-                            data.selectedTeam = data.getTeam(event.getSlot()).name;
-                            event.getWhoClicked().sendMessage("チーム" + data.selectedTeam + "を選択しました");
+                            data.adminSelectedTeam = data.getTeam(event.getSlot()).name;
+                            event.getWhoClicked().sendMessage("チーム" + data.adminSelectedTeam + "を選択しました");
                             UIAdminMenu.openUI((Player) event.getWhoClicked());
                         });
                 gui.setItem(i, teamSelectButton);

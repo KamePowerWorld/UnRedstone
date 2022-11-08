@@ -7,7 +7,11 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * UnRedStoneを共に攻略するチームのデータクラス
+ */
 public class UnRedStoneTeam {
+
     public String name;
     public String color;
     public Location startLocation;

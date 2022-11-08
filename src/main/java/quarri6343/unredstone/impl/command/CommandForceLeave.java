@@ -1,4 +1,4 @@
-package quarri6343.unredstone.impl;
+package quarri6343.unredstone.impl.command;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -11,6 +11,9 @@ import quarri6343.unredstone.UnRedstone;
 import quarri6343.unredstone.api.CommandBase;
 import quarri6343.unredstone.common.UnRedstoneData;
 
+/**
+ * プレイヤーを強制的にチームから外すコマンド
+ */
 public class CommandForceLeave extends CommandBase {
     
     private static final String commandName="forceleave";
