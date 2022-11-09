@@ -9,13 +9,14 @@ import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
- * ゲームが進行中でない時も必要なデータを全て保存するクラス
+ * 必要なデータを全て保存するクラス
  */
 public class UnRedstoneData {
     public String adminSelectedTeam = "";
-    private List<UnRedStoneTeam> teams = new ArrayList<>();
+    private List<UnRedstoneTeam> teams = new ArrayList<>();
 
     /**
      * チームを登録する
@@ -29,7 +30,7 @@ public class UnRedstoneData {
             return;
         }
 
-        teams.add(new UnRedStoneTeam(name, color));
+        teams.add(new UnRedstoneTeam(name, color));
     }
 
     /**
@@ -46,7 +47,8 @@ public class UnRedstoneData {
      * @param index チームのインデックス
      * @return チーム
      */
-    public @Nonnull UnRedStoneTeam getTeam(int index){
+    public @Nonnull
+    UnRedstoneTeam getTeam(int index){
         return teams.get(index);
     }
 
@@ -56,7 +58,7 @@ public class UnRedstoneData {
      * @return チーム
      */
     @ParametersAreNonnullByDefault
-    public @Nullable UnRedStoneTeam getTeambyName(String name){
+    public @Nullable UnRedstoneTeam getTeambyName(String name){
         return teams.stream().filter(v -> v.name.equals(name)).findFirst().orElse(null);
     }
 
@@ -65,7 +67,7 @@ public class UnRedstoneData {
      * @param color 色
      * @return チーム
      */
-    public @Nullable UnRedStoneTeam getTeambyColor(NamedTextColor color){
+    public @Nullable UnRedstoneTeam getTeambyColor(NamedTextColor color){
         return teams.stream().filter(v -> v.color.equals(NamedTextColor.NAMES.key(color))).findFirst().orElse(null);
     }
 
@@ -75,8 +77,13 @@ public class UnRedstoneData {
      * @return チーム
      */
     @ParametersAreNonnullByDefault
-    public @Nullable UnRedStoneTeam getTeambyColor(String color){
+    public @Nullable UnRedstoneTeam getTeambyColor(String color){
         return teams.stream().filter(v -> v.color.equals(color)).findFirst().orElse(null);
+    }
+
+    @ParametersAreNonnullByDefault
+    public @Nullable UnRedstoneTeam getTeambyLocomotiveID(UUID locomotiveID){
+        return teams.stream().filter(v -> v.locomotiveID.equals(locomotiveID)).findFirst().orElse(null);
     }
 
     /**

@@ -1,16 +1,16 @@
 package quarri6343.unredstone.common;
 
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
- * UnRedStoneを共に攻略するチームのデータクラス
+ * UnRedstoneを共に攻略するチームのデータクラス
  */
-public class UnRedStoneTeam {
+public class UnRedstoneTeam {
 
     public String name;
     public String color;
@@ -20,10 +20,11 @@ public class UnRedStoneTeam {
     public Location endLocation;
     public Location joinLocation1;
     public Location joinLocation2;
+    public UUID locomotiveID;
     
     public List<Player> players = new ArrayList<>();
     
-    public UnRedStoneTeam(String name, String color){
+    public UnRedstoneTeam(String name, String color){
         this.name = name;
         this.color = color;
     }

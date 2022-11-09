@@ -43,9 +43,10 @@ public class EventHandler implements Listener {
      * トロッコが破壊された場合、チームの初期地点に位置をリセットする
      */
     private void processLocomotiveDestruction(VehicleDestroyEvent event){
-        if(event.getVehicle().getUniqueId().equals(UnRedstone.getInstance().logic.locomotiveID)){
+        UnRedstoneTeam team = UnRedstone.getInstance().data.getTeambyLocomotiveID(event.getVehicle().getUniqueId());
+        if(team != null){
             event.setCancelled(true);
-            event.getVehicle().teleport(UnRedstone.getInstance().data.getTeam(0).startLocation.clone().add(0,1,0));
+            event.getVehicle().teleport(team.startLocation.clone().add(0,1,0));
         }
     }
 }

@@ -107,7 +107,7 @@ public class UIAdminMenu {
         });
         gui.setItem(15, setJoinLocation2Button);
         
-        GuiItem startButton = new GuiItem(new ItemCreator(Material.GREEN_WOOL).setName(Component.text("ゲームを開始(未実装につき1チームのみプレイできます)")).setLore(getCanStartGameDesc()).create(),
+        GuiItem startButton = new GuiItem(new ItemCreator(Material.GREEN_WOOL).setName(Component.text("ゲームを開始")).setLore(getCanStartGameDesc()).create(),
                 event -> {
                     getLogic().startGame((Player) event.getWhoClicked());
                     openUI((Player) event.getWhoClicked());
@@ -115,7 +115,7 @@ public class UIAdminMenu {
         gui.setItem(20, startButton);
         GuiItem endButton = new GuiItem(new ItemCreator(Material.RED_WOOL).setName(Component.text("ゲームを強制終了")).setLore(getCanTerminateGameDesc()).create(),
                 event -> {
-                    getLogic().endGame((Player) event.getWhoClicked(), UnRedstoneLogic.GameResult.FAIL);
+                    getLogic().endGame((Player) event.getWhoClicked(), null, UnRedstoneLogic.GameResult.FAIL);
                     openUI((Player) event.getWhoClicked());
                 });
         gui.setItem(24, endButton);
