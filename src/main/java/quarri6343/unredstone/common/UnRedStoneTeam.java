@@ -18,6 +18,8 @@ public class UnRedStoneTeam {
     //    public Location relayLocation1 = null;
 //    public Location relayLocation2 = null;
     public Location endLocation;
+    public Location joinLocation1;
+    public Location joinLocation2;
     
     public List<Player> players = new ArrayList<>();
     

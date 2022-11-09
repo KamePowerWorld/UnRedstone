@@ -12,7 +12,7 @@ import quarri6343.unredstone.api.CommandBase;
 import quarri6343.unredstone.common.UnRedstoneData;
 
 /**
- * プレイヤーを強制的にチームから外すコマンド
+ * プレイヤーを強制的にチームから外すコマンド。ゲーム中も実行可能
  */
 public class CommandForceLeave extends CommandBase {
     

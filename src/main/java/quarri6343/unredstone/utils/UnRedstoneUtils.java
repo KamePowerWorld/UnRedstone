@@ -7,6 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Rail;
 import org.bukkit.command.CommandMap;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.SimplePluginManager;
 
 import javax.annotation.Nullable;
@@ -54,5 +55,20 @@ public class UnRedstoneUtils {
             return Rail.Shape.NORTH_SOUTH;
         else
             return Rail.Shape.EAST_WEST;
+    }
+    
+    public static boolean isPlayerInArea(Player player, Location location1, Location location2){
+        double playerX = player.getLocation().getX();
+        double playerZ = player.getLocation().getZ();
+
+        boolean isXInRange = Math.min(location1.getX(),location2.getX()) <= playerX
+                && Math.max(location1.getX(),location2.getX()) >= playerX;
+        boolean isZInRange = Math.min(location1.getZ(),location2.getZ()) <= playerZ
+                && Math.max(location1.getZ(),location2.getZ()) >= playerZ;
+        
+        if(isXInRange && isZInRange)
+            return true;
+        else
+            return false;
     }
 }

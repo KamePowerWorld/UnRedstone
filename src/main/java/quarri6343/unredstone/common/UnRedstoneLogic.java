@@ -59,6 +59,7 @@ public class UnRedstoneLogic {
             return;
         }
         
+        assignPlayerstoTeam();
         gameWorld = gameMaster.getWorld();
         gameStatus = GameStatus.ACTIVE;
         setUpRail(data.getTeam(0).startLocation);
@@ -123,6 +124,7 @@ public class UnRedstoneLogic {
             return;
         }
 
+        disbandTeams();
         gameStatus = GameStatus.INACTIVE;
         gameRunnable.cancel();
         
@@ -133,6 +135,33 @@ public class UnRedstoneLogic {
         }
         else if(gameResult == GameResult.FAIL){
             Bukkit.getOnlinePlayers().forEach(player -> player.showTitle(Title.title(Component.text("ゲームオーバー"), Component.empty())));
+        }
+    }
+
+    private void assignPlayerstoTeam(){
+        UnRedstoneData data = UnRedstone.getInstance().data;
+        for(Player onlinePlayer : Bukkit.getOnlinePlayers()){
+            for (int i = 0; i < data.getTeamsLength(); i++) {
+                if(data.getTeam(i).players.contains(onlinePlayer)){
+                    onlinePlayer.sendMessage("既にチーム" + data.getTeam(i).name + "に加入しているので、チームに参加できませんでした");
+                    return;
+                }
+            }
+            
+            for (int i = 0; i < data.getTeamsLength(); i++) {
+                if(UnRedstoneUtils.isPlayerInArea(onlinePlayer, data.getTeam(i).joinLocation1, data.getTeam(i).joinLocation2)){
+                    data.getTeam(i).players.add(onlinePlayer);
+                    onlinePlayer.sendMessage("チーム" + data.getTeam(i).name + "に加入しました");
+                    break;
+                }
+            }
+        }
+    }
+    
+    private void disbandTeams(){
+        UnRedstoneData data = UnRedstone.getInstance().data;
+        for (int i = 0; i < data.getTeamsLength(); i++) {
+            data.getTeam(i).players.clear();
         }
     }
 

@@ -31,6 +31,8 @@ public class Config {
             data.addTeam(config.getString("team.name." + i), config.getString("team.color." + i));
             data.getTeam(i).startLocation = config.getLocation("team.startLocation." + i);
             data.getTeam(i).endLocation = config.getLocation("team.endLocation." + i);
+            data.getTeam(i).joinLocation1 = config.getLocation("team.joinlocation1." + i);
+            data.getTeam(i).joinLocation2 = config.getLocation("team.joinlocation2." + i);
         }
     }
 
@@ -49,6 +51,8 @@ public class Config {
             config.set("team.color." + i, data.getTeam(i).color);
             config.set("team.startLocation." + i, data.getTeam(i).startLocation);
             config.set("team.endLocation." + i, data.getTeam(i).endLocation);
+            config.set("team.joinlocation1." + i, data.getTeam(i).joinLocation1);
+            config.set("team.joinlocation2." + i, data.getTeam(i).joinLocation2);
         }
 
         plugin.saveConfig();

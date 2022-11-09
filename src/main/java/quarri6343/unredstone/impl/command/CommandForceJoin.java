@@ -9,7 +9,7 @@ import quarri6343.unredstone.api.CommandBase;
 import quarri6343.unredstone.common.UnRedstoneData;
 
 /**
- * プレイヤーを強制的にチームに参加させるコマンド
+ * プレイヤーを強制的にチームに参加させるコマンド。ゲーム中も実行可能
  */
 public class CommandForceJoin extends CommandBase {
     
