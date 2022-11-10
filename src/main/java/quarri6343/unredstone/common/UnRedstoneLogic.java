@@ -60,7 +60,7 @@ public class UnRedstoneLogic {
             setUpRail(getData().getTeam(i).startLocation);
             setUpRail(getData().getTeam(i).endLocation);
             Entity locomotive = gameWorld.spawnEntity(getData().getTeam(i).startLocation.clone().add(0, 1, 0), EntityType.MINECART_CHEST);
-            locomotive.customName(Component.text("原木x" + craftingCost + " + 丸石x" + craftingCost + " = 線路").color(NamedTextColor.GRAY));
+            locomotive.customName(Component.text("原木x" + getData().craftingCost + " + 丸石x" + getData().craftingCost + " = 線路").color(NamedTextColor.GRAY));
             getData().getTeam(i).locomotiveID = locomotive.getUniqueId();
 
             for (Player player : getData().getTeam(i).players) {
@@ -276,14 +276,14 @@ public class UnRedstoneLogic {
         private void processCrafting(InventoryHolder chest) {
             Inventory chestInMinecart = chest.getInventory();
 
-            if (chestInMinecart.containsAtLeast(new ItemStack(Material.RAIL), maxHoldableItems))
+            if (chestInMinecart.containsAtLeast(new ItemStack(Material.RAIL), getData().maxHoldableItems))
                 return;
 
             for (Material wood : woods) {
-                if (chestInMinecart.containsAtLeast(new ItemStack(wood), craftingCost)
-                        && chestInMinecart.containsAtLeast(new ItemStack(Material.COBBLESTONE), craftingCost)) {
-                    chestInMinecart.removeItemAnySlot(new ItemStack(wood, craftingCost));
-                    chestInMinecart.removeItemAnySlot(new ItemStack(Material.COBBLESTONE, craftingCost));
+                if (chestInMinecart.containsAtLeast(new ItemStack(wood), getData().craftingCost)
+                        && chestInMinecart.containsAtLeast(new ItemStack(Material.COBBLESTONE), getData().craftingCost)) {
+                    chestInMinecart.removeItemAnySlot(new ItemStack(wood, getData().craftingCost));
+                    chestInMinecart.removeItemAnySlot(new ItemStack(Material.COBBLESTONE, getData().craftingCost));
                     chestInMinecart.addItem(new ItemStack(Material.RAIL, 1));
                     break;
                 }
@@ -296,20 +296,20 @@ public class UnRedstoneLogic {
         private void dropItems(InventoryHolder chest, Material material) {
             for (int i = 0; i < getData().getTeamsLength(); i++) {
                 for (int j = 0; j < getData().getTeam(i).players.size(); j++) {
-                    Player player = getData().getTeam(i).players.get(i);
+                    Player player = getData().getTeam(i).players.get(j);
 
                     int itemsInInv = 0;
-                    for (ItemStack itemStack : getData().getTeam(i).players.get(i).getInventory().all(material).values()) {
+                    for (ItemStack itemStack : getData().getTeam(i).players.get(j).getInventory().all(material).values()) {
                         itemsInInv += itemStack.getAmount();
                     }
 
-                    ItemStack offHandItem = getData().getTeam(i).players.get(i).getInventory().getItemInOffHand();
+                    ItemStack offHandItem = getData().getTeam(i).players.get(j).getInventory().getItemInOffHand();
                     if (offHandItem.getType() == material)
                         itemsInInv += offHandItem.getAmount();
 
-                    if (itemsInInv > maxHoldableItems) {
-                        player.getInventory().removeItemAnySlot(new ItemStack(material, itemsInInv - maxHoldableItems));
-                        player.getWorld().dropItemNaturally(player.getLocation(), new ItemStack(material, itemsInInv - maxHoldableItems));
+                    if (itemsInInv > getData().maxHoldableItems) {
+                        player.getInventory().removeItemAnySlot(new ItemStack(material, itemsInInv - getData().maxHoldableItems));
+                        player.getWorld().dropItemNaturally(player.getLocation(), new ItemStack(material, itemsInInv - getData().maxHoldableItems));
                     }
                 }
 
@@ -318,13 +318,13 @@ public class UnRedstoneLogic {
                     itemsInInv += itemStack.getAmount();
                 }
 
-                if (itemsInInv <= maxHoldableItems) {
+                if (itemsInInv <= getData().maxHoldableItems) {
                     continue;
                 }
 
-                chest.getInventory().removeItemAnySlot(new ItemStack(material, itemsInInv - maxHoldableItems));
+                chest.getInventory().removeItemAnySlot(new ItemStack(material, itemsInInv - getData().maxHoldableItems));
                 if (chest.getInventory().getLocation() != null) {
-                    gameWorld.dropItemNaturally(chest.getInventory().getLocation(), new ItemStack(material, itemsInInv - maxHoldableItems));
+                    gameWorld.dropItemNaturally(chest.getInventory().getLocation(), new ItemStack(material, itemsInInv - getData().maxHoldableItems));
                 }
             }
         }

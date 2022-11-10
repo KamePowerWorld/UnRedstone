@@ -1,5 +1,6 @@
 package quarri6343.unredstone.common;
 
+import com.google.common.base.Objects;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -23,14 +24,19 @@ public class UnRedstoneData {
     public String adminSelectedTeam = "";
 
     /**
+     * プレイヤーが所持できる最大のアイテム数
+     */
+    public int maxHoldableItems = 10;
+
+    /**
+     * 線路一本を作るのに必要な原木と丸石の数
+     */
+    public int craftingCost = 2;
+
+    /**
      * ゲーム上に存在する全てのチーム
      */
     private final List<UnRedstoneTeam> teams = new ArrayList<>();
-
-    /**
-     * プレイヤーが所持できる最大のアイテム数
-     */
-    public static final int maxHoldableItems = 10;
 
     /**
      * ゲームのリザルトシーンの長さ
@@ -46,11 +52,6 @@ public class UnRedstoneData {
      * トロッコがレールをクラフトする周期
      */
     public static final int craftRailInterval = 40;
-
-    /**
-     * 線路一本を作るのに必要な原木と丸石の数
-     */
-    public static final int craftingCost = 2;
 
     /**
      * プレイヤーがある場所にスポーンするときスポーン地点をどれだけランダム化するか
@@ -128,7 +129,7 @@ public class UnRedstoneData {
 
     @ParametersAreNonnullByDefault
     public @Nullable UnRedstoneTeam getTeambyLocomotiveID(UUID locomotiveID) {
-        return teams.stream().filter(v -> v.locomotiveID.equals(locomotiveID)).findFirst().orElse(null);
+        return teams.stream().filter(v -> Objects.equal(v.locomotiveID, locomotiveID)).findFirst().orElse(null);
     }
 
     @ParametersAreNonnullByDefault

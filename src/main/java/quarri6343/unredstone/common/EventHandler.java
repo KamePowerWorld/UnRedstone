@@ -131,11 +131,11 @@ public class EventHandler implements Listener {
         if (offHandItem.getType() == material)
             itemsInInv += offHandItem.getAmount();
 
-        if (itemsInInv + event.getItem().getItemStack().getAmount() <= UnRedstoneData.maxHoldableItems)
+        if (itemsInInv + event.getItem().getItemStack().getAmount() <= getData().maxHoldableItems)
             return;
 
         event.setCancelled(true);
-        int itemsToAdd = UnRedstoneData.maxHoldableItems - itemsInInv;
+        int itemsToAdd = getData().maxHoldableItems - itemsInInv;
 
         if (itemsToAdd > 0) {
             ((Player) event.getEntity()).getInventory().addItem(new ItemStack(material, itemsToAdd));
