@@ -26,6 +26,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
 import static quarri6343.unredstone.common.UnRedstoneData.*;
+import static quarri6343.unredstone.utils.UnRedstoneUtils.randomizeLocation;
 import static quarri6343.unredstone.utils.UnRedstoneUtils.woods;
 
 /**
@@ -63,7 +64,7 @@ public class UnRedstoneLogic {
             getData().getTeam(i).locomotiveID = locomotive.getUniqueId();
 
             for (Player player : getData().getTeam(i).players) {
-                player.teleport(getData().getTeam(i).startLocation);
+                player.teleport(randomizeLocation(getData().getTeam(i).startLocation));
             }
         }
         UnRedstone.getInstance().scoreBoardManager.createTeam();

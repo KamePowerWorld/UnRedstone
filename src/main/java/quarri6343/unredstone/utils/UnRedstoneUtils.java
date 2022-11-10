@@ -9,11 +9,14 @@ import org.bukkit.block.data.Rail;
 import org.bukkit.command.CommandMap;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.SimplePluginManager;
+import quarri6343.unredstone.UnRedstone;
+import quarri6343.unredstone.common.UnRedstoneData;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.lang.reflect.Field;
+import java.util.Random;
 
 public class UnRedstoneUtils {
 
@@ -60,6 +63,14 @@ public class UnRedstoneUtils {
             return Rail.Shape.EAST_WEST;
     }
 
+    /**
+     * プレイヤーがx,z空間上で範囲内にいるか判定する
+     *
+     * @param player    プレイヤー
+     * @param location1 範囲の始点
+     * @param location2 範囲の終点
+     * @return 範囲内にいるか
+     */
     @ParametersAreNonnullByDefault
     public static boolean isPlayerInArea(Player player, Location location1, Location location2) {
         double playerX = player.getLocation().getX();
@@ -76,6 +87,13 @@ public class UnRedstoneUtils {
             return false;
     }
 
+    /**
+     * ある範囲のx,z空間内の中心点を見つける
+     *
+     * @param location1 範囲の始点
+     * @param location2 範囲の終点
+     * @return 範囲の中心点
+     */
     @ParametersAreNonnullByDefault
     public static @Nonnull
     Location getCenterLocation(Location location1, Location location2) {
@@ -83,5 +101,20 @@ public class UnRedstoneUtils {
                 (location1.getX() + location2.getX()) / 2,
                 (location1.getY() + location2.getY()) / 2,
                 (location1.getZ() + location2.getZ()) / 2);
+    }
+
+    /**
+     * ある場所のx,z座標をランダム化する
+     *
+     * @param location ランダム化したい場所
+     * @return ランダム化された場所
+     */
+    @ParametersAreNonnullByDefault
+    public static Location randomizeLocation(Location location) {
+        int magnitude = UnRedstoneData.randomSpawnMagnitude;
+        int x = new Random().nextInt(magnitude * 2 + 1) - magnitude;
+        int y = 0;
+        int z = new Random().nextInt(magnitude * 2 + 1) - magnitude;
+        return location.clone().add(x, y, z);
     }
 }

@@ -43,6 +43,7 @@ public class CommandForceJoin extends CommandBase {
         }
 
         data.getTeambyName(data.adminSelectedTeam).players.add(player);
+        UnRedstone.getInstance().scoreBoardManager.addPlayerToTeam(player, data.adminSelectedTeam);
         sender.sendMessage(arguments[0] + "をチーム" + data.adminSelectedTeam + "に加入させました");
         return true;
     }

@@ -15,14 +15,12 @@ public class ScoreBoardManager {
      * データに存在するチームからminecraftのチームを作る
      */
     public void createTeam() {
-        ScoreboardManager manager = Bukkit.getScoreboardManager();
-        Scoreboard board = manager.getMainScoreboard();
 
         for (int i = 0; i < getData().getTeamsLength(); i++) {
             if (getData().getTeam(i).players.size() == 0)
                 continue;
 
-            Team team = board.registerNewTeam(getData().getTeam(i).name);
+            Team team = getBoard().registerNewTeam(getData().getTeam(i).name);
             team.color(NamedTextColor.NAMES.value(getData().getTeam(i).color));
             team.setPrefix(ChatColor.RED.toString());
             team.setSuffix(ChatColor.RESET.toString());
@@ -39,17 +37,34 @@ public class ScoreBoardManager {
      * minecraftのチームを全て解散させる
      */
     public void deleteTeam() {
-        ScoreboardManager manager = Bukkit.getScoreboardManager();
-        Scoreboard board = manager.getMainScoreboard();
-
         for (int i = 0; i < getData().getTeamsLength(); i++) {
-            Team team = board.getTeam(getData().getTeam(i).name);
+            Team team = getBoard().getTeam(getData().getTeam(i).name);
             if (team != null)
                 team.unregister();
         }
     }
+    
+    public void addPlayerToTeam(Player player, String teamName){
+        Team team = getBoard().getTeam(teamName);
+        if(team == null)
+            return;
+        
+        team.addPlayer(player);
+    }
+    
+    public void kickPlayerFromTeam(Player player){
+        Team team = getBoard().getPlayerTeam(player);
+        if(team == null)
+            return;
+        
+        team.removePlayer(player);
+    }
 
     private UnRedstoneData getData() {
         return UnRedstone.getInstance().data;
+    }
+    
+    private Scoreboard getBoard(){
+        return Bukkit.getScoreboardManager().getMainScoreboard();
     }
 }

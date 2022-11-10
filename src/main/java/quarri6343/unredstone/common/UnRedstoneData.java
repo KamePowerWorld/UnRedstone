@@ -53,6 +53,11 @@ public class UnRedstoneData {
     public static final int craftingCost = 2;
 
     /**
+     * プレイヤーがある場所にスポーンするときスポーン地点をどれだけランダム化するか
+     */
+    public static final int randomSpawnMagnitude = 5;
+
+    /**
      * チームを登録する
      *
      * @param name  チーム名

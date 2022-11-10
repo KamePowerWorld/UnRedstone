@@ -39,6 +39,7 @@ public class CommandForceLeave extends CommandBase {
         }
 
         team.players.remove(player);
+        UnRedstone.getInstance().scoreBoardManager.kickPlayerFromTeam(player);
         sender.sendMessage(arguments[0] + "をチーム" + team.name + "から離脱させました");
         return true;
     }

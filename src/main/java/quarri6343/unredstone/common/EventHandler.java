@@ -1,12 +1,14 @@
 package quarri6343.unredstone.common;
 
 import org.bukkit.Material;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockDropItemEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.vehicle.VehicleDestroyEvent;
 import org.bukkit.inventory.ItemStack;
 import quarri6343.unredstone.UnRedstone;
@@ -72,6 +74,7 @@ public class EventHandler implements Listener {
         if (team != null) {
             team.players.remove(player);
         }
+        UnRedstone.getInstance().scoreBoardManager.kickPlayerFromTeam(player);
     }
 
     @org.bukkit.event.EventHandler
@@ -140,6 +143,29 @@ public class EventHandler implements Listener {
         }
 
         event.getItem().setItemStack(new ItemStack(Material.AIR));
+    }
+
+    @org.bukkit.event.EventHandler
+    public void onPlayerRespawn(PlayerRespawnEvent event) {
+        respawnPlayerNearLocomotive(event);
+    }
+
+    /**
+     * 死んだプレイヤーをトロッコの近くにスポーンさせる
+     */
+    private void respawnPlayerNearLocomotive(PlayerRespawnEvent event) {
+        if(UnRedstone.getInstance().logic.gameStatus == UnRedstoneLogic.GameStatus.INACTIVE)
+            return;
+        
+        UnRedstoneTeam team = getData().getTeambyPlayer(event.getPlayer());
+        if (team == null)
+            return;
+        
+        Entity locomotive = UnRedstone.getInstance().logic.gameWorld.getEntity(team.locomotiveID);
+        if(locomotive == null)
+            return;
+        
+        event.setRespawnLocation(UnRedstoneUtils.randomizeLocation(locomotive.getLocation()));
     }
 
     private UnRedstoneData getData() {
