@@ -26,9 +26,9 @@ public class UICreateTeam {
     /**
      * チーム名が入力された時の挙動
      */
-    private static AnvilGUI.Response onTeamNameInputted(Player player, String text){
+    private static AnvilGUI.Response onTeamNameInputted(Player player, String text) {
         UnRedstoneData data = UnRedstone.getInstance().data;
-        if(data.getTeambyName(text) != null){
+        if (data.getTeambyName(text) != null) {
             player.sendMessage(Component.text("その名前のチームは既に存在します").color(NamedTextColor.RED));
             return AnvilGUI.Response.close();
         }
@@ -41,25 +41,25 @@ public class UICreateTeam {
     /**
      * チームカラー入力フォームを開く
      */
-    private static void openColorUI(Player player){
+    private static void openColorUI(Player player) {
         new AnvilGUI.Builder().onComplete(UICreateTeam::onTeamColorInputted).text("color").title("チームの色を入力。例：red").plugin(UnRedstone.getInstance()).open(player);
     }
 
     /**
-     *チームカラーが入力された時の挙動
+     * チームカラーが入力された時の挙動
      */
-    private static AnvilGUI.Response onTeamColorInputted(Player player, String text){
-        if(NamedTextColor.NAMES.value(text) == null){
+    private static AnvilGUI.Response onTeamColorInputted(Player player, String text) {
+        if (NamedTextColor.NAMES.value(text) == null) {
             player.sendMessage(Component.text("チームカラーが不正です。redやgreenのように半角小文字で指定してください").color(NamedTextColor.RED));
             return AnvilGUI.Response.close();
         }
 
         UnRedstoneData data = UnRedstone.getInstance().data;
-        if(data.getTeambyColor(text) != null){
+        if (data.getTeambyColor(text) != null) {
             player.sendMessage(Component.text("その色のチームは既に存在します").color(NamedTextColor.RED));
             return AnvilGUI.Response.close();
         }
-        
+
         inputtedTeamColor = text;
 
         data.addTeam(inputtedTeamName, inputtedTeamColor);

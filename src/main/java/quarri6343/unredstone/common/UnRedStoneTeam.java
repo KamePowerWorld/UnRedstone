@@ -21,10 +21,10 @@ public class UnRedstoneTeam {
     public Location joinLocation1;
     public Location joinLocation2;
     public UUID locomotiveID;
-    
+
     public List<Player> players = new ArrayList<>();
-    
-    public UnRedstoneTeam(String name, String color){
+
+    public UnRedstoneTeam(String name, String color) {
         this.name = name;
         this.color = color;
     }

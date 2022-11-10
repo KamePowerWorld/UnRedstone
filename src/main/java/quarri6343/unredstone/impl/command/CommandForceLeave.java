@@ -17,9 +17,9 @@ import quarri6343.unredstone.common.UnRedstoneTeam;
  * プレイヤーを強制的にチームから外すコマンド。ゲーム中も実行可能
  */
 public class CommandForceLeave extends CommandBase {
-    
-    private static final String commandName="forceleave";
-    
+
+    private static final String commandName = "forceleave";
+
     public CommandForceLeave() {
         super(commandName, 1, 1, true);
     }
@@ -27,14 +27,14 @@ public class CommandForceLeave extends CommandBase {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @Nullable String[] arguments) {
         Player player = Bukkit.getPlayer(arguments[0]);
-        if(player == null){
+        if (player == null) {
             sender.sendMessage("その名前のプレイヤーは存在しません");
             return true;
         }
 
         UnRedstoneData data = UnRedstone.getInstance().data;
         UnRedstoneTeam team = data.getTeambyPlayer(player);
-        if(team == null){
+        if (team == null) {
             sender.sendMessage(Component.text("プレイヤー" + arguments[0] + "はチームに所属していません").color(NamedTextColor.RED));
             return true;
         }

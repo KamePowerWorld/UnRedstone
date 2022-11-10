@@ -25,126 +25,131 @@ import quarri6343.unredstone.utils.UnRedstoneUtils;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
+import static quarri6343.unredstone.utils.UnRedstoneUtils.woods;
+
 /**
  * ゲームの進行を司るクラス
  */
 public class UnRedstoneLogic {
-    
+
     public GameStatus gameStatus = GameStatus.INACTIVE;
     public World gameWorld = null;
-    
+
     private BukkitTask gameRunnable;
-    
+
     /**
      * ゲームを開始する
+     *
      * @param gameMaster ゲームを開始した人
      */
-    public void startGame(@NotNull Player gameMaster){
+    public void startGame(@NotNull Player gameMaster) {
         assignPlayerstoTeam();
-        
-        if(!canStartGame(gameMaster)){
+
+        if (!canStartGame(gameMaster)) {
             disbandTeams();
             return;
         }
-        
+
         gameWorld = gameMaster.getWorld();
         gameStatus = GameStatus.ACTIVE;
         for (int i = 0; i < getData().getTeamsLength(); i++) {
-            if(getData().getTeam(i).players.size() == 0)
+            if (getData().getTeam(i).players.size() == 0)
                 continue;
-            
+
             setUpRail(getData().getTeam(i).startLocation);
             setUpRail(getData().getTeam(i).endLocation);
-            Entity locomotive = gameWorld.spawnEntity(getData().getTeam(i).startLocation.clone().add(0,1,0), EntityType.MINECART_CHEST);
+            Entity locomotive = gameWorld.spawnEntity(getData().getTeam(i).startLocation.clone().add(0, 1, 0), EntityType.MINECART_CHEST);
             locomotive.customName(Component.text("原木x2 + 丸石x2 = 線路").color(NamedTextColor.GRAY));
             getData().getTeam(i).locomotiveID = locomotive.getUniqueId();
         }
         Bukkit.getOnlinePlayers().forEach(player -> player.showTitle(Title.title(Component.text("ゲームスタート"), Component.empty())));
 
-        gameRunnable =  new GameRunnable().runTaskTimer(UnRedstone.getInstance(), 0, 1);
+        gameRunnable = new GameRunnable().runTaskTimer(UnRedstone.getInstance(), 0, 1);
     }
-    
-    private boolean canStartGame(Player gameMaster){
-        if(gameStatus == GameStatus.ACTIVE){
+
+    private boolean canStartGame(Player gameMaster) {
+        if (gameStatus == GameStatus.ACTIVE) {
             gameMaster.sendMessage("ゲームが進行中です！");
             return false;
         }
 
-        if(getData().getTeamsLength() == 0){
+        if (getData().getTeamsLength() == 0) {
             gameMaster.sendMessage("チームが存在しません!");
             return false;
         }
-        
+
         int playerCount = 0;
         for (int i = 0; i < getData().getTeamsLength(); i++) {
             playerCount += getData().getTeam(i).players.size();
-            
-            if(getData().getTeam(i).players.size() > 0){
-                if(getData().getTeam(i).startLocation == null){
+
+            if (getData().getTeam(i).players.size() > 0) {
+                if (getData().getTeam(i).startLocation == null) {
                     gameMaster.sendMessage("チーム" + getData().getTeam(i).name + "の開始地点を設定してください");
                     return false;
                 }
-                if(getData().getTeam(i).endLocation == null){
+                if (getData().getTeam(i).endLocation == null) {
                     gameMaster.sendMessage("チーム" + getData().getTeam(i).name + "の終了地点を設定してください");
                     return false;
                 }
             }
         }
-        
-        if(playerCount == 0){
+
+        if (playerCount == 0) {
             gameMaster.sendMessage("誰もチームに参加していません!");
             return false;
         }
-        
+
         return true;
     }
 
     /**
      * 指定した場所と向きにレールを設置する
+     *
      * @param location レールを置きたい場所と向き
      */
     @ParametersAreNonnullByDefault
-    private void setUpRail(Location location){
+    private void setUpRail(Location location) {
         gameWorld.setType(location, Material.RAIL);
         Rail rail = (Rail) (gameWorld.getBlockAt(location).getBlockData());
         rail.setShape(UnRedstoneUtils.yawToRailShape(location.getYaw()));
         gameWorld.setBlockData(location, rail);
-        gameWorld.setType(location.clone().subtract(0,1,0),Material.DIRT);
+        gameWorld.setType(location.clone().subtract(0, 1, 0), Material.DIRT);
     }
 
     /**
      * ゲームを終了する
-     * @param sender ゲームを終了した人
+     *
+     * @param sender      ゲームを終了した人
      * @param victoryTeam 勝ったチーム
-     * @param gameResult ゲームの結果
+     * @param gameResult  ゲームの結果
      */
-    public void endGame(@Nullable Player sender, @Nullable UnRedstoneTeam victoryTeam, GameResult gameResult){
-        if(gameStatus == GameStatus.INACTIVE){
-            if(sender != null)
+    public void endGame(@Nullable Player sender, @Nullable UnRedstoneTeam victoryTeam, GameResult gameResult) {
+        if (gameStatus == GameStatus.INACTIVE) {
+            if (sender != null)
                 sender.sendMessage("ゲームが始まっていません！");
             return;
         }
         gameStatus = GameStatus.INACTIVE;
         gameRunnable.cancel();
-        
+
         for (int i = 0; i < getData().getTeamsLength(); i++) {
-            if(getData().getTeam(i).locomotiveID == null)
+            if (getData().getTeam(i).locomotiveID == null)
                 continue;
-            
+
             Entity locomotive = gameWorld.getEntity(getData().getTeam(i).locomotiveID);
-            if(locomotive != null)
+            if (locomotive != null)
                 locomotive.remove();
         }
-        if(gameResult == GameResult.SUCCESS){
-            if(victoryTeam == null){
+        if (gameResult == GameResult.SUCCESS) {
+            if (victoryTeam == null) {
                 UnRedstone.getInstance().getLogger().severe("勝利したチームが不明です!");
                 return;
             }
-            
+
             List<TextComponent> playerList = victoryTeam.players.stream().map(player1 -> Component.text(player1.getName()).color(NamedTextColor.YELLOW)).toList();
             Component subTitle = Component.text("");
-            for(int i = 0; i < playerList.size(); i++){
-                if(i != 0)
+            for (int i = 0; i < playerList.size(); i++) {
+                if (i != 0)
                     subTitle = subTitle.append(Component.text(", ").color(NamedTextColor.YELLOW));
                 subTitle = subTitle.append(playerList.get(i));
             }
@@ -152,33 +157,32 @@ public class UnRedstoneLogic {
             Bukkit.getOnlinePlayers().forEach(player -> {
                 player.showTitle(Title.title(Component.text("チーム" + victoryTeam.name + "の勝利！"), finalSubTitle));
             });
-        }
-        else if(gameResult == GameResult.FAIL){
+        } else if (gameResult == GameResult.FAIL) {
             Bukkit.getOnlinePlayers().forEach(player -> player.showTitle(Title.title(Component.text("ゲームオーバー"), Component.empty())));
         }
 
         disbandTeams();
     }
 
-    private void assignPlayerstoTeam(){
-        for(Player onlinePlayer : Bukkit.getOnlinePlayers()){
+    private void assignPlayerstoTeam() {
+        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
             for (int i = 0; i < getData().getTeamsLength(); i++) {
-                if(getData().getTeam(i).players.contains(onlinePlayer)){
+                if (getData().getTeam(i).players.contains(onlinePlayer)) {
                     onlinePlayer.sendMessage("既にチーム" + getData().getTeam(i).name + "に加入しています！");
                     return;
                 }
             }
-            
+
             for (int i = 0; i < getData().getTeamsLength(); i++) {
-                if(UnRedstoneUtils.isPlayerInArea(onlinePlayer, getData().getTeam(i).joinLocation1, getData().getTeam(i).joinLocation2)){
+                if (UnRedstoneUtils.isPlayerInArea(onlinePlayer, getData().getTeam(i).joinLocation1, getData().getTeam(i).joinLocation2)) {
                     getData().getTeam(i).players.add(onlinePlayer);
                     break;
                 }
             }
         }
     }
-    
-    private void disbandTeams(){
+
+    private void disbandTeams() {
         for (int i = 0; i < getData().getTeamsLength(); i++) {
             getData().getTeam(i).players.clear();
         }
@@ -187,7 +191,7 @@ public class UnRedstoneLogic {
     /**
      * ゲームの状態(進行中/始まっていない)
      */
-    public enum GameStatus{
+    public enum GameStatus {
         ACTIVE,
         INACTIVE
     }
@@ -195,13 +199,12 @@ public class UnRedstoneLogic {
     /**
      * ゲームの結果(成功/失敗)
      */
-    public enum GameResult
-    {
+    public enum GameResult {
         SUCCESS,
         FAIL;
     }
-    
-    private UnRedstoneData getData(){
+
+    private UnRedstoneData getData() {
         return UnRedstone.getInstance().data;
     }
 
@@ -211,30 +214,32 @@ public class UnRedstoneLogic {
     private class GameRunnable extends BukkitRunnable {
         int count = 0;
 
-        private static final Material[] woods = {Material.OAK_WOOD, Material.ACACIA_WOOD, Material.BIRCH_WOOD, Material.DARK_OAK_WOOD, Material.JUNGLE_WOOD, Material.JUNGLE_WOOD};
-
         @Override
         public void run() {
             count++;
 
             for (int i = 0; i < getData().getTeamsLength(); i++) {
-                if(getData().getTeam(i).locomotiveID == null)
+                if (getData().getTeam(i).locomotiveID == null)
                     continue;
 
                 Entity locomotive = gameWorld.getEntity(getData().getTeam(i).locomotiveID);
-                if(locomotive == null)
+                if (locomotive == null)
                     continue;
 
-                if(locomotive.getLocation().distance(getData().getTeam(i).endLocation.clone().add(0,1,0)) < 1){
+                if (locomotive.getLocation().distance(getData().getTeam(i).endLocation.clone().add(0, 1, 0)) < 1) {
                     endGame(null, getData().getTeam(i), UnRedstoneLogic.GameResult.SUCCESS);
                     return;
                 }
 
-                if(count % 20 == 0){
-                    dropRails((InventoryHolder)locomotive);   
+                if (count % 20 == 0) {
+                    dropItems((InventoryHolder) locomotive, Material.RAIL);
+                    for (Material wood : UnRedstoneUtils.woods) {
+                        dropItems((InventoryHolder) locomotive, wood);
+                    }
+                    dropItems((InventoryHolder) locomotive, Material.COBBLESTONE);
                 }
-                if(count % 40 == 0){
-                    processCrafting((InventoryHolder)locomotive);
+                if (count % 40 == 0) {
+                    processCrafting((InventoryHolder) locomotive);
                 }
             }
         }
@@ -242,58 +247,58 @@ public class UnRedstoneLogic {
         /**
          * インベントリの材料を消費して線路にする
          */
-        private void processCrafting(InventoryHolder chest){
+        private void processCrafting(InventoryHolder chest) {
             Inventory chestInMinecart = chest.getInventory();
-            
-            if(chestInMinecart.containsAtLeast(new ItemStack(Material.RAIL),getData().maxHoldableRails))
+
+            if (chestInMinecart.containsAtLeast(new ItemStack(Material.RAIL), getData().maxHoldableItems))
                 return;
-            
-            for(Material wood : woods){
-                if(chestInMinecart.containsAtLeast(new ItemStack(wood),2)
-                        && chestInMinecart.containsAtLeast(new ItemStack(Material.COBBLESTONE),2)){
-                    chestInMinecart.removeItemAnySlot(new ItemStack(wood,2));
-                    chestInMinecart.removeItemAnySlot(new ItemStack(Material.COBBLESTONE,2));
-                    chestInMinecart.addItem(new ItemStack(Material.RAIL,1));
+
+            for (Material wood : woods) {
+                if (chestInMinecart.containsAtLeast(new ItemStack(wood), 2)
+                        && chestInMinecart.containsAtLeast(new ItemStack(Material.COBBLESTONE), 2)) {
+                    chestInMinecart.removeItemAnySlot(new ItemStack(wood, 2));
+                    chestInMinecart.removeItemAnySlot(new ItemStack(Material.COBBLESTONE, 2));
+                    chestInMinecart.addItem(new ItemStack(Material.RAIL, 1));
                     break;
                 }
             }
         }
 
         /**
-         * プレイヤーやトロッコが線路を持ちすぎていた場合、ドロップする
+         * プレイヤーやトロッコがアイテムを持ちすぎていた場合、ドロップする
          */
-        private void dropRails(InventoryHolder chest){
+        private void dropItems(InventoryHolder chest, Material material) {
             for (int i = 0; i < getData().getTeamsLength(); i++) {
                 for (int j = 0; j < getData().getTeam(i).players.size(); j++) {
                     Player player = getData().getTeam(i).players.get(i);
 
-                    int railsInInv = 0;
-                    for (ItemStack itemStack : getData().getTeam(i).players.get(i).getInventory().all(Material.RAIL).values()) {
-                        railsInInv += itemStack.getAmount();
+                    int itemsInInv = 0;
+                    for (ItemStack itemStack : getData().getTeam(i).players.get(i).getInventory().all(material).values()) {
+                        itemsInInv += itemStack.getAmount();
                     }
-                    
+
                     ItemStack offHandItem = getData().getTeam(i).players.get(i).getInventory().getItemInOffHand();
-                    if(offHandItem.getType() == Material.RAIL)
-                        railsInInv += offHandItem.getAmount();
-                    
-                    if(railsInInv > getData().maxHoldableRails){
-                        player.getInventory().removeItemAnySlot(new ItemStack(Material.RAIL,railsInInv - getData().maxHoldableRails));
-                        player.getWorld().dropItemNaturally(player.getLocation(),new ItemStack(Material.RAIL, railsInInv - getData().maxHoldableRails));
+                    if (offHandItem.getType() == material)
+                        itemsInInv += offHandItem.getAmount();
+
+                    if (itemsInInv > getData().maxHoldableItems) {
+                        player.getInventory().removeItemAnySlot(new ItemStack(material, itemsInInv - getData().maxHoldableItems));
+                        player.getWorld().dropItemNaturally(player.getLocation(), new ItemStack(material, itemsInInv - getData().maxHoldableItems));
                     }
                 }
 
-                int railsInInv = 0;
-                for (ItemStack itemStack : chest.getInventory().all(Material.RAIL).values()) {
-                    railsInInv += itemStack.getAmount();
+                int itemsInInv = 0;
+                for (ItemStack itemStack : chest.getInventory().all(material).values()) {
+                    itemsInInv += itemStack.getAmount();
                 }
-                
-                if(railsInInv <= getData().maxHoldableRails){
+
+                if (itemsInInv <= getData().maxHoldableItems) {
                     continue;
                 }
 
-                chest.getInventory().removeItemAnySlot(new ItemStack(Material.RAIL,railsInInv - getData().maxHoldableRails));
-                if(chest.getInventory().getLocation() != null){
-                    gameWorld.dropItemNaturally(chest.getInventory().getLocation(), new ItemStack(Material.RAIL, railsInInv - getData().maxHoldableRails));
+                chest.getInventory().removeItemAnySlot(new ItemStack(material, itemsInInv - getData().maxHoldableItems));
+                if (chest.getInventory().getLocation() != null) {
+                    gameWorld.dropItemNaturally(chest.getInventory().getLocation(), new ItemStack(material, itemsInInv - getData().maxHoldableItems));
                 }
             }
         }

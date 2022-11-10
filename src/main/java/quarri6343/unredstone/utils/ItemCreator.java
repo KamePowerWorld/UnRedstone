@@ -27,6 +27,7 @@ public class ItemCreator {
 
     /**
      * バニラアイテムの型からバニラアイテムの実体/固有アイテムの型を生成する
+     *
      * @param material
      */
     @ParametersAreNonnullByDefault
@@ -36,6 +37,7 @@ public class ItemCreator {
 
     /**
      * バニラアイテムの実体/固有アイテムの型/固有アイテムの実体を改造する
+     *
      * @param itemStack
      */
     @ParametersAreNonnullByDefault
@@ -45,6 +47,7 @@ public class ItemCreator {
 
     /**
      * バニラアイテムの名前を変更する
+     *
      * @param name 名前
      * @return このクラス自体
      */
@@ -60,6 +63,7 @@ public class ItemCreator {
 
     /**
      * バニラアイテムの型を変更する
+     *
      * @param type 設定したい型
      * @return このクラス自体
      */
@@ -71,6 +75,7 @@ public class ItemCreator {
 
     /**
      * このクラスが改造しているバニラアイテムの型を取得する
+     *
      * @return バニラアイテムの型
      */
     @Nonnull
@@ -80,6 +85,7 @@ public class ItemCreator {
 
     /**
      * アイテムの量を設定する
+     *
      * @param amount 設定した医療
      * @return このクラス自体
      */
@@ -90,6 +96,7 @@ public class ItemCreator {
 
     /**
      * このクラスが改造しているアイテムの量を取得する
+     *
      * @return アイテムの量
      */
     public int getAmount() {
@@ -98,6 +105,7 @@ public class ItemCreator {
 
     /**
      * アイテムにブロックデータを設定する
+     *
      * @param data 設定したいブロックデータ
      * @return このクラス自体
      */
@@ -111,6 +119,7 @@ public class ItemCreator {
 
     /**
      * アイテムが破壊不可能かどうか設定する
+     *
      * @param value 破壊不可能かどうか
      * @return このクラス自体
      */
@@ -126,6 +135,7 @@ public class ItemCreator {
 
     /**
      * アイテムのフラグ(エンチャントを隠すかなど)を設定する
+     *
      * @param flags 設定したいフラグ
      * @return このクラス自体
      */
@@ -141,6 +151,7 @@ public class ItemCreator {
 
     /**
      * アイテムの説明文を消去する
+     *
      * @return このクラス自体
      */
     public ItemCreator clearlores() {
@@ -150,11 +161,12 @@ public class ItemCreator {
 
     /**
      * 1行のアイテムの説明文を設定する
+     *
      * @param lore 設定したい説明文
      * @return このクラス自体
      */
     @ParametersAreNullableByDefault
-    public ItemCreator setLore(Component lore){
+    public ItemCreator setLore(Component lore) {
         List<Component> lores = new ArrayList<>();
         lores.add(lore);
         return setLores(lores);
@@ -162,6 +174,7 @@ public class ItemCreator {
 
     /**
      * アイテムの説明文を設定する
+     *
      * @param lores 設定したい説明文達
      * @return このクラス自体
      */
@@ -177,6 +190,7 @@ public class ItemCreator {
 
     /**
      * アイテムの説明文を1行追加する
+     *
      * @param lore 追加したい説明文
      * @return このクラス自体
      */
@@ -200,6 +214,7 @@ public class ItemCreator {
 
     /**
      * アイテムの全ての説明文を取得
+     *
      * @return アイテムの説明文
      */
     @Nullable
@@ -214,8 +229,9 @@ public class ItemCreator {
 
     /**
      * アイテムにエンチャントを付与する
+     *
      * @param enchantment 付与したいエンチャント
-     * @param level エンチャントのレベル
+     * @param level       エンチャントのレベル
      * @return このクラス自体
      */
     @ParametersAreNonnullByDefault
@@ -226,6 +242,7 @@ public class ItemCreator {
 
     /**
      * ビルダーを終了して作成または改造したアイテムを受け取る
+     *
      * @return 作成または改造されたアイテム
      */
     @Nonnull
@@ -235,6 +252,7 @@ public class ItemCreator {
 
     /**
      * アイテムの名前を取得する
+     *
      * @return アイテムの名前
      */
     @Nonnull
@@ -244,6 +262,7 @@ public class ItemCreator {
 
     /**
      * アイテムのエンチャントを隠す
+     *
      * @return このクラス自体
      */
     public ItemCreator hideEnchantment() {
@@ -253,6 +272,7 @@ public class ItemCreator {
 
     /**
      * アイテムの属性を隠す
+     *
      * @return このクラス自体
      */
     public ItemCreator hideAttributes() {
@@ -262,11 +282,12 @@ public class ItemCreator {
 
     /**
      * アイテムの耐久値を減らす/回復させる
+     *
      * @param damage 減らしたい/回復させたい耐久値の量
      * @return このクラス自体
      */
-    public ItemCreator damage(int damage){
-        if(!(itemStack.getItemMeta() instanceof Damageable)){
+    public ItemCreator damage(int damage) {
+        if (!(itemStack.getItemMeta() instanceof Damageable)) {
             return this;
         }
 

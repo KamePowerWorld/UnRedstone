@@ -13,16 +13,16 @@ import quarri6343.unredstone.utils.ItemCreator;
  * 管理者に管理用メニューを配布するコマンド
  */
 public class CommandUnRedstone extends CommandBase {
-    
-    private static final String commandName="unredstone";
-    
+
+    private static final String commandName = "unredstone";
+
     public CommandUnRedstone() {
         super(commandName, 0, 0, true);
     }
 
     @Override
     public boolean onCommand(CommandSender sender, @Nullable String[] arguments) {
-        ((Player)sender).getInventory().addItem(new ItemCreator(Material.STICK).setName(Component.text(EventHandler.menuItemName)).create());
+        ((Player) sender).getInventory().addItem(new ItemCreator(Material.STICK).setName(Component.text(EventHandler.menuItemName)).create());
         return true;
     }
 }

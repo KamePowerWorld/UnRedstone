@@ -41,11 +41,11 @@ public class Config {
      */
     public void saveConfig() {
         resetConfig();//古いデータが混在しないように一旦コンフィグを消す
-        
+
         JavaPlugin plugin = UnRedstone.getInstance();
         FileConfiguration config = plugin.getConfig();
         UnRedstoneData data = UnRedstone.getInstance().data;
-        
+
         for (int i = 0; i < data.getTeamsLength(); i++) {
             config.set("team.name." + i, data.getTeam(i).name);
             config.set("team.color." + i, data.getTeam(i).color);
@@ -61,11 +61,11 @@ public class Config {
     /**
      * コンフィグを全て削除する
      */
-    public void resetConfig(){
+    public void resetConfig() {
         JavaPlugin plugin = UnRedstone.getInstance();
         File configFile = new File(plugin.getDataFolder(), "config.yml");
-        
-        if(configFile.delete()){
+
+        if (configFile.delete()) {
             plugin.saveDefaultConfig();
             plugin.reloadConfig();
         }
