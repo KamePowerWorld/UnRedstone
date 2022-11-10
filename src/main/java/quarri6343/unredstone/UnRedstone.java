@@ -1,10 +1,7 @@
 package quarri6343.unredstone;
 
 import org.bukkit.plugin.java.JavaPlugin;
-import quarri6343.unredstone.common.Config;
-import quarri6343.unredstone.common.EventHandler;
-import quarri6343.unredstone.common.UnRedstoneData;
-import quarri6343.unredstone.common.UnRedstoneLogic;
+import quarri6343.unredstone.common.*;
 import quarri6343.unredstone.impl.command.CommandForceJoin;
 import quarri6343.unredstone.impl.command.CommandForceLeave;
 import quarri6343.unredstone.impl.command.CommandUnRedstone;
@@ -14,6 +11,7 @@ public final class UnRedstone extends JavaPlugin {
     public UnRedstoneData data;
     public Config config;
     public UnRedstoneLogic logic;
+    public ScoreBoardManager scoreBoardManager;
     
     /**
      * シングルトンで管理されているこのクラスのインスタンス
@@ -35,6 +33,7 @@ public final class UnRedstone extends JavaPlugin {
         config = new Config();
         config.loadConfig();
         logic = new UnRedstoneLogic();
+        scoreBoardManager = new ScoreBoardManager();
         new CommandUnRedstone();
         new CommandForceJoin();
         new CommandForceLeave();
@@ -45,5 +44,6 @@ public final class UnRedstone extends JavaPlugin {
     public void onDisable() {
         // Plugin shutdown logic
         config.saveConfig();
+        scoreBoardManager.deleteTeam();
     }
 }

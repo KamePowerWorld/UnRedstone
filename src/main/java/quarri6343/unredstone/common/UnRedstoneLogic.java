@@ -66,11 +66,18 @@ public class UnRedstoneLogic {
                 player.teleport(getData().getTeam(i).startLocation);
             }
         }
+        UnRedstone.getInstance().scoreBoardManager.createTeam();
         Bukkit.getOnlinePlayers().forEach(player -> player.showTitle(Title.title(Component.text("ゲームスタート"), Component.empty())));
 
         gameRunnable = new GameRunnable().runTaskTimer(UnRedstone.getInstance(), 0, 1);
     }
 
+    /**
+     * ゲームを開始できるか判定する
+     *
+     * @param gameMaster ゲーム開始者
+     * @return ゲームを開始できるか
+     */
     private boolean canStartGame(Player gameMaster) {
         if (gameStatus == GameStatus.ACTIVE) {
             gameMaster.sendMessage("ゲームが進行中です！");
@@ -153,6 +160,9 @@ public class UnRedstoneLogic {
         new GameEndRunnable().runTaskTimer(UnRedstone.getInstance(), gameResultSceneLength, 1);
     }
 
+    /**
+     * 参加エリアにいるプレイヤーをチームに割り当てる
+     */
     private void assignPlayerstoTeam() {
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
             for (int i = 0; i < getData().getTeamsLength(); i++) {
@@ -163,9 +173,9 @@ public class UnRedstoneLogic {
             }
 
             for (int i = 0; i < getData().getTeamsLength(); i++) {
-                if(getData().getTeam(i).joinLocation1 == null || getData().getTeam(i).joinLocation2 == null)
+                if (getData().getTeam(i).joinLocation1 == null || getData().getTeam(i).joinLocation2 == null)
                     continue;
-                
+
                 if (UnRedstoneUtils.isPlayerInArea(onlinePlayer, getData().getTeam(i).joinLocation1, getData().getTeam(i).joinLocation2)) {
                     getData().getTeam(i).players.add(onlinePlayer);
                     break;
@@ -173,8 +183,13 @@ public class UnRedstoneLogic {
             }
         }
     }
-    
-    private void displayGameSuccessTitle(UnRedstoneTeam victoryTeam){
+
+    /**
+     * ゲームが成功したというタイトルを表示する
+     *
+     * @param victoryTeam 勝利したチーム
+     */
+    private void displayGameSuccessTitle(UnRedstoneTeam victoryTeam) {
         if (victoryTeam == null) {
             UnRedstone.getInstance().getLogger().severe("勝利したチームが不明です!");
             return;
@@ -188,11 +203,14 @@ public class UnRedstoneLogic {
             subTitle = subTitle.append(playerList.get(i));
         }
         Component finalSubTitle = subTitle;
-        Bukkit.getOnlinePlayers().forEach(player -> 
+        Bukkit.getOnlinePlayers().forEach(player ->
                 player.showTitle(Title.title(Component.text("チーム" + victoryTeam.name + "の勝利！"), finalSubTitle)));
     }
-    
-    private void displayGameFailureTitle(){
+
+    /**
+     * ゲームが失敗したというタイトルを表示する
+     */
+    private void displayGameFailureTitle() {
         Bukkit.getOnlinePlayers().forEach(player -> player.showTitle(Title.title(Component.text("ゲームオーバー"), Component.empty())));
     }
 
@@ -273,7 +291,7 @@ public class UnRedstoneLogic {
         }
 
         /**
-         * プレイヤーやトロッコがアイテムを持ちすぎていた場合、ドロップする
+         * プレイヤーやトロッコがアイテムを持ちすぎていた場合、ドロップさせる
          */
         private void dropItems(InventoryHolder chest, Material material) {
             for (int i = 0; i < getData().getTeamsLength(); i++) {
@@ -320,21 +338,22 @@ public class UnRedstoneLogic {
         @Override
         public void run() {
             teleportTeamToLobby();
+            UnRedstone.getInstance().scoreBoardManager.deleteTeam();
             getData().disbandTeams();
-            
+
             cancel();
         }
 
         /**
          * チームメンバーをチームに加入した位置にテレポートさせる
          */
-        private void teleportTeamToLobby(){
+        private void teleportTeamToLobby() {
             for (int i = 0; i < getData().getTeamsLength(); i++) {
-                if(getData().getTeam(i).joinLocation1 == null || getData().getTeam(i).joinLocation2 == null)
+                if (getData().getTeam(i).joinLocation1 == null || getData().getTeam(i).joinLocation2 == null)
                     continue;
 
                 Location centerLocation = UnRedstoneUtils.getCenterLocation(getData().getTeam(i).joinLocation1, getData().getTeam(i).joinLocation2);
-                for(Player player : getData().getTeam(i).players){
+                for (Player player : getData().getTeam(i).players) {
                     player.teleport(centerLocation);
                 }
             }
