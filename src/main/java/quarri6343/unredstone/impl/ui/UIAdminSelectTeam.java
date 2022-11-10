@@ -32,17 +32,14 @@ public class UIAdminSelectTeam {
         if (data.getTeamsLength() == 0) {
             GuiItem closeButton = new GuiItem(new ItemCreator(Material.BARRIER)
                     .setName(Component.text("まず/create team {チーム名} {チームの色}でチームを作ってください").color(NamedTextColor.WHITE)).create(),
-                    event -> {
-                        gui.close(event.getWhoClicked());
-                    });
+                    event -> gui.close(event.getWhoClicked()));
             gui.setItem(22, closeButton);
         } else {
             for (int i = 0; i < data.getTeamsLength(); i++) {
                 List<Component> lores = new ArrayList<>();
                 lores.add(Component.text("プレイヤー数: " + data.getTeam(i).players.size()));
-                lores.addAll(data.getTeam(i).players.stream().map(player1 -> {
-                    return Component.text(player1.getName()).color(NamedTextColor.GRAY);
-                }).toList());
+                lores.addAll(data.getTeam(i).players.stream().map(
+                        player1 -> Component.text(player1.getName()).color(NamedTextColor.GRAY)).toList());
 
                 ItemStack teamSelectItem = new ItemCreator(Material.WHITE_WOOL)
                         .setName(Component.text("チーム" + data.getTeam(i).name + "を選択"))

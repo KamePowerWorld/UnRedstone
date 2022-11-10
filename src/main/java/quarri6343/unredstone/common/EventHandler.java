@@ -28,8 +28,6 @@ public class EventHandler implements Listener {
 
     /**
      * 手持ちのアイテムを識別してそれに対応したguiを開く
-     *
-     * @param event
      */
     private void processHandheldItem(PlayerInteractEvent event) {
         if (event.getItem() != null) {
@@ -68,8 +66,6 @@ public class EventHandler implements Listener {
 
     /**
      * プレイヤーがゲームを退出した時、バグ防止のためチームから退出させる
-     *
-     * @param player
      */
     private void kickPlayerfromTeam(Player player) {
         UnRedstoneTeam team = getData().getTeambyPlayer(player);
@@ -127,11 +123,11 @@ public class EventHandler implements Listener {
         if (offHandItem.getType() == material)
             itemsInInv += offHandItem.getAmount();
 
-        if (itemsInInv + event.getItem().getItemStack().getAmount() <= getData().maxHoldableItems)
+        if (itemsInInv + event.getItem().getItemStack().getAmount() <= UnRedstoneData.maxHoldableItems)
             return;
 
         event.setCancelled(true);
-        int itemsToAdd = getData().maxHoldableItems - itemsInInv;
+        int itemsToAdd = UnRedstoneData.maxHoldableItems - itemsInInv;
 
         if (itemsToAdd > 0) {
             ((Player) event.getEntity()).getInventory().addItem(new ItemStack(material, itemsToAdd));

@@ -3,6 +3,7 @@ package quarri6343.unredstone.impl.command;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import quarri6343.unredstone.UnRedstone;
 import quarri6343.unredstone.api.CommandBase;
@@ -20,7 +21,7 @@ public class CommandForceJoin extends CommandBase {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, @Nullable String[] arguments) {
+    public boolean onCommand(@NotNull CommandSender sender, @Nullable String[] arguments) {
         UnRedstoneData data = UnRedstone.getInstance().data;
         if (data.adminSelectedTeam.equals("")) {
             sender.sendMessage("まずGUIで加入させたいチームを選択してください");

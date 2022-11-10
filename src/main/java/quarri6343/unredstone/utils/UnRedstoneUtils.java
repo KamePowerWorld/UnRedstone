@@ -10,6 +10,7 @@ import org.bukkit.command.CommandMap;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.SimplePluginManager;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.lang.reflect.Field;
@@ -59,6 +60,7 @@ public class UnRedstoneUtils {
             return Rail.Shape.EAST_WEST;
     }
 
+    @ParametersAreNonnullByDefault
     public static boolean isPlayerInArea(Player player, Location location1, Location location2) {
         double playerX = player.getLocation().getX();
         double playerZ = player.getLocation().getZ();
@@ -72,5 +74,14 @@ public class UnRedstoneUtils {
             return true;
         else
             return false;
+    }
+
+    @ParametersAreNonnullByDefault
+    public static @Nonnull
+    Location getCenterLocation(Location location1, Location location2) {
+        return new Location(location1.getWorld(),
+                (location1.getX() + location2.getX()) / 2,
+                (location1.getY() + location2.getY()) / 2,
+                (location1.getZ() + location2.getZ()) / 2);
     }
 }

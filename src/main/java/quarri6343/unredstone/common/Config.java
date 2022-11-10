@@ -25,7 +25,7 @@ public class Config {
 
         data.clearTeam();
         for (int i = 0; i < Integer.MAX_VALUE; i++) {
-            if (config.getString("team.name." + i) == null) {
+            if (config.getString("team.name." + i) == null || config.getString("team.color." + i) == null) {
                 break;
             }
             data.addTeam(config.getString("team.name." + i), config.getString("team.color." + i));

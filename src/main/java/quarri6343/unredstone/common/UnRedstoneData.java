@@ -16,10 +16,41 @@ import java.util.UUID;
  * 必要なデータを全て保存するクラス
  */
 public class UnRedstoneData {
-    public String adminSelectedTeam = "";
-    private List<UnRedstoneTeam> teams = new ArrayList<>();
 
-    public int maxHoldableItems = 10;
+    /**
+     * ゲーム管理者が現在選択しているクラス
+     */
+    public String adminSelectedTeam = "";
+
+    /**
+     * ゲーム上に存在する全てのチーム
+     */
+    private final List<UnRedstoneTeam> teams = new ArrayList<>();
+
+    /**
+     * プレイヤーが所持できる最大のアイテム数
+     */
+    public static final int maxHoldableItems = 10;
+
+    /**
+     * ゲームのリザルトシーンの長さ
+     */
+    public static final int gameResultSceneLength = 100;
+
+    /**
+     * ゲームがプレイヤーのインベントリを確認する周期
+     */
+    public static final int checkInventoryInterval = 20;
+
+    /**
+     * トロッコがレールをクラフトする周期
+     */
+    public static final int craftRailInterval = 40;
+
+    /**
+     * 線路一本を作るのに必要な原木と丸石の数
+     */
+    public static final int craftingCost = 2;
 
     /**
      * チームを登録する
@@ -103,8 +134,6 @@ public class UnRedstoneData {
 
     /**
      * チームの数を取得する
-     *
-     * @return
      */
     public int getTeamsLength() {
         return teams.size();
@@ -115,5 +144,14 @@ public class UnRedstoneData {
      */
     public void clearTeam() {
         teams.clear();
+    }
+
+    /**
+     * チームのプレイヤーを解散させる
+     */
+    public void disbandTeams() {
+        for (int i = 0; i < getTeamsLength(); i++) {
+            getTeam(i).players.clear();
+        }
     }
 }

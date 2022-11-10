@@ -97,16 +97,12 @@ public class UIAdminMenu {
 
         ItemStack setJoinLocation1Item = new ItemCreator(Material.STRUCTURE_BLOCK).setName(Component.text("チーム" + getData().adminSelectedTeam + "の参加エリアの始点を選ぶ"))
                 .addLore(getSetJoinLocation1ButtonStats()).addLore(setJoinLocationButtonGuide).create();
-        GuiItem setJoinLocation1Button = new GuiItem(setJoinLocation1Item, event -> {
-            onSetJoinLocationButton(event, true);
-        });
+        GuiItem setJoinLocation1Button = new GuiItem(setJoinLocation1Item, event -> onSetJoinLocationButton(event, true));
         gui.setItem(13, setJoinLocation1Button);
 
         ItemStack setJoinLocation2Item = new ItemCreator(Material.STRUCTURE_BLOCK).setName(Component.text("チーム" + getData().adminSelectedTeam + "の参加エリアの終点を選ぶ"))
                 .setLore(getSetJoinLocation2ButtonStats()).addLore(setJoinLocationButtonGuide).create();
-        GuiItem setJoinLocation2Button = new GuiItem(setJoinLocation2Item, event -> {
-            onSetJoinLocationButton(event, false);
-        });
+        GuiItem setJoinLocation2Button = new GuiItem(setJoinLocation2Item, event -> onSetJoinLocationButton(event, false));
         gui.setItem(15, setJoinLocation2Button);
 
         GuiItem startButton = new GuiItem(new ItemCreator(Material.GREEN_WOOL).setName(Component.text("ゲームを開始")).setLore(getCanStartGameDesc()).create(),
