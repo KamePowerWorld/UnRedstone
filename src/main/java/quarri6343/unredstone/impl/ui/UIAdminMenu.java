@@ -15,6 +15,7 @@ import org.bukkit.inventory.ItemStack;
 import quarri6343.unredstone.UnRedstone;
 import quarri6343.unredstone.common.UnRedstoneData;
 import quarri6343.unredstone.common.UnRedstoneLogic;
+import quarri6343.unredstone.common.UnRedstoneTeam;
 import quarri6343.unredstone.utils.ItemCreator;
 import quarri6343.unredstone.utils.UnRedstoneUtils;
 
@@ -68,13 +69,21 @@ public class UIAdminMenu {
         GuiItem setStartButton;
         ItemStack setStartItem = new ItemCreator(Material.FURNACE_MINECART).setName(Component.text("チーム" + getData().adminSelectedTeam + "のゲーム開始地点を設定"))
                 .addLore(getSetStartButtonStats()).addLore(setStartButtonGuide).create();
-        setStartButton = new GuiItem(setStartItem, UIAdminMenu::onSetStartButton);
+        setStartButton = new GuiItem(setStartItem,
+                event -> {
+                    onSetStartButton(event);
+                    openUI((Player) event.getWhoClicked());
+                });
         gui.setItem(4, setStartButton);
 
         GuiItem setEndButton;
         ItemStack setEndItem = new ItemCreator(Material.DETECTOR_RAIL).setName(Component.text("チーム" + getData().adminSelectedTeam + "のゲーム終了地点を設定"))
                 .addLore(getSetEndButtonStats()).addLore(setEndButtonGuide).create();
-        setEndButton = new GuiItem(setEndItem, UIAdminMenu::onSetEndButton);
+        setEndButton = new GuiItem(setEndItem,
+                event -> {
+                    onSetEndButton(event);
+                    openUI((Player) event.getWhoClicked());
+                });
         gui.setItem(6, setEndButton);
 
         GuiItem removeTeamButton;
@@ -97,13 +106,28 @@ public class UIAdminMenu {
 
         ItemStack setJoinLocation1Item = new ItemCreator(Material.STRUCTURE_BLOCK).setName(Component.text("チーム" + getData().adminSelectedTeam + "の参加エリアの始点を選ぶ"))
                 .addLore(getSetJoinLocation1ButtonStats()).addLore(setJoinLocationButtonGuide).create();
-        GuiItem setJoinLocation1Button = new GuiItem(setJoinLocation1Item, event -> onSetJoinLocationButton(event, true));
+        GuiItem setJoinLocation1Button = new GuiItem(setJoinLocation1Item,
+                event -> {
+                    onSetJoinLocationButton(event, true);
+                    openUI((Player) event.getWhoClicked());
+                });
         gui.setItem(13, setJoinLocation1Button);
 
         ItemStack setJoinLocation2Item = new ItemCreator(Material.STRUCTURE_BLOCK).setName(Component.text("チーム" + getData().adminSelectedTeam + "の参加エリアの終点を選ぶ"))
                 .setLore(getSetJoinLocation2ButtonStats()).addLore(setJoinLocationButtonGuide).create();
-        GuiItem setJoinLocation2Button = new GuiItem(setJoinLocation2Item, event -> onSetJoinLocationButton(event, false));
+        GuiItem setJoinLocation2Button = new GuiItem(setJoinLocation2Item,
+                event -> {
+                    onSetJoinLocationButton(event, false);
+                    openUI((Player) event.getWhoClicked());
+                });
         gui.setItem(15, setJoinLocation2Button);
+
+        GuiItem resetTeamSettingsButton = new GuiItem(new ItemCreator(Material.PUFFERFISH).setName(Component.text("チーム" + getData().adminSelectedTeam + "の設定をリセットする")).create(),
+                event -> {
+                    onResetTeamSettingsButton(event);
+                    openUI((Player) event.getWhoClicked());
+                });
+        gui.setItem(17, resetTeamSettingsButton);
 
         GuiItem startButton = new GuiItem(new ItemCreator(Material.GREEN_WOOL).setName(Component.text("ゲームを開始")).setLore(getCanStartGameDesc()).create(),
                 event -> {
@@ -172,6 +196,25 @@ public class UIAdminMenu {
         return getLocDesc(getData().getTeambyName(getData().adminSelectedTeam).joinLocation2);
     }
 
+    private static void onResetTeamSettingsButton(InventoryClickEvent event) {
+        if (getLogic().gameStatus == UnRedstoneLogic.GameStatus.ACTIVE) {
+            event.getWhoClicked().sendMessage(gameRunningText);
+            return;
+        }
+        
+        UnRedstoneTeam team = getData().getTeambyName(getData().adminSelectedTeam);
+        if (team == null) {
+            event.getWhoClicked().sendMessage(teamNotSelectedText);
+            return;
+        }
+
+        team.startLocation = null;
+        team.endLocation = null;
+        team.joinLocation1 = null;
+        team.joinLocation2 = null;
+        event.getWhoClicked().sendMessage(Component.text("チーム" + team.name + "の設定をリセットしました"));
+    }
+
 
     /**
      * 初期位置を設定するボタンを押したときのイベント
@@ -224,7 +267,13 @@ public class UIAdminMenu {
             event.getWhoClicked().sendMessage(teamNotSelectedText);
             return;
         }
-
+        
+        UnRedstoneTeam team = getData().getTeambyName(getData().adminSelectedTeam);
+        if(team == null)
+            return;
+        
+        for (Player player : team.players)
+            UnRedstone.getInstance().scoreBoardManager.kickPlayerFromTeam(player);
         getData().removeTeam(getData().adminSelectedTeam);
         event.getWhoClicked().sendMessage(Component.text("チーム" + getData().adminSelectedTeam + "を削除しました").color(NamedTextColor.WHITE));
         getData().adminSelectedTeam = "";

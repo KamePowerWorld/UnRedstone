@@ -1,15 +1,20 @@
 package quarri6343.unredstone.common;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockDropItemEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
+import org.bukkit.event.inventory.CraftItemEvent;
+import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.vehicle.VehicleDestroyEvent;
+import org.bukkit.event.world.PortalCreateEvent;
 import org.bukkit.inventory.ItemStack;
 import quarri6343.unredstone.UnRedstone;
 import quarri6343.unredstone.impl.ui.UIAdminMenu;
@@ -166,6 +171,40 @@ public class EventHandler implements Listener {
             return;
         
         event.setRespawnLocation(UnRedstoneUtils.randomizeLocation(locomotive.getLocation()));
+    }
+
+    @org.bukkit.event.EventHandler
+    public void onPortalCreate(PortalCreateEvent event) {
+        stopPortalCreate(event);
+    }
+
+    /**
+     * トロッコがネザーやエンドに行くのを防ぐ
+     */
+    private void stopPortalCreate(PortalCreateEvent event){
+        if(UnRedstone.getInstance().logic.gameStatus == UnRedstoneLogic.GameStatus.INACTIVE)
+            return;
+
+        event.setCancelled(true);
+    }
+    
+    @org.bukkit.event.EventHandler
+    public void onCraftItem(CraftItemEvent event){
+        stopChestCrafting(event);
+    }
+
+    /**
+     * バランス崩壊を防ぐためチェストをクラフトさせない
+     */
+    private void stopChestCrafting(CraftItemEvent event){
+        if(UnRedstone.getInstance().logic.gameStatus == UnRedstoneLogic.GameStatus.INACTIVE)
+            return;
+        
+        Material resultMaterial = event.getRecipe().getResult().getType();
+        if(resultMaterial == Material.CHEST || resultMaterial == Material.TRAPPED_CHEST){
+            event.getWhoClicked().sendMessage(Component.text("あれ？チェストってどうやって作るんだっけ？"));
+            event.setCancelled(true);
+        }
     }
 
     private UnRedstoneData getData() {

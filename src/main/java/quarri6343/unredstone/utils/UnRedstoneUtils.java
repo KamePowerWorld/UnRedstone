@@ -81,10 +81,7 @@ public class UnRedstoneUtils {
         boolean isZInRange = Math.min(location1.getZ(), location2.getZ()) <= playerZ
                 && Math.max(location1.getZ(), location2.getZ()) >= playerZ;
 
-        if (isXInRange && isZInRange)
-            return true;
-        else
-            return false;
+        return isXInRange && isZInRange;
     }
 
     /**

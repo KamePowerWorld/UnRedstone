@@ -5,7 +5,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
 import quarri6343.unredstone.UnRedstone;
 
@@ -14,7 +13,7 @@ public class ScoreBoardManager {
     /**
      * データに存在するチームからminecraftのチームを作る
      */
-    public void createTeam() {
+    public void createTeamFromData() {
 
         for (int i = 0; i < getData().getTeamsLength(); i++) {
             if (getData().getTeam(i).players.size() == 0)

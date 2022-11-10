@@ -67,7 +67,7 @@ public class UnRedstoneLogic {
                 player.teleport(randomizeLocation(getData().getTeam(i).startLocation));
             }
         }
-        UnRedstone.getInstance().scoreBoardManager.createTeam();
+        UnRedstone.getInstance().scoreBoardManager.createTeamFromData();
         Bukkit.getOnlinePlayers().forEach(player -> player.showTitle(Title.title(Component.text("ゲームスタート"), Component.empty())));
 
         gameRunnable = new GameRunnable().runTaskTimer(UnRedstone.getInstance(), 0, 1);
@@ -141,7 +141,6 @@ public class UnRedstoneLogic {
                 sender.sendMessage("ゲームが始まっていません！");
             return;
         }
-        gameStatus = GameStatus.INACTIVE;
         gameRunnable.cancel();
 
         for (int i = 0; i < getData().getTeamsLength(); i++) {
@@ -341,7 +340,7 @@ public class UnRedstoneLogic {
             teleportTeamToLobby();
             UnRedstone.getInstance().scoreBoardManager.deleteTeam();
             getData().disbandTeams();
-
+            gameStatus = GameStatus.INACTIVE;
             cancel();
         }
 
