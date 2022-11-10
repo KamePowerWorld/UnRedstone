@@ -1,6 +1,7 @@
 package quarri6343.unredstone.common;
 
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import quarri6343.unredstone.UnRedstone;
@@ -17,6 +18,8 @@ import java.util.UUID;
 public class UnRedstoneData {
     public String adminSelectedTeam = "";
     private List<UnRedstoneTeam> teams = new ArrayList<>();
+    
+    public int maxHoldableRails = 10;
 
     /**
      * チームを登録する
@@ -85,6 +88,12 @@ public class UnRedstoneData {
     public @Nullable UnRedstoneTeam getTeambyLocomotiveID(UUID locomotiveID){
         return teams.stream().filter(v -> v.locomotiveID.equals(locomotiveID)).findFirst().orElse(null);
     }
+
+    @ParametersAreNonnullByDefault
+    public @Nullable UnRedstoneTeam getTeambyPlayer(Player player){
+        return teams.stream().filter(v -> v.players.contains(player)).findFirst().orElse(null);
+    }
+
 
     /**
      * チームの数を取得する
