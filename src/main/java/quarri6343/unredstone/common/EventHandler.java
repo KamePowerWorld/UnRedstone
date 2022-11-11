@@ -8,15 +8,16 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockDropItemEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
-import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.vehicle.VehicleDestroyEvent;
 import org.bukkit.event.world.PortalCreateEvent;
 import org.bukkit.inventory.ItemStack;
 import quarri6343.unredstone.UnRedstone;
+import quarri6343.unredstone.common.data.URData;
+import quarri6343.unredstone.common.data.URTeam;
+import quarri6343.unredstone.common.logic.URLogic;
 import quarri6343.unredstone.impl.ui.UIAdminMenu;
 import quarri6343.unredstone.utils.UnRedstoneUtils;
 
@@ -55,31 +56,31 @@ public class EventHandler implements Listener {
      * トロッコが破壊された場合、チームの初期地点に位置をリセットする
      */
     private void processLocomotiveDestruction(VehicleDestroyEvent event) {
-        if (UnRedstone.getInstance().logic.gameStatus == UnRedstoneLogic.GameStatus.INACTIVE) {
+        if (UnRedstone.getInstance().logic.gameStatus == URLogic.GameStatus.INACTIVE) {
             return;
         }
 
-        UnRedstoneTeam team = getData().getTeambyLocomotiveID(event.getVehicle().getUniqueId());
+        URTeam team = getData().teams.getTeambyLocomotiveID(event.getVehicle().getUniqueId());
         if (team != null) {
             event.setCancelled(true);
-            event.getVehicle().teleport(team.startLocation.clone().add(0, 1, 0));
+            event.getVehicle().teleport(team.getStartLocation().clone().add(0, 1, 0));
         }
     }
 
     @org.bukkit.event.EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-        kickPlayerfromTeam(event.getPlayer());
+        kickPlayerFromTeam(event.getPlayer());
     }
 
     /**
      * プレイヤーがゲームを退出した時、バグ防止のためチームから退出させる
      */
-    private void kickPlayerfromTeam(Player player) {
-        UnRedstoneTeam team = getData().getTeambyPlayer(player);
+    private void kickPlayerFromTeam(Player player) {
+        URTeam team = getData().teams.getTeambyPlayer(player);
         if (team != null) {
             team.players.remove(player);
         }
-        UnRedstone.getInstance().scoreBoardManager.kickPlayerFromTeam(player);
+        UnRedstone.getInstance().scoreBoardManager.kickPlayerFromMCTeam(player);
     }
 
     @org.bukkit.event.EventHandler
@@ -91,7 +92,7 @@ public class EventHandler implements Listener {
      * バランス崩壊防止のためにレールを壊したときドロップさせないようにする
      */
     private void stopRailDrop(BlockDropItemEvent event) {
-        if (UnRedstone.getInstance().logic.gameStatus == UnRedstoneLogic.GameStatus.INACTIVE) {
+        if (UnRedstone.getInstance().logic.gameStatus == URLogic.GameStatus.INACTIVE) {
             return;
         }
 
@@ -114,7 +115,7 @@ public class EventHandler implements Listener {
      * プレイヤーが持てる上限を超えてアイテムを拾わないようにする
      */
     private void stopPickUpItems(EntityPickupItemEvent event, Material material) {
-        if (UnRedstone.getInstance().logic.gameStatus == UnRedstoneLogic.GameStatus.INACTIVE)
+        if (UnRedstone.getInstance().logic.gameStatus == URLogic.GameStatus.INACTIVE)
             return;
 
         if (!(event.getItem().getItemStack().getType() == material))
@@ -131,11 +132,11 @@ public class EventHandler implements Listener {
         if (offHandItem.getType() == material)
             itemsInInv += offHandItem.getAmount();
 
-        if (itemsInInv + event.getItem().getItemStack().getAmount() <= getData().maxHoldableItems)
+        if (itemsInInv + event.getItem().getItemStack().getAmount() <= getData().maxHoldableItems.get())
             return;
 
         event.setCancelled(true);
-        int itemsToAdd = getData().maxHoldableItems - itemsInInv;
+        int itemsToAdd = getData().maxHoldableItems.get() - itemsInInv;
 
         if (itemsToAdd > 0) {
             ((Player) event.getEntity()).getInventory().addItem(new ItemStack(material, itemsToAdd));
@@ -159,10 +160,10 @@ public class EventHandler implements Listener {
      * 死んだプレイヤーをトロッコの近くにスポーンさせる
      */
     private void respawnPlayerNearLocomotive(PlayerRespawnEvent event) {
-        if(UnRedstone.getInstance().logic.gameStatus == UnRedstoneLogic.GameStatus.INACTIVE)
+        if(UnRedstone.getInstance().logic.gameStatus == URLogic.GameStatus.INACTIVE)
             return;
         
-        UnRedstoneTeam team = getData().getTeambyPlayer(event.getPlayer());
+        URTeam team = getData().teams.getTeambyPlayer(event.getPlayer());
         if (team == null)
             return;
         
@@ -182,7 +183,7 @@ public class EventHandler implements Listener {
      * トロッコがネザーやエンドに行くのを防ぐ
      */
     private void stopPortalCreate(PortalCreateEvent event){
-        if(UnRedstone.getInstance().logic.gameStatus == UnRedstoneLogic.GameStatus.INACTIVE)
+        if(UnRedstone.getInstance().logic.gameStatus == URLogic.GameStatus.INACTIVE)
             return;
 
         event.setCancelled(true);
@@ -197,7 +198,7 @@ public class EventHandler implements Listener {
      * バランス崩壊を防ぐためチェストをクラフトさせない
      */
     private void stopChestCrafting(CraftItemEvent event){
-        if(UnRedstone.getInstance().logic.gameStatus == UnRedstoneLogic.GameStatus.INACTIVE)
+        if(UnRedstone.getInstance().logic.gameStatus == URLogic.GameStatus.INACTIVE)
             return;
         
         Material resultMaterial = event.getRecipe().getResult().getType();
@@ -207,7 +208,7 @@ public class EventHandler implements Listener {
         }
     }
 
-    private UnRedstoneData getData() {
+    private URData getData() {
         return UnRedstone.getInstance().data;
     }
 }

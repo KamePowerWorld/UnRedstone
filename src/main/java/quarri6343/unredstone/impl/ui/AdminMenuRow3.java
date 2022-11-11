@@ -8,36 +8,35 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import quarri6343.unredstone.UnRedstone;
-import quarri6343.unredstone.common.UnRedstoneData;
-import quarri6343.unredstone.common.UnRedstoneLogic;
+import quarri6343.unredstone.api.stackSizeInt;
+import quarri6343.unredstone.common.data.URData;
+import quarri6343.unredstone.common.logic.URLogic;
 import quarri6343.unredstone.utils.ItemCreator;
 
 public class AdminMenuRow3 {
 
-    private static UnRedstoneData getData() {
+    private static URData getData() {
         return UnRedstone.getInstance().data;
     }
-    private static UnRedstoneLogic getLogic() {
+
+    private static URLogic getLogic() {
         return UnRedstone.getInstance().logic;
     }
 
-    public static void addElements(PaginatedGui gui, Player player){
+    public static void addElements(PaginatedGui gui, Player player) {
         ItemStack setMaxHoldableItemsItem = new ItemCreator(Material.OAK_LOG).setName(Component.text("プレイヤーが所持可能な最大の原木、丸石、線路の数を変更"))
-                .setLore(Component.text("現在: " + getData().maxHoldableItems + "個").decoration(TextDecoration.ITALIC, false)).create();
+                .setLore(Component.text("現在: " + getData().maxHoldableItems.get() + "個").decoration(TextDecoration.ITALIC, false)).create();
         GuiItem setMaxHoldableItemsButton = new GuiItem(setMaxHoldableItemsItem,
-                event -> {
-                    UINumberConfiguration.openUI(player, integer -> getData().maxHoldableItems = integer);
-                });
+                AdminMenuRow3::onSetMaxHoldableItemsButton);
         gui.setItem(18, setMaxHoldableItemsButton);
 
         ItemStack setCraftingCostItem = new ItemCreator(Material.COBBLESTONE).setName(Component.text("線路を一個作るのに必要な材料の数を変更"))
-                .setLore(Component.text("現在: " + getData().craftingCost + "個").decoration(TextDecoration.ITALIC, false)).create();
+                .setLore(Component.text("現在: " + getData().craftingCost.get() + "個").decoration(TextDecoration.ITALIC, false)).create();
         GuiItem setCraftingCostButton = new GuiItem(setCraftingCostItem,
-                event -> {
-                    UINumberConfiguration.openUI(player, integer -> getData().craftingCost = integer);
-                });
+                AdminMenuRow3::onSetCraftingCostButton);
         gui.setItem(20, setCraftingCostButton);
 
         GuiItem closeButton = new GuiItem(new ItemCreator(Material.BARRIER).setName(Component.text("閉じる")).create(),
@@ -52,7 +51,7 @@ public class AdminMenuRow3 {
         gui.setItem(24, startButton);
         GuiItem endButton = new GuiItem(new ItemCreator(Material.RED_WOOL).setName(Component.text("ゲームを強制終了")).setLore(getCanTerminateGameDesc()).create(),
                 event -> {
-                    getLogic().endGame((Player) event.getWhoClicked(), null, UnRedstoneLogic.GameResult.FAIL);
+                    getLogic().endGame((Player) event.getWhoClicked(), null, URLogic.GameResult.FAIL);
                     UIAdminMenu.openUI((Player) event.getWhoClicked());
                 });
         gui.setItem(26, endButton);
@@ -63,7 +62,7 @@ public class AdminMenuRow3 {
      * @return 現在ゲームを開始できるかどうかを示した文
      */
     private static TextComponent getCanStartGameDesc() {
-        return getLogic().gameStatus == UnRedstoneLogic.GameStatus.INACTIVE ?
+        return getLogic().gameStatus == URLogic.GameStatus.INACTIVE ?
                 Component.text("開始可能").color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false)
                 : Component.text("ゲームが進行中です!").color(NamedTextColor.RED).decoration(TextDecoration.ITALIC, false);
     }
@@ -72,8 +71,34 @@ public class AdminMenuRow3 {
      * @return 現在ゲームを終了できるかどうかを示した文
      */
     private static TextComponent getCanTerminateGameDesc() {
-        return getLogic().gameStatus == UnRedstoneLogic.GameStatus.ACTIVE ?
+        return getLogic().gameStatus == URLogic.GameStatus.ACTIVE ?
                 Component.text("強制終了可能").color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false)
                 : Component.text("進行中のゲームはありません").color(NamedTextColor.RED).decoration(TextDecoration.ITALIC, false);
+    }
+
+    private static void onSetMaxHoldableItemsButton(InventoryClickEvent event) {
+        UINumberConfiguration.openUI((Player) event.getWhoClicked(),
+                integer ->
+                {
+                    if (!stackSizeInt.isValid(integer)) {
+                        event.getWhoClicked().sendMessage("現実的な数を入力してください");
+                        return;
+                    }
+
+                    getData().maxHoldableItems.set(integer);
+                });
+    }
+    
+    private static void onSetCraftingCostButton(InventoryClickEvent event){
+        UINumberConfiguration.openUI((Player) event.getWhoClicked(),
+                integer ->
+                {
+                    if (!stackSizeInt.isValid(integer)) {
+                        event.getWhoClicked().sendMessage("現実的な数を入力してください");
+                        return;
+                    }
+
+                    getData().craftingCost.set(integer);
+                });
     }
 }

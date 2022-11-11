@@ -8,10 +8,13 @@ import quarri6343.unredstone.UnRedstone;
 
 import java.util.function.Consumer;
 
+/**
+ * 正の数字を受け付ける金床UIのクラス
+ */
 public class UINumberConfiguration {
     
     public static void openUI(Player player, Consumer<Integer> resultConsumer) {
-        new AnvilGUI.Builder().onComplete((player1, s) -> onNumberInputted(player, s, resultConsumer)).text("name").title("数値設定").plugin(UnRedstone.getInstance()).open(player);
+        new AnvilGUI.Builder().onComplete((player1, s) -> onNumberInputted(player, s, resultConsumer)).text("number").title("数値設定").plugin(UnRedstone.getInstance()).open(player);
     }
 
     private static AnvilGUI.Response onNumberInputted(Player player, String text, Consumer<Integer> resultConsumer) {

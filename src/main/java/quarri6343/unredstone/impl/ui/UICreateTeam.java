@@ -6,7 +6,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.wesjd.anvilgui.AnvilGUI;
 import org.bukkit.entity.Player;
 import quarri6343.unredstone.UnRedstone;
-import quarri6343.unredstone.common.UnRedstoneData;
+import quarri6343.unredstone.common.data.URData;
 
 /**
  * 管理者がチームを作成するときのGUI
@@ -27,8 +27,8 @@ public class UICreateTeam {
      * チーム名が入力された時の挙動
      */
     private static AnvilGUI.Response onTeamNameInputted(Player player, String text) {
-        UnRedstoneData data = UnRedstone.getInstance().data;
-        if (data.getTeambyName(text) != null) {
+        URData data = UnRedstone.getInstance().data;
+        if (data.teams.getTeambyName(text) != null) {
             player.sendMessage(Component.text("その名前のチームは既に存在します").color(NamedTextColor.RED));
             return AnvilGUI.Response.close();
         }
@@ -54,15 +54,15 @@ public class UICreateTeam {
             return AnvilGUI.Response.close();
         }
 
-        UnRedstoneData data = UnRedstone.getInstance().data;
-        if (data.getTeambyColor(text) != null) {
+        URData data = UnRedstone.getInstance().data;
+        if (data.teams.getTeambyColor(text) != null) {
             player.sendMessage(Component.text("その色のチームは既に存在します").color(NamedTextColor.RED));
             return AnvilGUI.Response.close();
         }
 
         inputtedTeamColor = text;
 
-        data.addTeam(inputtedTeamName, inputtedTeamColor);
+        data.teams.addTeam(inputtedTeamName, inputtedTeamColor);
         player.sendMessage(Component.text("チーム「" + inputtedTeamName + "」を作成しました").color(NamedTextColor.NAMES.value(inputtedTeamColor)));
         return AnvilGUI.Response.close();
     }

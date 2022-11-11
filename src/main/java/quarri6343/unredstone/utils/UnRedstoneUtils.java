@@ -1,6 +1,5 @@
 package quarri6343.unredstone.utils;
 
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -9,8 +8,7 @@ import org.bukkit.block.data.Rail;
 import org.bukkit.command.CommandMap;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.SimplePluginManager;
-import quarri6343.unredstone.UnRedstone;
-import quarri6343.unredstone.common.UnRedstoneData;
+import quarri6343.unredstone.common.data.URData;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -42,14 +40,6 @@ public class UnRedstoneUtils {
         }
 
         return null;
-    }
-
-    /**
-     * Locationのブロック座標を文字列に変換する
-     */
-    @ParametersAreNonnullByDefault
-    public static String locationBlockPostoString(Location location) {
-        return "x=" + location.getBlockX() + ",y=" + location.getBlockY() + ",z=" + location.getBlockZ();
     }
 
     /**
@@ -108,7 +98,7 @@ public class UnRedstoneUtils {
      */
     @ParametersAreNonnullByDefault
     public static Location randomizeLocation(Location location) {
-        int magnitude = UnRedstoneData.randomSpawnMagnitude;
+        int magnitude = URData.randomSpawnMagnitude;
         int x = new Random().nextInt(magnitude * 2 + 1) - magnitude;
         int y = 0;
         int z = new Random().nextInt(magnitude * 2 + 1) - magnitude;

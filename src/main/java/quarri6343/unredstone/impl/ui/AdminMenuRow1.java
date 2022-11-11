@@ -6,16 +6,17 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import quarri6343.unredstone.UnRedstone;
-import quarri6343.unredstone.common.UnRedstoneData;
-import quarri6343.unredstone.common.UnRedstoneLogic;
-import quarri6343.unredstone.common.UnRedstoneTeam;
+import quarri6343.unredstone.common.data.URData;
+import quarri6343.unredstone.common.logic.URLogic;
+import quarri6343.unredstone.common.data.URTeam;
 import quarri6343.unredstone.utils.ItemCreator;
-import quarri6343.unredstone.utils.UnRedstoneUtils;
+import quarri6343.unredstone.utils.UIUtility;
 
 import static quarri6343.unredstone.utils.UIUtility.*;
 
@@ -26,11 +27,11 @@ public class AdminMenuRow1 {
     private static final TextComponent setEndButtonGuide = Component.text("現在立っている場所が終了地点になります")
             .color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false);
 
-    private static UnRedstoneData getData() {
+    private static URData getData() {
         return UnRedstone.getInstance().data;
     }
 
-    private static UnRedstoneLogic getLogic() {
+    private static URLogic getLogic() {
         return UnRedstone.getInstance().logic;
     }
     
@@ -78,48 +79,57 @@ public class AdminMenuRow1 {
      * @return 初期位置を設定するボタンに表示する現在の状況
      */
     private static TextComponent getSetStartButtonStats() {
-        if (getData().getTeambyName(getData().adminSelectedTeam) == null) {
+        URTeam team = getData().teams.getTeambyName(getData().adminSelectedTeam);
+        if (team == null) {
             return teamNotSelectedText;
         }
 
-        if (getLogic().gameStatus == UnRedstoneLogic.GameStatus.ACTIVE) {
+        if (getLogic().gameStatus == URLogic.GameStatus.ACTIVE) {
             return gameRunningText;
         }
 
-        return getLocDesc(getData().getTeambyName(getData().adminSelectedTeam).startLocation);
+        return getLocDesc(team.getStartLocation());
     }
 
     /**
      * @return ゴール位置を設定するボタンに表示する現在の状況
      */
     private static TextComponent getSetEndButtonStats() {
-        if (getData().getTeambyName(getData().adminSelectedTeam) == null) {
+        URTeam team = getData().teams.getTeambyName(getData().adminSelectedTeam);
+        if (team == null) {
             return teamNotSelectedText;
         }
 
-        if (getLogic().gameStatus == UnRedstoneLogic.GameStatus.ACTIVE) {
+        if (getLogic().gameStatus == URLogic.GameStatus.ACTIVE) {
             return gameRunningText;
         }
 
-        return getLocDesc(getData().getTeambyName(getData().adminSelectedTeam).endLocation);
+        return getLocDesc(team.getEndLocation());
     }
 
     /**
      * 初期位置を設定するボタンを押したときのイベント
      */
     private static void onSetStartButton(InventoryClickEvent event) {
-        if (getData().getTeambyName(getData().adminSelectedTeam) == null) {
+        URTeam team = getData().teams.getTeambyName(getData().adminSelectedTeam);
+        if (team == null) {
             event.getWhoClicked().sendMessage(teamNotSelectedText);
             return;
         }
 
-        if (getLogic().gameStatus == UnRedstoneLogic.GameStatus.ACTIVE) {
+        if (getLogic().gameStatus == URLogic.GameStatus.ACTIVE) {
             event.getWhoClicked().sendMessage(gameRunningText);
             return;
         }
 
-        getData().getTeambyName(getData().adminSelectedTeam).startLocation = event.getWhoClicked().getLocation();
-        event.getWhoClicked().sendMessage(Component.text("開始地点を" + UnRedstoneUtils.locationBlockPostoString(event.getWhoClicked().getLocation()) + "に設定しました"));
+        Location startLocation = event.getWhoClicked().getLocation();
+        if(!team.isStartLocationValid(startLocation)){
+            event.getWhoClicked().sendMessage(Component.text("終了位置と近すぎます"));
+            return;
+        }
+        
+        team.setStartLocation(startLocation);
+        event.getWhoClicked().sendMessage(Component.text("開始地点を" + UIUtility.locationBlockPostoString(startLocation) + "に設定しました"));
         UIAdminMenu.openUI((Player) event.getWhoClicked());
     }
 
@@ -127,18 +137,25 @@ public class AdminMenuRow1 {
      * 終了位置を設定するボタンを押したときのイベント
      */
     private static void onSetEndButton(InventoryClickEvent event) {
-        if (getData().getTeambyName(getData().adminSelectedTeam) == null) {
+        URTeam team = getData().teams.getTeambyName(getData().adminSelectedTeam);
+        if (team == null) {
             event.getWhoClicked().sendMessage(teamNotSelectedText);
             return;
         }
 
-        if (getLogic().gameStatus == UnRedstoneLogic.GameStatus.ACTIVE) {
+        if (getLogic().gameStatus == URLogic.GameStatus.ACTIVE) {
             event.getWhoClicked().sendMessage(gameRunningText);
             return;
         }
 
-        getData().getTeambyName(getData().adminSelectedTeam).endLocation = event.getWhoClicked().getLocation();
-        event.getWhoClicked().sendMessage(Component.text("終了地点を" + UnRedstoneUtils.locationBlockPostoString(event.getWhoClicked().getLocation()) + "に設定しました"));
+        Location endLocation = event.getWhoClicked().getLocation();
+        if(!team.isEndLocationValid(endLocation)){
+            event.getWhoClicked().sendMessage(Component.text("開始位置と近すぎます"));
+            return;
+        }
+
+        team.setEndLocation(endLocation);
+        event.getWhoClicked().sendMessage(Component.text("終了地点を" + UIUtility.locationBlockPostoString(endLocation) + "に設定しました"));
         UIAdminMenu.openUI((Player) event.getWhoClicked());
     }
 
@@ -146,23 +163,23 @@ public class AdminMenuRow1 {
      * チームを削除するボタンを押したときのイベント
      */
     private static void onRemoveTeamButton(InventoryClickEvent event) {
-        if (getLogic().gameStatus == UnRedstoneLogic.GameStatus.ACTIVE) {
+        if (getLogic().gameStatus == URLogic.GameStatus.ACTIVE) {
             event.getWhoClicked().sendMessage(gameRunningText);
             return;
         }
 
-        if (getData().adminSelectedTeam.equals("")) {
+        if (getData().adminSelectedTeam.isEmpty()) {
             event.getWhoClicked().sendMessage(teamNotSelectedText);
             return;
         }
 
-        UnRedstoneTeam team = getData().getTeambyName(getData().adminSelectedTeam);
+        URTeam team = getData().teams.getTeambyName(getData().adminSelectedTeam);
         if(team == null)
             return;
 
         for (Player player : team.players)
-            UnRedstone.getInstance().scoreBoardManager.kickPlayerFromTeam(player);
-        getData().removeTeam(getData().adminSelectedTeam);
+            UnRedstone.getInstance().scoreBoardManager.kickPlayerFromMCTeam(player);
+        getData().teams.removeTeam(getData().adminSelectedTeam);
         event.getWhoClicked().sendMessage(Component.text("チーム" + getData().adminSelectedTeam + "を削除しました").color(NamedTextColor.WHITE));
         getData().adminSelectedTeam = "";
     }
@@ -171,7 +188,7 @@ public class AdminMenuRow1 {
      * @return チーム削除ボタンの説明文
      */
     private static TextComponent getRemoveTeamDesc() {
-        if (getLogic().gameStatus == UnRedstoneLogic.GameStatus.ACTIVE) {
+        if (getLogic().gameStatus == URLogic.GameStatus.ACTIVE) {
             return gameRunningText;
         }
 

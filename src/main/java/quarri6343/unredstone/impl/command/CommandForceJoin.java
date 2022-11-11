@@ -7,7 +7,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import quarri6343.unredstone.UnRedstone;
 import quarri6343.unredstone.api.CommandBase;
-import quarri6343.unredstone.common.UnRedstoneData;
+import quarri6343.unredstone.common.data.URData;
+import quarri6343.unredstone.common.data.URTeam;
 
 /**
  * プレイヤーを強制的にチームに参加させるコマンド。ゲーム中も実行可能
@@ -22,8 +23,8 @@ public class CommandForceJoin extends CommandBase {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @Nullable String[] arguments) {
-        UnRedstoneData data = UnRedstone.getInstance().data;
-        if (data.adminSelectedTeam.equals("")) {
+        URData data = UnRedstone.getInstance().data;
+        if (data.adminSelectedTeam.isEmpty()) {
             sender.sendMessage("まずGUIで加入させたいチームを選択してください");
             return true;
         }
@@ -34,16 +35,20 @@ public class CommandForceJoin extends CommandBase {
             return true;
         }
 
-        for (int i = 0; i < data.getTeamsLength(); i++) {
-            if (data.getTeam(i).players.contains(player)) {
-                data.getTeam(i).players.remove(player);
+        for (int i = 0; i < data.teams.getTeamsLength(); i++) {
+            if (data.teams.getTeam(i).players.contains(player)) {
+                data.teams.getTeam(i).players.remove(player);
                 sender.sendMessage(arguments[0] + "が既にチームに入っていたので離脱させました");
                 break;
             }
         }
 
-        data.getTeambyName(data.adminSelectedTeam).players.add(player);
-        UnRedstone.getInstance().scoreBoardManager.addPlayerToTeam(player, data.adminSelectedTeam);
+        URTeam team = data.teams.getTeambyName(data.adminSelectedTeam);
+        if(team == null)
+            return true;
+        
+        team.players.add(player);
+        UnRedstone.getInstance().scoreBoardManager.addPlayerToMCTeam(player, data.adminSelectedTeam);
         sender.sendMessage(arguments[0] + "をチーム" + data.adminSelectedTeam + "に加入させました");
         return true;
     }
