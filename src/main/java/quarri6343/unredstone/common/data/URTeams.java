@@ -89,7 +89,7 @@ public class URTeams {
 
     @ParametersAreNonnullByDefault
     public @Nullable URTeam getTeambyPlayer(Player player) {
-        return teams.stream().filter(v -> v.players.contains(player)).findFirst().orElse(null);
+        return teams.stream().filter(v -> v.containsPlayer(player)).findFirst().orElse(null);
     }
 
 
@@ -112,7 +112,7 @@ public class URTeams {
      */
     public void disbandTeams() {
         for (int i = 0; i < getTeamsLength(); i++) {
-            getTeam(i).players.clear();
+            getTeam(i).removeAllPlayer();
         }
     }
 }

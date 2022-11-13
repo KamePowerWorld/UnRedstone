@@ -9,6 +9,7 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import quarri6343.unredstone.UnRedstone;
 import quarri6343.unredstone.common.data.URData;
+import quarri6343.unredstone.common.data.URPlayer;
 import quarri6343.unredstone.common.data.URTeam;
 import quarri6343.unredstone.common.logic.URLogic;
 import quarri6343.unredstone.utils.UnRedstoneUtils;
@@ -25,7 +26,7 @@ public class GlobalTeamHandler {
      * @param team   入れたいURチーム
      */
     public void addPlayerToTeam(Player player, URTeam team) {
-        team.players.add(player);
+        team.addPlayer(player);
         UnRedstone.getInstance().mcTeamHandler.addPlayerToMCTeam(player, team);
     }
 
@@ -35,7 +36,7 @@ public class GlobalTeamHandler {
     public void removePlayerFromTeam(Player player) {
         URTeam team = getData().teams.getTeambyPlayer(player);
         if (team != null) {
-            team.players.remove(player);
+            team.removePlayer(player);
         }
         UnRedstone.getInstance().mcTeamHandler.removePlayerFromMCTeam(player);
     }
@@ -66,8 +67,8 @@ public class GlobalTeamHandler {
                 continue;
 
             Location centerLocation = UnRedstoneUtils.getCenterLocation(team.joinLocation1, team.joinLocation2);
-            for (Player player : team.players) {
-                player.teleport(centerLocation);
+            for (int j = 0; j < team.getPlayersSize(); j++) {
+                team.getPlayer(j).teleport(centerLocation);
             }
         }
     }
@@ -92,9 +93,9 @@ public class GlobalTeamHandler {
         int playerCount = 0;
         for (int i = 0; i < getData().teams.getTeamsLength(); i++) {
             URTeam team = getData().teams.getTeam(i);
-            playerCount += team.players.size();
+            playerCount += team.getPlayersSize();
 
-            if (team.players.size() > 0) {
+            if (team.getPlayersSize() > 0) {
                 if (team.getStartLocation() == null) {
                     gameMaster.sendMessage("チーム" + team.name + "の開始地点を設定してください");
                     return false;
@@ -120,7 +121,7 @@ public class GlobalTeamHandler {
     public void assignPlayersInJoinArea() {
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
             for (int i = 0; i < getData().teams.getTeamsLength(); i++) {
-                if (getData().teams.getTeam(i).players.contains(onlinePlayer)) {
+                if (getData().teams.getTeam(i).containsPlayer(onlinePlayer)) {
                     onlinePlayer.sendMessage("既にチーム" + getData().teams.getTeam(i).name + "に加入しています！");
                     return;
                 }
@@ -144,15 +145,15 @@ public class GlobalTeamHandler {
      * チーム中のプレイヤーが指定アイテムを持ちすぎていた場合、ドロップさせる
      */
     public void dropExcessiveItems(URTeam team, Material material, int maxHoldableItems) {
-        for (int j = 0; j < team.players.size(); j++) {
-            Player player = team.players.get(j);
+        for (int i = 0; i < team.getPlayersSize(); i++) {
+            Player player = team.getPlayer(i);
 
             int itemsInInv = 0;
-            for (ItemStack itemStack : team.players.get(j).getInventory().all(material).values()) {
+            for (ItemStack itemStack : player.getInventory().all(material).values()) {
                 itemsInInv += itemStack.getAmount();
             }
 
-            ItemStack offHandItem = team.players.get(j).getInventory().getItemInOffHand();
+            ItemStack offHandItem = player.getInventory().getItemInOffHand();
             if (offHandItem.getType() == material)
                 itemsInInv += offHandItem.getAmount();
 

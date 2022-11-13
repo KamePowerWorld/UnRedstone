@@ -1,5 +1,7 @@
 package quarri6343.unredstone.common.data;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -23,7 +25,7 @@ public class URTeam {
     public Location joinLocation2;
     public Locomotive locomotive;
 
-    public List<Player> players = new ArrayList<>();
+    private final List<URPlayer> players = new ArrayList<>();
 
     public URTeam(String name, String color) {
         if (name.isEmpty()) {
@@ -82,5 +84,42 @@ public class URTeam {
             throw new IllegalArgumentException();
 
         endLocation = location;
+    }
+    
+    public void addPlayer(Player player){
+        players.add(new URPlayer(player));
+    }
+    
+    public Player getPlayer(int index){
+        return players.get(index).entity;
+    }
+    
+    public void removePlayer(Player player){
+        URPlayer playerToRemove = players.stream().filter(urPlayer -> urPlayer.entity.equals(player)).findFirst().orElse(null);
+        if(playerToRemove == null){
+            return;
+        }
+        
+        playerToRemove.restoreGameMode();
+        players.remove(playerToRemove);
+    }
+    
+    public void removeAllPlayer(){
+        for (URPlayer player : players) {
+            player.restoreGameMode();
+        }
+        players.clear();
+    }
+    
+    public int getPlayersSize(){
+        return players.size();
+    }
+    
+    public boolean containsPlayer(Player player){
+        return players.stream().filter(urPlayer -> urPlayer.entity.equals(player)).findFirst().orElse(null) != null;
+    }
+    
+    public List<TextComponent> playerNamesToText(){
+        return players.stream().map(player1 -> Component.text(player1.entity.getName()).color(NamedTextColor.YELLOW)).toList();
     }
 }

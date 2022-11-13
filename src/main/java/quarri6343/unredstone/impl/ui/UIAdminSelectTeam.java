@@ -37,9 +37,8 @@ public class UIAdminSelectTeam {
         } else {
             for (int i = 0; i < data.teams.getTeamsLength(); i++) {
                 List<Component> lores = new ArrayList<>();
-                lores.add(Component.text("プレイヤー数: " + data.teams.getTeam(i).players.size()));
-                lores.addAll(data.teams.getTeam(i).players.stream().map(
-                        player1 -> Component.text(player1.getName()).color(NamedTextColor.GRAY)).toList());
+                lores.add(Component.text("プレイヤー数: " + data.teams.getTeam(i).getPlayersSize()));
+                lores.addAll(data.teams.getTeam(i).playerNamesToText());
 
                 ItemStack teamSelectItem = new ItemCreator(Material.WHITE_WOOL)
                         .setName(Component.text("チーム" + data.teams.getTeam(i).name + "を選択"))

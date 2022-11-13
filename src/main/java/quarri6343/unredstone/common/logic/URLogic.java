@@ -4,10 +4,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.data.Rail;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -58,7 +55,7 @@ public class URLogic {
         gameStatus = GameStatus.ACTIVE;
         for (int i = 0; i < getData().teams.getTeamsLength(); i++) {
             URTeam team = getData().teams.getTeam(i);
-            if (team.players.size() == 0)
+            if (team.getPlayersSize() == 0)
                 continue;
 
             setUpRail(team.getStartLocation());
@@ -67,8 +64,9 @@ public class URLogic {
             locomotive.customName(Component.text("原木x" + getData().craftingCost.get() + " + 丸石x" + getData().craftingCost.get() + " = 線路").color(NamedTextColor.GRAY));
             team.locomotive = new Locomotive(locomotive);
 
-            for (Player player : team.players) {
-                player.teleport(randomizeLocation(team.getStartLocation()));
+            for (int j = 0; j < team.getPlayersSize(); j++) {
+                team.getPlayer(j).teleport(randomizeLocation(team.getStartLocation()));
+                team.getPlayer(j).setGameMode(GameMode.SURVIVAL);
             }
         }
         Bukkit.getOnlinePlayers().forEach(player -> player.showTitle(Title.title(Component.text("ゲームスタート"), Component.empty())));
@@ -134,7 +132,7 @@ public class URLogic {
             return;
         }
 
-        List<TextComponent> playerList = victoryTeam.players.stream().map(player1 -> Component.text(player1.getName()).color(NamedTextColor.YELLOW)).toList();
+        List<TextComponent> playerList = victoryTeam.playerNamesToText();
         Component subTitle = Component.text("");
         for (int i = 0; i < playerList.size(); i++) {
             if (i != 0)
