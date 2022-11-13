@@ -6,6 +6,8 @@ import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import quarri6343.unredstone.UnRedstone;
 import quarri6343.unredstone.common.data.URData;
 import quarri6343.unredstone.common.data.URTeam;
@@ -161,6 +163,15 @@ public class GlobalTeamHandler {
                     player.getInventory().removeItemAnySlot(new ItemStack(material, itemsInInv - maxHoldableItems));
                     player.getWorld().dropItemNaturally(player.getLocation(), new ItemStack(material, itemsInInv - maxHoldableItems));
                 }
+            }
+        }
+    }
+    
+    public static void giveEffectToPlayers(PotionEffectType type, int duration, int level){
+        for (int i = 0; i < getData().teams.getTeamsLength(); i++) {
+            URTeam team = getData().teams.getTeam(i);
+            for (int j = 0; j < team.getPlayersSize(); j++) {
+                team.getPlayer(j).addPotionEffect(new PotionEffect(type, duration, level - 1, false, false));
             }
         }
     }

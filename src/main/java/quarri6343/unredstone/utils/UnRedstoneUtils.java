@@ -20,6 +20,7 @@ public class UnRedstoneUtils {
 
     public static final BlockFace[] axis = {BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST};
     public static final Material[] woods = {Material.OAK_WOOD, Material.ACACIA_WOOD, Material.BIRCH_WOOD, Material.DARK_OAK_WOOD, Material.JUNGLE_WOOD, Material.JUNGLE_WOOD};
+    public static final Material[] heavyBlocks = {Material.COBBLESTONE, Material.RAIL, };
 
     /**
      * プラグインマネージャからコマンドマップを取得する

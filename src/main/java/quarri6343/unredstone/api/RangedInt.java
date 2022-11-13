@@ -1,15 +1,20 @@
 package quarri6343.unredstone.api;
 
-public class stackSizeInt {
+public class RangedInt {
+    
+    private final int min;
+    private final int max;
     
     private int value;
     
-    public stackSizeInt(int value){
+    public RangedInt(int value, int min, int max){
+        this.min = min;
+        this.max = max;
         set(value);
     }
     
-    public static boolean isValid(int value){
-        return value >= 1 && value <= 64;
+    public boolean isValid(int value){
+        return value >= min && value <= max;
     }
     
     public void set(int value){

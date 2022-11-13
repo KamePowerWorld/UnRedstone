@@ -1,7 +1,7 @@
 package quarri6343.unredstone.common.logic;
 
 import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import quarri6343.unredstone.UnRedstone;
 import quarri6343.unredstone.common.GlobalTeamHandler;
@@ -11,8 +11,7 @@ import quarri6343.unredstone.utils.UnRedstoneUtils;
 
 import java.util.function.Consumer;
 
-import static quarri6343.unredstone.common.data.URData.checkInventoryInterval;
-import static quarri6343.unredstone.common.data.URData.craftRailInterval;
+import static quarri6343.unredstone.common.data.URData.*;
 
 /**
  * 定期的に起動してゲームの状態を監視するrunnable
@@ -63,6 +62,11 @@ public class GameRunnable extends BukkitRunnable {
                 GlobalTeamHandler.dropExcessiveItems(wood, maxHoldableItems);
             }
             GlobalTeamHandler.dropExcessiveItems(Material.COBBLESTONE, maxHoldableItems);
+        }
+        
+        if(count % giveBuffInterval == 0 && getData().buffStrength.get() > 0){
+            GlobalTeamHandler.giveEffectToPlayers(PotionEffectType.SPEED, giveBuffInterval * 2, getData().buffStrength.get());
+            GlobalTeamHandler.giveEffectToPlayers(PotionEffectType.FAST_DIGGING, giveBuffInterval * 2, getData().buffStrength.get());
         }
     }
     

@@ -64,13 +64,15 @@ public class ConfigHandler {
         int maxHoldableItems = config.getInt("maxHoldableItems");
         if(maxHoldableItems < 1)
             maxHoldableItems = 1;
-        
         data.maxHoldableItems.set(maxHoldableItems);
         
         int craftingCost = config.getInt("crafingCost");
         if(craftingCost < 1)
             craftingCost = 1;
         data.craftingCost.set(craftingCost);
+
+        int buffStrength = config.getInt("buffStrength");
+        data.buffStrength.set(buffStrength);
     }
 
     /**
@@ -110,6 +112,7 @@ public class ConfigHandler {
         URData data = UnRedstone.getInstance().getData();
         config.set("maxHoldableItems", data.maxHoldableItems.get());
         config.set("crafingCost", data.craftingCost.get());
+        config.set("buffStrength", data.buffStrength.get());
     }
 
     /**

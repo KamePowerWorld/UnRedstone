@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import quarri6343.unredstone.UnRedstone;
-import quarri6343.unredstone.api.stackSizeInt;
+import quarri6343.unredstone.api.RangedInt;
 import quarri6343.unredstone.common.data.URData;
 import quarri6343.unredstone.common.logic.URLogic;
 import quarri6343.unredstone.utils.ItemCreator;
@@ -27,17 +27,23 @@ public class AdminMenuRow3 {
     }
 
     public static void addElements(PaginatedGui gui, Player player) {
-        ItemStack setMaxHoldableItemsItem = new ItemCreator(Material.OAK_LOG).setName(Component.text("プレイヤーが所持可能な最大の原木、丸石、線路の数を変更"))
+        ItemStack setMaxHoldableItemsItem = new ItemCreator(Material.OAK_LOG).setName(Component.text("プレイヤーが所持可能な最大の原木、丸石、線路の数"))
                 .setLore(Component.text("現在: " + getData().maxHoldableItems.get() + "個").decoration(TextDecoration.ITALIC, false)).create();
         GuiItem setMaxHoldableItemsButton = new GuiItem(setMaxHoldableItemsItem,
                 AdminMenuRow3::onSetMaxHoldableItemsButton);
         gui.setItem(18, setMaxHoldableItemsButton);
 
-        ItemStack setCraftingCostItem = new ItemCreator(Material.COBBLESTONE).setName(Component.text("線路を一個作るのに必要な材料の数を変更"))
+        ItemStack setCraftingCostItem = new ItemCreator(Material.COBBLESTONE).setName(Component.text("線路を一個作るのに必要な材料の数"))
                 .setLore(Component.text("現在: " + getData().craftingCost.get() + "個").decoration(TextDecoration.ITALIC, false)).create();
         GuiItem setCraftingCostButton = new GuiItem(setCraftingCostItem,
                 AdminMenuRow3::onSetCraftingCostButton);
-        gui.setItem(20, setCraftingCostButton);
+        gui.setItem(19, setCraftingCostButton);
+
+        ItemStack setBuffStrengthItem = new ItemCreator(Material.POTION).setName(Component.text("ゲームの展開速度変更のためプレイヤーに付与するバフの強度"))
+                .setLore(Component.text("現在: " + getData().buffStrength.get()).decoration(TextDecoration.ITALIC, false)).create();
+        GuiItem setBuffStrengthButton = new GuiItem(setBuffStrengthItem,
+                AdminMenuRow3::onSetBuffStrengthButton);
+        gui.setItem(20, setBuffStrengthButton);
 
         GuiItem closeButton = new GuiItem(new ItemCreator(Material.BARRIER).setName(Component.text("閉じる")).create(),
                 event -> gui.close(event.getWhoClicked()));
@@ -77,28 +83,14 @@ public class AdminMenuRow3 {
     }
 
     private static void onSetMaxHoldableItemsButton(InventoryClickEvent event) {
-        UINumberConfiguration.openUI((Player) event.getWhoClicked(),
-                integer ->
-                {
-                    if (!stackSizeInt.isValid(integer)) {
-                        event.getWhoClicked().sendMessage("現実的な数を入力してください");
-                        return;
-                    }
-
-                    getData().maxHoldableItems.set(integer);
-                });
+        UINumberConfiguration.openUI((Player) event.getWhoClicked(),getData().maxHoldableItems);
     }
     
     private static void onSetCraftingCostButton(InventoryClickEvent event){
-        UINumberConfiguration.openUI((Player) event.getWhoClicked(),
-                integer ->
-                {
-                    if (!stackSizeInt.isValid(integer)) {
-                        event.getWhoClicked().sendMessage("現実的な数を入力してください");
-                        return;
-                    }
+        UINumberConfiguration.openUI((Player) event.getWhoClicked(),getData().craftingCost);
+    }
 
-                    getData().craftingCost.set(integer);
-                });
+    private static void onSetBuffStrengthButton(InventoryClickEvent event){
+        UINumberConfiguration.openUI((Player) event.getWhoClicked(),getData().buffStrength);
     }
 }
