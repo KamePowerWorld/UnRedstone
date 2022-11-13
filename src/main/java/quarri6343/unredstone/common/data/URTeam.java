@@ -100,13 +100,13 @@ public class URTeam {
             return;
         }
         
-        playerToRemove.restoreGameMode();
+        playerToRemove.restoreStats();
         players.remove(playerToRemove);
     }
     
     public void removeAllPlayer(){
         for (URPlayer player : players) {
-            player.restoreGameMode();
+            player.restoreStats();
         }
         players.clear();
     }

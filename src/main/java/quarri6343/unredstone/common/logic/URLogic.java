@@ -9,6 +9,7 @@ import org.bukkit.block.data.Rail;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -67,6 +68,7 @@ public class URLogic {
             for (int j = 0; j < team.getPlayersSize(); j++) {
                 team.getPlayer(j).teleport(randomizeLocation(team.getStartLocation()));
                 team.getPlayer(j).setGameMode(GameMode.SURVIVAL);
+                team.getPlayer(j).getInventory().setContents(new ItemStack[]{});
             }
         }
         Bukkit.getOnlinePlayers().forEach(player -> player.showTitle(Title.title(Component.text("ゲームスタート"), Component.empty())));
