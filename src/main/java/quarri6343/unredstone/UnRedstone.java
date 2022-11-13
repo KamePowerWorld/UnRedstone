@@ -3,6 +3,7 @@ package quarri6343.unredstone;
 import org.bukkit.plugin.java.JavaPlugin;
 import quarri6343.unredstone.common.*;
 import quarri6343.unredstone.common.data.URData;
+import quarri6343.unredstone.common.logic.GameEndRunnable;
 import quarri6343.unredstone.common.logic.URLogic;
 import quarri6343.unredstone.impl.command.CommandForceJoin;
 import quarri6343.unredstone.impl.command.CommandForceLeave;
@@ -46,6 +47,9 @@ public final class UnRedstone extends JavaPlugin {
     @Override
     public void onDisable() {
         config.saveConfig();
-        mcTeamHandler.deleteMinecraftTeams();
+        
+        if(logic.gameStatus == URLogic.GameStatus.ACTIVE){
+            logic.endGame(null, null, URLogic.GameResult.FAIL, false);
+        }
     }
 }

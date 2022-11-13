@@ -73,7 +73,7 @@ public class URLogic {
         }
         Bukkit.getOnlinePlayers().forEach(player -> player.showTitle(Title.title(Component.text("ゲームスタート"), Component.empty())));
 
-        gameRunnable = new GameRunnable(urTeam -> endGame(null, urTeam, URLogic.GameResult.SUCCESS)).runTaskTimer(UnRedstone.getInstance(), 0, 1);
+        gameRunnable = new GameRunnable(urTeam -> endGame(null, urTeam, URLogic.GameResult.SUCCESS, true)).runTaskTimer(UnRedstone.getInstance(), 0, 1);
     }
 
     /**
@@ -97,7 +97,7 @@ public class URLogic {
      * @param victoryTeam 勝ったチーム
      * @param gameResult  ゲームの結果
      */
-    public void endGame(@Nullable Player sender, @Nullable URTeam victoryTeam, GameResult gameResult) {
+    public void endGame(@Nullable Player sender, @Nullable URTeam victoryTeam, GameResult gameResult, boolean hasResultScene) {
         if (gameStatus == GameStatus.INACTIVE) {
             if (sender != null)
                 sender.sendMessage("ゲームが始まっていません！");
@@ -119,8 +119,11 @@ public class URLogic {
         } else if (gameResult == GameResult.FAIL) {
             displayGameFailureTitle();
         }
-
-        new GameEndRunnable(() -> gameStatus = URLogic.GameStatus.INACTIVE).runTaskTimer(UnRedstone.getInstance(), gameResultSceneLength, 1);
+        
+        if(hasResultScene)
+            new GameEndRunnable(() -> gameStatus = URLogic.GameStatus.INACTIVE).runTaskTimer(UnRedstone.getInstance(), gameResultSceneLength, 1);
+        else 
+            new GameEndRunnable(() -> gameStatus = URLogic.GameStatus.INACTIVE).run();
     }
 
     /**

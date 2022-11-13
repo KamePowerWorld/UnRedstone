@@ -51,7 +51,7 @@ public class AdminMenuRow3 {
         gui.setItem(24, startButton);
         GuiItem endButton = new GuiItem(new ItemCreator(Material.RED_WOOL).setName(Component.text("ゲームを強制終了")).setLore(getCanTerminateGameDesc()).create(),
                 event -> {
-                    getLogic().endGame((Player) event.getWhoClicked(), null, URLogic.GameResult.FAIL);
+                    getLogic().endGame((Player) event.getWhoClicked(), null, URLogic.GameResult.FAIL, true);
                     UIAdminMenu.openUI((Player) event.getWhoClicked());
                 });
         gui.setItem(26, endButton);
