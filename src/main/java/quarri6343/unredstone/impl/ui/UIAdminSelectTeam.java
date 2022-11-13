@@ -28,7 +28,7 @@ public class UIAdminSelectTeam {
                 .disableAllInteractions()
                 .create();
 
-        URData data = UnRedstone.getInstance().data;
+        URData data = UnRedstone.getInstance().getData();
         if (data.teams.getTeamsLength() == 0) {
             GuiItem closeButton = new GuiItem(new ItemCreator(Material.BARRIER)
                     .setName(Component.text("まず/create team {チーム名} {チームの色}でチームを作ってください").color(NamedTextColor.WHITE)).create(),

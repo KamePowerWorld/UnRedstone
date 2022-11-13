@@ -44,26 +44,29 @@ public class GameRunnable extends BukkitRunnable {
                 int maxHoldableItems = getData().maxHoldableItems.get();
                 
                 team.locomotive.dropExcessiveItems(Material.RAIL, maxHoldableItems);
-                getTeamHandler().dropExcessiveItems(team, Material.RAIL, maxHoldableItems);
                 for (Material wood : UnRedstoneUtils.woods) {
                     team.locomotive.dropExcessiveItems(wood, maxHoldableItems);
-                    getTeamHandler().dropExcessiveItems(team, wood, maxHoldableItems);
                 }
                 team.locomotive.dropExcessiveItems(Material.COBBLESTONE, maxHoldableItems);
-                getTeamHandler().dropExcessiveItems(team, Material.COBBLESTONE, maxHoldableItems);
             }
             
             if (count % craftRailInterval == 0) {
                 team.locomotive.processCrafting(getData());
             }
         }
+
+        if (count % checkInventoryInterval == 0) {
+            int maxHoldableItems = getData().maxHoldableItems.get();
+            
+            GlobalTeamHandler.dropExcessiveItems(Material.RAIL, maxHoldableItems);
+            for (Material wood : UnRedstoneUtils.woods) {
+                GlobalTeamHandler.dropExcessiveItems(wood, maxHoldableItems);
+            }
+            GlobalTeamHandler.dropExcessiveItems(Material.COBBLESTONE, maxHoldableItems);
+        }
     }
     
     private URData getData() {
-        return UnRedstone.getInstance().data;
-    }
-    
-    private GlobalTeamHandler getTeamHandler(){
-        return UnRedstone.getInstance().globalTeamHandler;
+        return UnRedstone.getInstance().getData();
     }
 }

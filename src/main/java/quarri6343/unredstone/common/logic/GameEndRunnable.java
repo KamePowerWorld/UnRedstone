@@ -2,6 +2,7 @@ package quarri6343.unredstone.common.logic;
 
 import org.bukkit.scheduler.BukkitRunnable;
 import quarri6343.unredstone.UnRedstone;
+import quarri6343.unredstone.common.GlobalTeamHandler;
 
 /**
  * ゲーム終了後時間を空けて行いたい処理
@@ -15,8 +16,8 @@ public class GameEndRunnable extends BukkitRunnable {
     
     @Override
     public void run() {
-        UnRedstone.getInstance().globalTeamHandler.teleportTeamToLobby();
-        UnRedstone.getInstance().globalTeamHandler.resetTeams();
+        GlobalTeamHandler.teleportTeamToLobby();
+        GlobalTeamHandler.resetTeams();
         additionalAction.run();
         cancel();
     }

@@ -27,7 +27,7 @@ public class UICreateTeam {
      * チーム名が入力された時の挙動
      */
     private static AnvilGUI.Response onTeamNameInputted(Player player, String text) {
-        URData data = UnRedstone.getInstance().data;
+        URData data = UnRedstone.getInstance().getData();
         if (data.teams.getTeambyName(text) != null) {
             player.sendMessage(Component.text("その名前のチームは既に存在します").color(NamedTextColor.RED));
             return AnvilGUI.Response.close();
@@ -54,7 +54,7 @@ public class UICreateTeam {
             return AnvilGUI.Response.close();
         }
 
-        URData data = UnRedstone.getInstance().data;
+        URData data = UnRedstone.getInstance().getData();
         if (data.teams.getTeambyColor(text) != null) {
             player.sendMessage(Component.text("その色のチームは既に存在します").color(NamedTextColor.RED));
             return AnvilGUI.Response.close();

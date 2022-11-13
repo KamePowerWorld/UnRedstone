@@ -10,9 +10,9 @@ import quarri6343.unredstone.common.data.URTeam;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-public class MCTeamHandler {
+public class MCTeams {
 
-    public void addPlayerToMCTeam(Player player, URTeam urTeam) {
+    public static void addPlayerToMCTeam(Player player, URTeam urTeam) {
         Team team = getBoard().getTeam(urTeam.name);
         if (team == null)
             team = createMinecraftTeam(urTeam);
@@ -22,7 +22,7 @@ public class MCTeamHandler {
     /**
      * 新しいminecraftのチームを作る
      */
-    private Team createMinecraftTeam(URTeam urTeam) {
+    private static Team createMinecraftTeam(URTeam urTeam) {
         Team team = getBoard().registerNewTeam(urTeam.name);
         team.color(NamedTextColor.NAMES.value(urTeam.color));
         team.displayName(Component.text(urTeam.name).color(NamedTextColor.NAMES.value(urTeam.color)));
@@ -34,7 +34,7 @@ public class MCTeamHandler {
     /**
      * minecraftのチームを全て解散させる
      */
-    public void deleteMinecraftTeams() {
+    public static void deleteMinecraftTeams() {
         for (int i = 0; i < getBoard().getTeams().size(); i++) {
             getBoard().getTeams().forEach(team -> team.unregister());
         }
@@ -46,7 +46,7 @@ public class MCTeamHandler {
      * @param player プレイヤー名
      */
     @ParametersAreNonnullByDefault
-    public void removePlayerFromMCTeam(Player player) {
+    public static void removePlayerFromMCTeam(Player player) {
         Team team = getBoard().getPlayerTeam(player);
         if (team == null)
             return;
@@ -54,7 +54,7 @@ public class MCTeamHandler {
         team.removePlayer(player);
     }
 
-    private Scoreboard getBoard() {
+    private static Scoreboard getBoard() {
         return Bukkit.getScoreboardManager().getMainScoreboard();
     }
 }

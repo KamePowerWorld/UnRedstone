@@ -5,11 +5,9 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import quarri6343.unredstone.UnRedstone;
 import quarri6343.unredstone.common.data.URData;
-import quarri6343.unredstone.common.data.URPlayer;
 import quarri6343.unredstone.common.data.URTeam;
 import quarri6343.unredstone.common.logic.URLogic;
 import quarri6343.unredstone.utils.UnRedstoneUtils;
@@ -25,42 +23,42 @@ public class GlobalTeamHandler {
      * @param player プレイヤー
      * @param team   入れたいURチーム
      */
-    public void addPlayerToTeam(Player player, URTeam team) {
+    public static void addPlayerToTeam(Player player, URTeam team) {
         team.addPlayer(player);
-        UnRedstone.getInstance().mcTeamHandler.addPlayerToMCTeam(player, team);
+        MCTeams.addPlayerToMCTeam(player, team);
     }
 
     /**
      * プレイヤーをUR, MC両方のチームから退出させる
      */
-    public void removePlayerFromTeam(Player player) {
+    public static void removePlayerFromTeam(Player player) {
         URTeam team = getData().teams.getTeambyPlayer(player);
         if (team != null) {
             team.removePlayer(player);
         }
-        UnRedstone.getInstance().mcTeamHandler.removePlayerFromMCTeam(player);
+        MCTeams.removePlayerFromMCTeam(player);
     }
 
     /**
-     * 死んだプレイヤーをチームのトロッコの近くにスポーンさせる
+     * 死んだプレイヤーのチームのトロッコの近くのリスポーン位置を取得
      */
-    public void respawnPlayerNearLocomotive(PlayerRespawnEvent event) {
-        if (UnRedstone.getInstance().logic.gameStatus == URLogic.GameStatus.INACTIVE)
-            return;
+    public static Location getTeamPlayerRespawnLocation(Player player) {
+        if (UnRedstone.getInstance().getLogic().gameStatus == URLogic.GameStatus.INACTIVE)
+            return null;
 
-        URTeam team = getData().teams.getTeambyPlayer(event.getPlayer());
+        URTeam team = getData().teams.getTeambyPlayer(player);
         if (team == null || team.locomotive == null)
-            return;
+            return null;
 
         Entity locomotive = team.locomotive.entity;
-
-        event.setRespawnLocation(UnRedstoneUtils.randomizeLocation(locomotive.getLocation()));
+        
+        return UnRedstoneUtils.randomizeLocation(locomotive.getLocation());
     }
 
     /**
      * チームメンバーをチームに加入した位置にテレポートさせる
      */
-    public void teleportTeamToLobby() {
+    public static void teleportTeamToLobby() {
         for (int i = 0; i < getData().teams.getTeamsLength(); i++) {
             URTeam team = getData().teams.getTeam(i);
             if (team.joinLocation1 == null || team.joinLocation2 == null)
@@ -73,8 +71,8 @@ public class GlobalTeamHandler {
         }
     }
 
-    public void resetTeams() {
-        UnRedstone.getInstance().mcTeamHandler.deleteMinecraftTeams();
+    public static void resetTeams() {
+        MCTeams.deleteMinecraftTeams();
         getData().teams.disbandTeams();
     }
 
@@ -84,7 +82,7 @@ public class GlobalTeamHandler {
      * @param gameMaster ゲーム開始者
      * @return ゲームを開始できるか
      */
-    public boolean areTeamsValid(Player gameMaster) {
+    public static boolean areTeamsValid(Player gameMaster) {
         if (getData().teams.getTeamsLength() == 0) {
             gameMaster.sendMessage("チームが存在しません!");
             return false;
@@ -118,7 +116,7 @@ public class GlobalTeamHandler {
     /**
      * 参加エリアにいるプレイヤーをチームに割り当てる
      */
-    public void assignPlayersInJoinArea() {
+    public static void assignPlayersInJoinArea() {
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
             for (int i = 0; i < getData().teams.getTeamsLength(); i++) {
                 if (getData().teams.getTeam(i).containsPlayer(onlinePlayer)) {
@@ -144,27 +142,30 @@ public class GlobalTeamHandler {
     /**
      * チーム中のプレイヤーが指定アイテムを持ちすぎていた場合、ドロップさせる
      */
-    public void dropExcessiveItems(URTeam team, Material material, int maxHoldableItems) {
-        for (int i = 0; i < team.getPlayersSize(); i++) {
-            Player player = team.getPlayer(i);
+    public static void dropExcessiveItems(Material material, int maxHoldableItems) {
+        for (int i = 0; i < getData().teams.getTeamsLength(); i++) {
+            URTeam team = getData().teams.getTeam(i);
+            for (int j = 0; j < team.getPlayersSize(); j++) {
+                Player player = team.getPlayer(j);
 
-            int itemsInInv = 0;
-            for (ItemStack itemStack : player.getInventory().all(material).values()) {
-                itemsInInv += itemStack.getAmount();
-            }
+                int itemsInInv = 0;
+                for (ItemStack itemStack : player.getInventory().all(material).values()) {
+                    itemsInInv += itemStack.getAmount();
+                }
 
-            ItemStack offHandItem = player.getInventory().getItemInOffHand();
-            if (offHandItem.getType() == material)
-                itemsInInv += offHandItem.getAmount();
+                ItemStack offHandItem = player.getInventory().getItemInOffHand();
+                if (offHandItem.getType() == material)
+                    itemsInInv += offHandItem.getAmount();
 
-            if (itemsInInv > maxHoldableItems) {
-                player.getInventory().removeItemAnySlot(new ItemStack(material, itemsInInv - maxHoldableItems));
-                player.getWorld().dropItemNaturally(player.getLocation(), new ItemStack(material, itemsInInv - maxHoldableItems));
+                if (itemsInInv > maxHoldableItems) {
+                    player.getInventory().removeItemAnySlot(new ItemStack(material, itemsInInv - maxHoldableItems));
+                    player.getWorld().dropItemNaturally(player.getLocation(), new ItemStack(material, itemsInInv - maxHoldableItems));
+                }
             }
         }
     }
 
-    private URData getData() {
-        return UnRedstone.getInstance().data;
+    private static URData getData() {
+        return UnRedstone.getInstance().getData();
     }
 }

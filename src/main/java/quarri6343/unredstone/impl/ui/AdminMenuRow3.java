@@ -19,11 +19,11 @@ import quarri6343.unredstone.utils.ItemCreator;
 public class AdminMenuRow3 {
 
     private static URData getData() {
-        return UnRedstone.getInstance().data;
+        return UnRedstone.getInstance().getData();
     }
 
     private static URLogic getLogic() {
-        return UnRedstone.getInstance().logic;
+        return UnRedstone.getInstance().getLogic();
     }
 
     public static void addElements(PaginatedGui gui, Player player) {

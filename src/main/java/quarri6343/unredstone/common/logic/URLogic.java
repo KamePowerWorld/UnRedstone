@@ -14,6 +14,7 @@ import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import quarri6343.unredstone.UnRedstone;
+import quarri6343.unredstone.common.GlobalTeamHandler;
 import quarri6343.unredstone.common.data.Locomotive;
 import quarri6343.unredstone.common.data.URData;
 import quarri6343.unredstone.common.data.URTeam;
@@ -45,10 +46,10 @@ public class URLogic {
             return;
         }
         
-        UnRedstone.getInstance().globalTeamHandler.assignPlayersInJoinArea();
+        GlobalTeamHandler.assignPlayersInJoinArea();
 
-        if (!UnRedstone.getInstance().globalTeamHandler.areTeamsValid(gameMaster)) {
-            UnRedstone.getInstance().globalTeamHandler.resetTeams();
+        if (!GlobalTeamHandler.areTeamsValid(gameMaster)) {
+            GlobalTeamHandler.resetTeams();
             return;
         }
 
@@ -173,6 +174,6 @@ public class URLogic {
     }
 
     private URData getData() {
-        return UnRedstone.getInstance().data;
+        return UnRedstone.getInstance().getData();
     }
 }

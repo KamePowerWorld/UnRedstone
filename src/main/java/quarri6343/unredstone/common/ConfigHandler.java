@@ -35,7 +35,7 @@ public class ConfigHandler {
      */
     @ParametersAreNonnullByDefault
     private void loadTeams(FileConfiguration config){
-        URData data = UnRedstone.getInstance().data;
+        URData data = UnRedstone.getInstance().getData();
         data.teams.clearTeam();
         for (int i = 0; i < Integer.MAX_VALUE; i++) {
             String teamName = config.getString("team.name." + i);
@@ -59,7 +59,7 @@ public class ConfigHandler {
      */
     @ParametersAreNonnullByDefault
     private void loadMisc(FileConfiguration config){
-        URData data = UnRedstone.getInstance().data;
+        URData data = UnRedstone.getInstance().getData();
         
         int maxHoldableItems = config.getInt("maxHoldableItems");
         if(maxHoldableItems < 1)
@@ -94,7 +94,7 @@ public class ConfigHandler {
      */
     @ParametersAreNonnullByDefault
     private void saveTeams(FileConfiguration config){
-        URData data = UnRedstone.getInstance().data;
+        URData data = UnRedstone.getInstance().getData();
         for (int i = 0; i < data.teams.getTeamsLength(); i++) {
             config.set("team.name." + i, data.teams.getTeam(i).name);
             config.set("team.color." + i, data.teams.getTeam(i).color);
@@ -107,7 +107,7 @@ public class ConfigHandler {
     
     @ParametersAreNonnullByDefault
     private void saveMisc(FileConfiguration config){
-        URData data = UnRedstone.getInstance().data;
+        URData data = UnRedstone.getInstance().getData();
         config.set("maxHoldableItems", data.maxHoldableItems.get());
         config.set("crafingCost", data.craftingCost.get());
     }

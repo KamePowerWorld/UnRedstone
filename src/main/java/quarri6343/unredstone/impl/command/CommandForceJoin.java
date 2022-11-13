@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import quarri6343.unredstone.UnRedstone;
 import quarri6343.unredstone.api.CommandBase;
+import quarri6343.unredstone.common.GlobalTeamHandler;
 import quarri6343.unredstone.common.data.URData;
 import quarri6343.unredstone.common.data.URTeam;
 
@@ -23,7 +24,7 @@ public class CommandForceJoin extends CommandBase {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @Nullable String[] arguments) {
-        URData data = UnRedstone.getInstance().data;
+        URData data = UnRedstone.getInstance().getData();
         if (data.adminSelectedTeam.isEmpty()) {
             sender.sendMessage("まずGUIで加入させたいチームを選択してください");
             return true;
@@ -36,7 +37,7 @@ public class CommandForceJoin extends CommandBase {
         }
 
         if (data.teams.getTeambyPlayer(player) != null) {
-            UnRedstone.getInstance().globalTeamHandler.removePlayerFromTeam(player);
+            GlobalTeamHandler.removePlayerFromTeam(player);
             sender.sendMessage(arguments[0] + "が既にチームに入っていたので離脱させました");
         }
 
@@ -44,7 +45,7 @@ public class CommandForceJoin extends CommandBase {
         if (team == null)
             return true;
         
-        UnRedstone.getInstance().globalTeamHandler.addPlayerToTeam(player, team);
+        GlobalTeamHandler.addPlayerToTeam(player, team);
         sender.sendMessage(arguments[0] + "をチーム" + data.adminSelectedTeam + "に加入させました");
         return true;
     }

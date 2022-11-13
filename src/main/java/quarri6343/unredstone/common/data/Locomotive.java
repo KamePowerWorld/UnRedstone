@@ -46,7 +46,7 @@ public class Locomotive {
     }
 
     /**
-     * アイテムを持ちすぎていた場合、ドロップさせる
+     * 特定のアイテムを持ちすぎていた場合、ドロップさせる
      */
     public void dropExcessiveItems(Material material, int maxHoldableItems) {
         Inventory inventory = ((InventoryHolder)entity).getInventory();

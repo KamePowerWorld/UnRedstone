@@ -1,6 +1,7 @@
 package quarri6343.unredstone.common;
 
 import net.kyori.adventure.text.Component;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -55,7 +56,7 @@ public class EventHandler implements Listener {
      * トロッコが破壊された場合、チームの初期地点に位置をリセットする
      */
     private void processLocomotiveDestruction(VehicleDestroyEvent event) {
-        if (UnRedstone.getInstance().logic.gameStatus == URLogic.GameStatus.INACTIVE) {
+        if (UnRedstone.getInstance().getLogic().gameStatus == URLogic.GameStatus.INACTIVE) {
             return;
         }
 
@@ -68,7 +69,7 @@ public class EventHandler implements Listener {
 
     @org.bukkit.event.EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-        UnRedstone.getInstance().globalTeamHandler.removePlayerFromTeam(event.getPlayer());
+        GlobalTeamHandler.removePlayerFromTeam(event.getPlayer());
     }
 
     @org.bukkit.event.EventHandler
@@ -80,7 +81,7 @@ public class EventHandler implements Listener {
      * バランス崩壊防止のためにレールを壊したときドロップさせないようにする
      */
     private void stopRailDrop(BlockDropItemEvent event) {
-        if (UnRedstone.getInstance().logic.gameStatus == URLogic.GameStatus.INACTIVE) {
+        if (UnRedstone.getInstance().getLogic().gameStatus == URLogic.GameStatus.INACTIVE) {
             return;
         }
 
@@ -103,7 +104,7 @@ public class EventHandler implements Listener {
      * プレイヤーが持てる上限を超えてアイテムを拾わないようにする
      */
     private void stopPickUpItems(EntityPickupItemEvent event, Material material) {
-        if (UnRedstone.getInstance().logic.gameStatus == URLogic.GameStatus.INACTIVE)
+        if (UnRedstone.getInstance().getLogic().gameStatus == URLogic.GameStatus.INACTIVE)
             return;
 
         if (!(event.getItem().getItemStack().getType() == material))
@@ -141,7 +142,9 @@ public class EventHandler implements Listener {
 
     @org.bukkit.event.EventHandler
     public void onPlayerRespawn(PlayerRespawnEvent event) {
-        UnRedstone.getInstance().globalTeamHandler.respawnPlayerNearLocomotive(event);
+        Location respawnLocation = GlobalTeamHandler.getTeamPlayerRespawnLocation(event.getPlayer());
+        if(respawnLocation != null)
+            event.setRespawnLocation(respawnLocation);
     }
 
     @org.bukkit.event.EventHandler
@@ -153,7 +156,7 @@ public class EventHandler implements Listener {
      * トロッコがネザーやエンドに行くのを防ぐ
      */
     private void stopPortalCreate(PortalCreateEvent event) {
-        if (UnRedstone.getInstance().logic.gameStatus == URLogic.GameStatus.INACTIVE)
+        if (UnRedstone.getInstance().getLogic().gameStatus == URLogic.GameStatus.INACTIVE)
             return;
 
         event.setCancelled(true);
@@ -168,7 +171,7 @@ public class EventHandler implements Listener {
      * バランス崩壊を防ぐためチェストをクラフトさせない
      */
     private void stopChestCrafting(CraftItemEvent event) {
-        if (UnRedstone.getInstance().logic.gameStatus == URLogic.GameStatus.INACTIVE)
+        if (UnRedstone.getInstance().getLogic().gameStatus == URLogic.GameStatus.INACTIVE)
             return;
 
         Material resultMaterial = event.getRecipe().getResult().getType();
@@ -179,6 +182,6 @@ public class EventHandler implements Listener {
     }
 
     private URData getData() {
-        return UnRedstone.getInstance().data;
+        return UnRedstone.getInstance().getData();
     }
 }

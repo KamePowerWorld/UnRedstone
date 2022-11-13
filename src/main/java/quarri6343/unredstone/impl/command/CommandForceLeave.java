@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import quarri6343.unredstone.UnRedstone;
 import quarri6343.unredstone.api.CommandBase;
+import quarri6343.unredstone.common.GlobalTeamHandler;
 import quarri6343.unredstone.common.data.URData;
 import quarri6343.unredstone.common.data.URTeam;
 
@@ -31,14 +32,14 @@ public class CommandForceLeave extends CommandBase {
             return true;
         }
 
-        URData data = UnRedstone.getInstance().data;
+        URData data = UnRedstone.getInstance().getData();
         URTeam team = data.teams.getTeambyPlayer(player);
         if (team == null) {
             sender.sendMessage(Component.text("プレイヤー" + arguments[0] + "はチームに所属していません").color(NamedTextColor.RED));
             return true;
         }
 
-        UnRedstone.getInstance().globalTeamHandler.removePlayerFromTeam(player);
+        GlobalTeamHandler.removePlayerFromTeam(player);
         sender.sendMessage(arguments[0] + "をチーム" + team.name + "から離脱させました");
         return true;
     }

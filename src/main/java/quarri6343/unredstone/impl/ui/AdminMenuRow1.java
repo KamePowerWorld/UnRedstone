@@ -12,10 +12,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import quarri6343.unredstone.UnRedstone;
+import quarri6343.unredstone.common.GlobalTeamHandler;
 import quarri6343.unredstone.common.data.URData;
-import quarri6343.unredstone.common.data.URPlayer;
-import quarri6343.unredstone.common.logic.URLogic;
 import quarri6343.unredstone.common.data.URTeam;
+import quarri6343.unredstone.common.logic.URLogic;
 import quarri6343.unredstone.utils.ItemCreator;
 import quarri6343.unredstone.utils.UIUtility;
 
@@ -29,11 +29,11 @@ public class AdminMenuRow1 {
             .color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false);
 
     private static URData getData() {
-        return UnRedstone.getInstance().data;
+        return UnRedstone.getInstance().getData();
     }
 
     private static URLogic getLogic() {
-        return UnRedstone.getInstance().logic;
+        return UnRedstone.getInstance().getLogic();
     }
 
     public static void addElements(PaginatedGui gui, Player player) {
@@ -179,7 +179,7 @@ public class AdminMenuRow1 {
             return;
 
         for (int i = 0; i < team.getPlayersSize(); i ++){
-            UnRedstone.getInstance().globalTeamHandler.removePlayerFromTeam(team.getPlayer(i));
+            GlobalTeamHandler.removePlayerFromTeam(team.getPlayer(i));
         }
         getData().teams.removeTeam(getData().adminSelectedTeam);
         event.getWhoClicked().sendMessage(Component.text("チーム" + getData().adminSelectedTeam + "を削除しました").color(NamedTextColor.WHITE));
@@ -198,7 +198,7 @@ public class AdminMenuRow1 {
             return teamNotSelectedText;
         }
 
-        return Component.text("選択中のチーム:" + UnRedstone.getInstance().data.adminSelectedTeam)
+        return Component.text("選択中のチーム:" + getData().adminSelectedTeam)
                 .color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false);
     }
 }

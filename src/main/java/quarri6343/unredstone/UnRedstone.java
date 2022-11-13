@@ -3,7 +3,6 @@ package quarri6343.unredstone;
 import org.bukkit.plugin.java.JavaPlugin;
 import quarri6343.unredstone.common.*;
 import quarri6343.unredstone.common.data.URData;
-import quarri6343.unredstone.common.logic.GameEndRunnable;
 import quarri6343.unredstone.common.logic.URLogic;
 import quarri6343.unredstone.impl.command.CommandForceJoin;
 import quarri6343.unredstone.impl.command.CommandForceLeave;
@@ -11,11 +10,10 @@ import quarri6343.unredstone.impl.command.CommandUnRedstone;
 
 public final class UnRedstone extends JavaPlugin {
 
-    public URData data;
-    public ConfigHandler config;
-    public URLogic logic;
-    public MCTeamHandler mcTeamHandler;
-    public GlobalTeamHandler globalTeamHandler;
+    private URData data;
+    private URLogic logic;
+
+    private ConfigHandler config;
 
     /**
      * シングルトンで管理されているこのクラスのインスタンス
@@ -36,8 +34,6 @@ public final class UnRedstone extends JavaPlugin {
         config = new ConfigHandler();
         config.loadConfig();
         logic = new URLogic();
-        mcTeamHandler = new MCTeamHandler();
-        globalTeamHandler = new GlobalTeamHandler();
         new CommandUnRedstone();
         new CommandForceJoin();
         new CommandForceLeave();
@@ -51,5 +47,13 @@ public final class UnRedstone extends JavaPlugin {
         if(logic.gameStatus == URLogic.GameStatus.ACTIVE){
             logic.endGame(null, null, URLogic.GameResult.FAIL, false);
         }
+    }
+    
+    public URData getData(){
+        return data;
+    }
+    
+    public URLogic getLogic(){
+        return logic;
     }
 }

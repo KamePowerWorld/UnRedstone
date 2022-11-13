@@ -29,11 +29,11 @@ public class AdminMenuRow2 {
             .color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false);
 
     private static URData getData() {
-        return UnRedstone.getInstance().data;
+        return UnRedstone.getInstance().getData();
     }
     
     private static URLogic getLogic() {
-        return UnRedstone.getInstance().logic;
+        return UnRedstone.getInstance().getLogic();
     }
     
     public static void addElements(PaginatedGui gui, Player player){
