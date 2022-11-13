@@ -1,7 +1,7 @@
 package quarri6343.unredstone.common.data;
 
 import com.google.common.base.Objects;
-import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -10,7 +10,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * チームに対する操作を行うクラス
@@ -73,17 +72,6 @@ public class URTeams {
     }
 
     /**
-     * 色からチームを取得する
-     *
-     * @param color 色
-     * @return チーム
-     */
-    @ParametersAreNonnullByDefault
-    public @Nullable URTeam getTeambyColor(NamedTextColor color) {
-        return teams.stream().filter(v -> v.color.equals(NamedTextColor.NAMES.key(color))).findFirst().orElse(null);
-    }
-
-    /**
      * 色の文字列からチームを取得する
      *
      * @param color 色
@@ -95,8 +83,8 @@ public class URTeams {
     }
 
     @ParametersAreNonnullByDefault
-    public @Nullable URTeam getTeambyLocomotiveID(UUID locomotiveID) {
-        return teams.stream().filter(v -> Objects.equal(v.locomotiveID, locomotiveID)).findFirst().orElse(null);
+    public @Nullable URTeam getTeambyLocomotive(Entity locomotive) {
+        return teams.stream().filter(v -> v.locomotive != null && Objects.equal(v.locomotive.entity, locomotive)).findFirst().orElse(null);
     }
 
     @ParametersAreNonnullByDefault

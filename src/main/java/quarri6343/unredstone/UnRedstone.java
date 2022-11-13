@@ -13,8 +13,9 @@ public final class UnRedstone extends JavaPlugin {
     public URData data;
     public ConfigHandler config;
     public URLogic logic;
-    public ScoreBoardHandler scoreBoardManager;
-    
+    public MCTeamHandler mcTeamHandler;
+    public GlobalTeamHandler globalTeamHandler;
+
     /**
      * シングルトンで管理されているこのクラスのインスタンス
      */
@@ -27,15 +28,15 @@ public final class UnRedstone extends JavaPlugin {
     public static UnRedstone getInstance() {
         return instance;
     }
-    
+
     @Override
     public void onEnable() {
-        // Plugin startup logic
         data = new URData();
         config = new ConfigHandler();
         config.loadConfig();
         logic = new URLogic();
-        scoreBoardManager = new ScoreBoardHandler();
+        mcTeamHandler = new MCTeamHandler();
+        globalTeamHandler = new GlobalTeamHandler();
         new CommandUnRedstone();
         new CommandForceJoin();
         new CommandForceLeave();
@@ -44,8 +45,7 @@ public final class UnRedstone extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
         config.saveConfig();
-        scoreBoardManager.deleteMinecraftTeam();
+        mcTeamHandler.deleteMinecraftTeams();
     }
 }

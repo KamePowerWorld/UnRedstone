@@ -34,8 +34,8 @@ public class AdminMenuRow1 {
     private static URLogic getLogic() {
         return UnRedstone.getInstance().logic;
     }
-    
-    public static void addElements(PaginatedGui gui, Player player){
+
+    public static void addElements(PaginatedGui gui, Player player) {
         ItemStack createTeamItem = new ItemCreator(Material.WHITE_BANNER).setName(Component.text("新しいチームを作成"))
                 .create();
         GuiItem createTeamButton = new GuiItem(createTeamItem,
@@ -74,7 +74,7 @@ public class AdminMenuRow1 {
         removeTeamButton = new GuiItem(removeTeamItem, AdminMenuRow1::onRemoveTeamButton);
         gui.setItem(8, removeTeamButton);
     }
-    
+
     /**
      * @return 初期位置を設定するボタンに表示する現在の状況
      */
@@ -123,11 +123,11 @@ public class AdminMenuRow1 {
         }
 
         Location startLocation = event.getWhoClicked().getLocation();
-        if(!team.isStartLocationValid(startLocation)){
+        if (!team.isStartLocationValid(startLocation)) {
             event.getWhoClicked().sendMessage(Component.text("終了位置と近すぎます"));
             return;
         }
-        
+
         team.setStartLocation(startLocation);
         event.getWhoClicked().sendMessage(Component.text("開始地点を" + UIUtility.locationBlockPostoString(startLocation) + "に設定しました"));
         UIAdminMenu.openUI((Player) event.getWhoClicked());
@@ -149,7 +149,7 @@ public class AdminMenuRow1 {
         }
 
         Location endLocation = event.getWhoClicked().getLocation();
-        if(!team.isEndLocationValid(endLocation)){
+        if (!team.isEndLocationValid(endLocation)) {
             event.getWhoClicked().sendMessage(Component.text("開始位置と近すぎます"));
             return;
         }
@@ -174,11 +174,11 @@ public class AdminMenuRow1 {
         }
 
         URTeam team = getData().teams.getTeambyName(getData().adminSelectedTeam);
-        if(team == null)
+        if (team == null)
             return;
 
         for (Player player : team.players)
-            UnRedstone.getInstance().scoreBoardManager.kickPlayerFromMCTeam(player);
+            UnRedstone.getInstance().mcTeamHandler.removePlayerFromMCTeam(player);
         getData().teams.removeTeam(getData().adminSelectedTeam);
         event.getWhoClicked().sendMessage(Component.text("チーム" + getData().adminSelectedTeam + "を削除しました").color(NamedTextColor.WHITE));
         getData().adminSelectedTeam = "";

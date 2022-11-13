@@ -15,12 +15,12 @@ public class URData {
     /**
      * プレイヤーが所持できる最大のアイテム数
      */
-    public stackSizeInt maxHoldableItems = new stackSizeInt(10);
+    public final stackSizeInt maxHoldableItems = new stackSizeInt(10);
 
     /**
      * 線路一本を作るのに必要な原木と丸石の数
      */
-    public stackSizeInt craftingCost = new stackSizeInt(2);
+    public final stackSizeInt craftingCost = new stackSizeInt(2);
 
     public final URTeams teams = new URTeams();
 

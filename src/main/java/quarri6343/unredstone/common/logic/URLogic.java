@@ -12,14 +12,11 @@ import org.bukkit.block.data.Rail;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import quarri6343.unredstone.UnRedstone;
+import quarri6343.unredstone.common.data.Locomotive;
 import quarri6343.unredstone.common.data.URData;
 import quarri6343.unredstone.common.data.URTeam;
 import quarri6343.unredstone.utils.UnRedstoneUtils;
@@ -45,10 +42,15 @@ public class URLogic {
      * @param gameMaster ゲームを開始した人
      */
     public void startGame(@NotNull Player gameMaster) {
-        assignPlayerstoTeam();
+        if (gameStatus == GameStatus.ACTIVE) {
+            gameMaster.sendMessage("ゲームが進行中です！");
+            return;
+        }
+        
+        UnRedstone.getInstance().globalTeamHandler.assignPlayersInJoinArea();
 
-        if (!canStartGame(gameMaster)) {
-            getData().teams.disbandTeams();
+        if (!UnRedstone.getInstance().globalTeamHandler.areTeamsValid(gameMaster)) {
+            UnRedstone.getInstance().globalTeamHandler.resetTeams();
             return;
         }
 
@@ -63,58 +65,15 @@ public class URLogic {
             setUpRail(team.getEndLocation());
             Entity locomotive = gameWorld.spawnEntity(team.getStartLocation().clone().add(0, 1, 0), EntityType.MINECART_CHEST);
             locomotive.customName(Component.text("原木x" + getData().craftingCost.get() + " + 丸石x" + getData().craftingCost.get() + " = 線路").color(NamedTextColor.GRAY));
-            team.locomotiveID = locomotive.getUniqueId();
+            team.locomotive = new Locomotive(locomotive);
 
             for (Player player : team.players) {
                 player.teleport(randomizeLocation(team.getStartLocation()));
             }
         }
-        UnRedstone.getInstance().scoreBoardManager.createMinecraftTeam();
         Bukkit.getOnlinePlayers().forEach(player -> player.showTitle(Title.title(Component.text("ゲームスタート"), Component.empty())));
 
-        gameRunnable = new GameRunnable(gameWorld, urTeam -> endGame(null, urTeam, URLogic.GameResult.SUCCESS)).runTaskTimer(UnRedstone.getInstance(), 0, 1);
-    }
-
-    /**
-     * ゲームを開始できるか判定する
-     *
-     * @param gameMaster ゲーム開始者
-     * @return ゲームを開始できるか
-     */
-    private boolean canStartGame(Player gameMaster) {
-        if (gameStatus == GameStatus.ACTIVE) {
-            gameMaster.sendMessage("ゲームが進行中です！");
-            return false;
-        }
-
-        if (getData().teams.getTeamsLength() == 0) {
-            gameMaster.sendMessage("チームが存在しません!");
-            return false;
-        }
-
-        int playerCount = 0;
-        for (int i = 0; i < getData().teams.getTeamsLength(); i++) {
-            URTeam team = getData().teams.getTeam(i);
-            playerCount += team.players.size();
-
-            if (team.players.size() > 0) {
-                if (team.getStartLocation() == null) {
-                    gameMaster.sendMessage("チーム" + team.name + "の開始地点を設定してください");
-                    return false;
-                }
-                if (team.getEndLocation() == null) {
-                    gameMaster.sendMessage("チーム" + team.name + "の終了地点を設定してください");
-                    return false;
-                }
-            }
-        }
-
-        if (playerCount == 0) {
-            gameMaster.sendMessage("誰もチームに参加していません!");
-            return false;
-        }
-
-        return true;
+        gameRunnable = new GameRunnable(urTeam -> endGame(null, urTeam, URLogic.GameResult.SUCCESS)).runTaskTimer(UnRedstone.getInstance(), 0, 1);
     }
 
     /**
@@ -149,12 +108,11 @@ public class URLogic {
             gameRunnable.cancel();
 
         for (int i = 0; i < getData().teams.getTeamsLength(); i++) {
-            if (getData().teams.getTeam(i).locomotiveID == null)
+            if (getData().teams.getTeam(i).locomotive == null)
                 continue;
 
-            Entity locomotive = gameWorld.getEntity(getData().teams.getTeam(i).locomotiveID);
-            if (locomotive != null)
-                locomotive.remove();
+            getData().teams.getTeam(i).locomotive.entity.remove();
+            getData().teams.getTeam(i).locomotive = null;
         }
         if (gameResult == GameResult.SUCCESS) {
             displayGameSuccessTitle(victoryTeam);
@@ -163,32 +121,6 @@ public class URLogic {
         }
 
         new GameEndRunnable(() -> gameStatus = URLogic.GameStatus.INACTIVE).runTaskTimer(UnRedstone.getInstance(), gameResultSceneLength, 1);
-    }
-
-    /**
-     * 参加エリアにいるプレイヤーをチームに割り当てる
-     */
-    private void assignPlayerstoTeam() {
-        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-            for (int i = 0; i < getData().teams.getTeamsLength(); i++) {
-                if (getData().teams.getTeam(i).players.contains(onlinePlayer)) {
-                    onlinePlayer.sendMessage("既にチーム" + getData().teams.getTeam(i).name + "に加入しています！");
-                    return;
-                }
-            }
-
-            for (int i = 0; i < getData().teams.getTeamsLength(); i++) {
-                URTeam team = getData().teams.getTeam(i);
-                
-                if (team.joinLocation1 == null || team.joinLocation2 == null)
-                    continue;
-
-                if (UnRedstoneUtils.isPlayerInArea(onlinePlayer, team.joinLocation1, team.joinLocation2)) {
-                    team.players.add(onlinePlayer);
-                    break;
-                }
-            }
-        }
     }
 
     /**

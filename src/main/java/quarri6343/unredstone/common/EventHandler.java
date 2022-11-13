@@ -2,7 +2,6 @@ package quarri6343.unredstone.common;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockDropItemEvent;
@@ -60,7 +59,7 @@ public class EventHandler implements Listener {
             return;
         }
 
-        URTeam team = getData().teams.getTeambyLocomotiveID(event.getVehicle().getUniqueId());
+        URTeam team = getData().teams.getTeambyLocomotive(event.getVehicle());
         if (team != null) {
             event.setCancelled(true);
             event.getVehicle().teleport(team.getStartLocation().clone().add(0, 1, 0));
@@ -69,18 +68,7 @@ public class EventHandler implements Listener {
 
     @org.bukkit.event.EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-        kickPlayerFromTeam(event.getPlayer());
-    }
-
-    /**
-     * プレイヤーがゲームを退出した時、バグ防止のためチームから退出させる
-     */
-    private void kickPlayerFromTeam(Player player) {
-        URTeam team = getData().teams.getTeambyPlayer(player);
-        if (team != null) {
-            team.players.remove(player);
-        }
-        UnRedstone.getInstance().scoreBoardManager.kickPlayerFromMCTeam(player);
+        UnRedstone.getInstance().globalTeamHandler.removePlayerFromTeam(event.getPlayer());
     }
 
     @org.bukkit.event.EventHandler
@@ -153,25 +141,7 @@ public class EventHandler implements Listener {
 
     @org.bukkit.event.EventHandler
     public void onPlayerRespawn(PlayerRespawnEvent event) {
-        respawnPlayerNearLocomotive(event);
-    }
-
-    /**
-     * 死んだプレイヤーをトロッコの近くにスポーンさせる
-     */
-    private void respawnPlayerNearLocomotive(PlayerRespawnEvent event) {
-        if(UnRedstone.getInstance().logic.gameStatus == URLogic.GameStatus.INACTIVE)
-            return;
-        
-        URTeam team = getData().teams.getTeambyPlayer(event.getPlayer());
-        if (team == null)
-            return;
-        
-        Entity locomotive = UnRedstone.getInstance().logic.gameWorld.getEntity(team.locomotiveID);
-        if(locomotive == null)
-            return;
-        
-        event.setRespawnLocation(UnRedstoneUtils.randomizeLocation(locomotive.getLocation()));
+        UnRedstone.getInstance().globalTeamHandler.respawnPlayerNearLocomotive(event);
     }
 
     @org.bukkit.event.EventHandler
@@ -182,27 +152,27 @@ public class EventHandler implements Listener {
     /**
      * トロッコがネザーやエンドに行くのを防ぐ
      */
-    private void stopPortalCreate(PortalCreateEvent event){
-        if(UnRedstone.getInstance().logic.gameStatus == URLogic.GameStatus.INACTIVE)
+    private void stopPortalCreate(PortalCreateEvent event) {
+        if (UnRedstone.getInstance().logic.gameStatus == URLogic.GameStatus.INACTIVE)
             return;
 
         event.setCancelled(true);
     }
-    
+
     @org.bukkit.event.EventHandler
-    public void onCraftItem(CraftItemEvent event){
+    public void onCraftItem(CraftItemEvent event) {
         stopChestCrafting(event);
     }
 
     /**
      * バランス崩壊を防ぐためチェストをクラフトさせない
      */
-    private void stopChestCrafting(CraftItemEvent event){
-        if(UnRedstone.getInstance().logic.gameStatus == URLogic.GameStatus.INACTIVE)
+    private void stopChestCrafting(CraftItemEvent event) {
+        if (UnRedstone.getInstance().logic.gameStatus == URLogic.GameStatus.INACTIVE)
             return;
-        
+
         Material resultMaterial = event.getRecipe().getResult().getType();
-        if(resultMaterial == Material.CHEST || resultMaterial == Material.TRAPPED_CHEST){
+        if (resultMaterial == Material.CHEST || resultMaterial == Material.TRAPPED_CHEST) {
             event.getWhoClicked().sendMessage(Component.text("あれ？チェストってどうやって作るんだっけ？"));
             event.setCancelled(true);
         }

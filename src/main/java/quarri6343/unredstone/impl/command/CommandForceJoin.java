@@ -35,20 +35,16 @@ public class CommandForceJoin extends CommandBase {
             return true;
         }
 
-        for (int i = 0; i < data.teams.getTeamsLength(); i++) {
-            if (data.teams.getTeam(i).players.contains(player)) {
-                data.teams.getTeam(i).players.remove(player);
-                sender.sendMessage(arguments[0] + "が既にチームに入っていたので離脱させました");
-                break;
-            }
+        if (data.teams.getTeambyPlayer(player) != null) {
+            UnRedstone.getInstance().globalTeamHandler.removePlayerFromTeam(player);
+            sender.sendMessage(arguments[0] + "が既にチームに入っていたので離脱させました");
         }
 
         URTeam team = data.teams.getTeambyName(data.adminSelectedTeam);
-        if(team == null)
+        if (team == null)
             return true;
         
-        team.players.add(player);
-        UnRedstone.getInstance().scoreBoardManager.addPlayerToMCTeam(player, data.adminSelectedTeam);
+        UnRedstone.getInstance().globalTeamHandler.addPlayerToTeam(player, team);
         sender.sendMessage(arguments[0] + "をチーム" + data.adminSelectedTeam + "に加入させました");
         return true;
     }

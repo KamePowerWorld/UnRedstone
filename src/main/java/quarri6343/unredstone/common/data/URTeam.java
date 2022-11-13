@@ -5,10 +5,8 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNullableByDefault;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * UnRedstoneを共に攻略するチームのデータクラス
@@ -23,7 +21,7 @@ public class URTeam {
     
     public Location joinLocation1;
     public Location joinLocation2;
-    public UUID locomotiveID;
+    public Locomotive locomotive;
 
     public List<Player> players = new ArrayList<>();
 

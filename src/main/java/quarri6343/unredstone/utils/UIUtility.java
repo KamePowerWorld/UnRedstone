@@ -15,6 +15,8 @@ public class UIUtility {
             .color(NamedTextColor.RED).decoration(TextDecoration.ITALIC, false);
 
     /**
+     * Locationの状況を文章に変換する
+     * 
      * @param location 文章にしたいLocation
      * @return 渡されたLocationの情報を表す文
      */
