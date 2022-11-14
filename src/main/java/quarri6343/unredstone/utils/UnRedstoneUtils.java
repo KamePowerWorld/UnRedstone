@@ -7,6 +7,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Rail;
 import org.bukkit.command.CommandMap;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.plugin.SimplePluginManager;
 import quarri6343.unredstone.common.data.URData;
 
@@ -14,14 +15,15 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.Random;
 
 public class UnRedstoneUtils {
 
     public static final BlockFace[] axis = {BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST};
-    public static final Material[] woods = {Material.OAK_WOOD, Material.ACACIA_WOOD, Material.BIRCH_WOOD, Material.DARK_OAK_WOOD, Material.JUNGLE_WOOD, Material.JUNGLE_WOOD};
-    public static final Material[] heavyBlocks = {Material.COBBLESTONE, Material.RAIL, };
-
+    public static final Material[] woods = {Material.OAK_LOG, Material.ACACIA_LOG, Material.BIRCH_LOG, Material.DARK_OAK_LOG, Material.JUNGLE_LOG, Material.JUNGLE_LOG};
+    public static final InventoryType[] whiteListedInventories = {InventoryType.PLAYER, InventoryType.CHEST, InventoryType.CRAFTING, InventoryType.WORKBENCH};
+    
     /**
      * プラグインマネージャからコマンドマップを取得する
      *
@@ -104,5 +106,22 @@ public class UnRedstoneUtils {
         int y = 0;
         int z = new Random().nextInt(magnitude * 2 + 1) - magnitude;
         return location.clone().add(x, y, z);
+    }
+
+    /**
+     * インベントリが所持制限を適用されないかどうか
+     * @param type インベントリの種類
+     */
+    public static boolean isInventoryTypeWhiteListed(InventoryType type){
+        return Arrays.stream(whiteListedInventories).filter(inventoryType -> type == inventoryType).findFirst().orElse(null) != null;
+    }
+
+    /**
+     * 所持制限があるアイテムの種類であるかどうか
+     * @param type アイテムの種類
+     */
+    public static boolean isItemTypeBlackListed(Material type){
+        return Arrays.stream(woods).filter(material -> type == material).findFirst().orElse(null) != null
+                || type == Material.COBBLESTONE || type == Material.RAIL;
     }
 }

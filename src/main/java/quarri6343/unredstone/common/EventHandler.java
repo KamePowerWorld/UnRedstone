@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockDropItemEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
-import org.bukkit.event.inventory.CraftItemEvent;
+import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -20,6 +20,11 @@ import quarri6343.unredstone.common.data.URTeam;
 import quarri6343.unredstone.common.logic.URLogic;
 import quarri6343.unredstone.impl.ui.UIAdminMenu;
 import quarri6343.unredstone.utils.UnRedstoneUtils;
+
+import java.util.Arrays;
+
+import static quarri6343.unredstone.utils.UnRedstoneUtils.isInventoryTypeWhiteListed;
+import static quarri6343.unredstone.utils.UnRedstoneUtils.isItemTypeBlackListed;
 
 public class EventHandler implements Listener {
 
@@ -183,5 +188,72 @@ public class EventHandler implements Listener {
 
     private URData getData() {
         return UnRedstone.getInstance().getData();
+    }
+
+    @org.bukkit.event.EventHandler
+    public void onInventoryClick(InventoryClickEvent e) {
+        stopRestrictedItemClick(e);
+    }
+
+    /**
+     * 所持制限があるアイテムが別のインベントリでスタックされることを防ぐ
+     */
+    private void stopRestrictedItemClick(InventoryClickEvent e){
+        if (UnRedstone.getInstance().getLogic().gameStatus == URLogic.GameStatus.INACTIVE)
+            return;
+
+        if (!(e.getWhoClicked() instanceof Player) || e.getClickedInventory() == null) {
+            return;
+        }
+
+        if(isInventoryTypeWhiteListed(e.getView().getTopInventory().getType()))
+            return;
+
+        if(e.getClick().equals(ClickType.NUMBER_KEY)){
+            ItemStack slotItem = e.getWhoClicked().getInventory().getItem(e.getHotbarButton());
+            if ((slotItem == null)) {
+                return;
+            }
+
+            if(isItemTypeBlackListed(slotItem.getType()))
+                e.setCancelled(true);
+        }
+        else {
+            ItemStack currentItem = e.getCurrentItem();
+            if ((currentItem != null) && isItemTypeBlackListed(currentItem.getType())) {
+                e.setCancelled(true);
+            }
+
+            ItemStack cursorItem = e.getCursor();
+            if ((cursorItem != null) && isItemTypeBlackListed(cursorItem.getType())) {
+                e.setCancelled(true);
+            }
+        }
+    }
+
+    @org.bukkit.event.EventHandler
+    public void onInventoryDrag(InventoryDragEvent e) {
+        stopRestrictedItemDrag(e);
+    }
+
+    /**
+     * 所持制限があるアイテムが別のインベントリでスタックされることを防ぐ
+     */
+    private void stopRestrictedItemDrag(InventoryDragEvent e){
+        if (UnRedstone.getInstance().getLogic().gameStatus == URLogic.GameStatus.INACTIVE)
+            return;
+
+        if (!(e.getWhoClicked() instanceof Player)) {
+            return;
+        }
+
+        if (isInventoryTypeWhiteListed(e.getView().getTopInventory().getType())) {
+            return;
+        }
+
+        ItemStack cursorItem = e.getOldCursor();
+        if (isItemTypeBlackListed(cursorItem.getType())) {
+            e.setCancelled(true);
+        }
     }
 }
