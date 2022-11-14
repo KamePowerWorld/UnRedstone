@@ -3,11 +3,14 @@ package quarri6343.unredstone.common;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.minecart.StorageMinecart;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockDropItemEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.inventory.*;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -148,7 +151,7 @@ public class EventHandler implements Listener {
     @org.bukkit.event.EventHandler
     public void onPlayerRespawn(PlayerRespawnEvent event) {
         Location respawnLocation = GlobalTeamHandler.getTeamPlayerRespawnLocation(event.getPlayer());
-        if(respawnLocation != null)
+        if (respawnLocation != null)
             event.setRespawnLocation(respawnLocation);
     }
 
@@ -198,7 +201,7 @@ public class EventHandler implements Listener {
     /**
      * 所持制限があるアイテムが別のインベントリでスタックされることを防ぐ
      */
-    private void stopRestrictedItemClick(InventoryClickEvent e){
+    private void stopRestrictedItemClick(InventoryClickEvent e) {
         if (UnRedstone.getInstance().getLogic().gameStatus == URLogic.GameStatus.INACTIVE)
             return;
 
@@ -206,19 +209,18 @@ public class EventHandler implements Listener {
             return;
         }
 
-        if(isInventoryTypeWhiteListed(e.getView().getTopInventory().getType()))
+        if (isInventoryTypeWhiteListed(e.getView().getTopInventory().getType()))
             return;
 
-        if(e.getClick().equals(ClickType.NUMBER_KEY)){
+        if (e.getClick().equals(ClickType.NUMBER_KEY)) {
             ItemStack slotItem = e.getWhoClicked().getInventory().getItem(e.getHotbarButton());
             if ((slotItem == null)) {
                 return;
             }
 
-            if(isItemTypeBlackListed(slotItem.getType()))
+            if (isItemTypeBlackListed(slotItem.getType()))
                 e.setCancelled(true);
-        }
-        else {
+        } else {
             ItemStack currentItem = e.getCurrentItem();
             if ((currentItem != null) && isItemTypeBlackListed(currentItem.getType())) {
                 e.setCancelled(true);
@@ -239,7 +241,7 @@ public class EventHandler implements Listener {
     /**
      * 所持制限があるアイテムが別のインベントリでスタックされることを防ぐ
      */
-    private void stopRestrictedItemDrag(InventoryDragEvent e){
+    private void stopRestrictedItemDrag(InventoryDragEvent e) {
         if (UnRedstone.getInstance().getLogic().gameStatus == URLogic.GameStatus.INACTIVE)
             return;
 
@@ -254,6 +256,25 @@ public class EventHandler implements Listener {
         ItemStack cursorItem = e.getOldCursor();
         if (isItemTypeBlackListed(cursorItem.getType())) {
             e.setCancelled(true);
+        }
+    }
+
+    @org.bukkit.event.EventHandler
+    public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
+        tryExtinguishLocomotive(event);
+    }
+
+    /**
+     * プレイヤーが水バケツを持ってチームのトロッコを右クリックした場合、トロッコの熱を0にする
+     */
+    private void tryExtinguishLocomotive(PlayerInteractEntityEvent event) {
+        if ((event.getRightClicked() instanceof StorageMinecart && event.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.WATER_BUCKET))) {
+            URTeam team = getData().teams.getTeambyLocomotive(event.getRightClicked());
+
+            if (team != null) {
+                event.getPlayer().getInventory().setItemInMainHand(new ItemStack(Material.BUCKET));
+                team.locomotive.extinguish();
+            }
         }
     }
 }

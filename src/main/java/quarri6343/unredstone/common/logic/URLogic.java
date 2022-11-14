@@ -63,7 +63,7 @@ public class URLogic {
             setUpRail(team.getStartLocation());
             setUpRail(team.getEndLocation());
             Entity locomotive = gameWorld.spawnEntity(team.getStartLocation().clone().add(0, 1, 0), EntityType.MINECART_CHEST);
-            locomotive.customName(Component.text("原木x" + getData().craftingCost.get() + " + 丸石x" + getData().craftingCost.get() + " = 線路").color(NamedTextColor.GRAY));
+            locomotive.setCustomNameVisible(true);
             team.locomotive = new Locomotive(locomotive);
 
             for (int j = 0; j < team.getPlayersSize(); j++) {

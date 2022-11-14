@@ -53,4 +53,9 @@ public class URData {
      * プレイヤーがある場所にスポーンするときスポーン地点をどれだけランダム化するか
      */
     public static final int randomSpawnMagnitude = 5;
+
+    /**
+     * トロッコを1ポイント加熱する周期
+     */
+    public static final int heatLocomotiveInterval = 20;
 }
