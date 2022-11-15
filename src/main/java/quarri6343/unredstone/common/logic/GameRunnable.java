@@ -56,6 +56,10 @@ public class GameRunnable extends BukkitRunnable {
             if (count % heatLocomotiveInterval == 0) {
                 team.locomotive.addHeat();
             }
+            
+            if(count % headLightInterval == 0){
+                GlobalTeamHandler.giveHeadLight(headLightInterval);
+            }
         }
 
         if (count % checkInventoryInterval == 0) {

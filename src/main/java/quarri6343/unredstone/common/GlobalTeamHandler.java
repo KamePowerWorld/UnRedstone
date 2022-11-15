@@ -176,6 +176,30 @@ public class GlobalTeamHandler {
         }
     }
 
+    /**
+     * プレイヤーにヘッドライトを付与する。LightAPIの1.19.2への対応待ち
+     * @param length
+     */
+    public static void giveHeadLight(int length){
+//        List<Location> locationList = new ArrayList<>();
+//        for (int i = 0; i < getData().teams.getTeamsLength(); i++) {
+//            URTeam team = getData().teams.getTeam(i);
+//            for (int j = 0; j < team.getPlayersSize(); j++) {
+//                Location location = team.getPlayer(j).getLocation();
+//                LightAPI.get().setLightLevel(team.getPlayer(j).getWorld().getName(), location.getBlockX(), location.getBlockY(), location.getBlockZ(), 15);
+//                locationList.add(location);
+//            }
+//        }
+//        
+//        new BukkitRunnable() {
+//            @Override
+//            public void run() {
+//                locationList.forEach(location -> LightAPI.get().setLightLevel(location.getWorld().getName(), location.getBlockX(), location.getBlockY(), location.getBlockZ(), 0));
+//                cancel();
+//            }
+//        }.runTaskTimer(UnRedstone.getInstance(), length, 1);
+    }
+
     private static URData getData() {
         return UnRedstone.getInstance().getData();
     }

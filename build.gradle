@@ -20,6 +20,10 @@ repositories {
         name = 'codemc-snapshots'
         url = 'https://repo.codemc.io/repository/maven-snapshots/'
     }
+    maven {
+        name = "jitpack.io"
+        url = "https://jitpack.io"
+    }
 }
 
 dependencies {

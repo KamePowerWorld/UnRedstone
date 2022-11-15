@@ -212,7 +212,7 @@ public class EventHandler implements Listener {
         if (isInventoryTypeWhiteListed(e.getView().getTopInventory().getType()))
             return;
 
-        if (e.getClick().equals(ClickType.NUMBER_KEY)) {
+        if (e.getClick().equals(ClickType.NUMBER_KEY)) { //handle number key click
             ItemStack slotItem = e.getWhoClicked().getInventory().getItem(e.getHotbarButton());
             if ((slotItem == null)) {
                 return;
@@ -220,15 +220,45 @@ public class EventHandler implements Listener {
 
             if (isItemTypeBlackListed(slotItem.getType()))
                 e.setCancelled(true);
-        } else {
+        } else if(e.getClick().equals(ClickType.SHIFT_LEFT) || e.getClick().equals(ClickType.SHIFT_RIGHT)){ //handle shift key click
+            if(!(e.getClickedInventory().getType() == InventoryType.PLAYER)){
+                return;
+            }
+            
             ItemStack currentItem = e.getCurrentItem();
             if ((currentItem != null) && isItemTypeBlackListed(currentItem.getType())) {
                 e.setCancelled(true);
             }
-
+        }
+        else if(!(e.getClickedInventory().getType() == InventoryType.PLAYER)){ //handle target inventory click
+            ItemStack currentItem = e.getCurrentItem();
             ItemStack cursorItem = e.getCursor();
-            if ((cursorItem != null) && isItemTypeBlackListed(cursorItem.getType())) {
+            if(cursorItem == null || !isItemTypeBlackListed(cursorItem.getType()))
+                return;
+            
+            if(cursorItem.getType() == Material.RAIL){ //disallow put any rail into inventory
                 e.setCancelled(true);
+                return;
+            }
+            
+            if (currentItem != null) {
+                if(currentItem.getType() == cursorItem.getType()){
+                    if(cursorItem.getAmount() + currentItem.getAmount() <= getData().maxHoldableItems.get())
+                        return;
+                    
+                    e.setCancelled(true);
+                    e.setCurrentItem(new ItemStack(currentItem.getType(), getData().maxHoldableItems.get()));
+                    e.getView().getBottomInventory().addItem(new ItemStack(cursorItem.getType(),cursorItem.getAmount() + currentItem.getAmount() - getData().maxHoldableItems.get()));
+                    e.setCursor(null);
+                }
+                else if(cursorItem.getAmount() > getData().maxHoldableItems.get())
+                    e.setCancelled(true);
+            }
+            else if(cursorItem.getAmount() > getData().maxHoldableItems.get()){
+                e.setCancelled(true);
+                e.setCurrentItem(new ItemStack(cursorItem.getType(), getData().maxHoldableItems.get()));
+                e.getView().getBottomInventory().addItem(new ItemStack(cursorItem.getType(),cursorItem.getAmount() - getData().maxHoldableItems.get()));
+                e.setCursor(null);
             }
         }
     }

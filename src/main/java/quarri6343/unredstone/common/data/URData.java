@@ -57,5 +57,10 @@ public class URData {
     /**
      * トロッコを1ポイント加熱する周期
      */
-    public static final int heatLocomotiveInterval = 20;
+    public static final int heatLocomotiveInterval = 40;
+
+    /**
+     * プレイヤーにヘッドライトを配る周期
+     */
+    public static final int headLightInterval = 5;
 }
