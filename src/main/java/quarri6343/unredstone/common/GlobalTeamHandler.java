@@ -39,6 +39,10 @@ public class GlobalTeamHandler {
             team.removePlayer(player);
         }
         MCTeams.removePlayerFromMCTeam(player);
+
+        if (countAllPlayers() == 0) {
+            getLogic().endGame(null, null, URLogic.GameResult.FAIL, true);
+        }
     }
 
     /**
@@ -53,7 +57,7 @@ public class GlobalTeamHandler {
             return null;
 
         Entity locomotive = team.locomotive.entity;
-        
+
         return UnRedstoneUtils.randomizeLocation(locomotive.getLocation());
     }
 
@@ -90,10 +94,8 @@ public class GlobalTeamHandler {
             return false;
         }
 
-        int playerCount = 0;
         for (int i = 0; i < getData().teams.getTeamsLength(); i++) {
             URTeam team = getData().teams.getTeam(i);
-            playerCount += team.getPlayersSize();
 
             if (team.getPlayersSize() > 0) {
                 if (team.getStartLocation() == null) {
@@ -107,12 +109,26 @@ public class GlobalTeamHandler {
             }
         }
 
-        if (playerCount == 0) {
+        if (countAllPlayers() == 0) {
             gameMaster.sendMessage("誰もチームに参加していません!");
             return false;
         }
 
         return true;
+    }
+
+    /**
+     * チームに参加している全てのプレイヤーをカウントする
+     *
+     * @return 全てのチームのプレイヤー数の合計
+     */
+    public static int countAllPlayers() {
+        int playerCount = 0;
+        for (int i = 0; i < getData().teams.getTeamsLength(); i++) {
+            playerCount += getData().teams.getTeam(i).getPlayersSize();
+        }
+
+        return playerCount;
     }
 
     /**
@@ -166,8 +182,8 @@ public class GlobalTeamHandler {
             }
         }
     }
-    
-    public static void giveEffectToPlayers(PotionEffectType type, int duration, int level){
+
+    public static void giveEffectToPlayers(PotionEffectType type, int duration, int level) {
         for (int i = 0; i < getData().teams.getTeamsLength(); i++) {
             URTeam team = getData().teams.getTeam(i);
             for (int j = 0; j < team.getPlayersSize(); j++) {
@@ -178,9 +194,10 @@ public class GlobalTeamHandler {
 
     /**
      * プレイヤーにヘッドライトを付与する。LightAPIの1.19.2への対応待ち
+     *
      * @param length
      */
-    public static void giveHeadLight(int length){
+    public static void giveHeadLight(int length) {
 //        List<Location> locationList = new ArrayList<>();
 //        for (int i = 0; i < getData().teams.getTeamsLength(); i++) {
 //            URTeam team = getData().teams.getTeam(i);
@@ -202,5 +219,9 @@ public class GlobalTeamHandler {
 
     private static URData getData() {
         return UnRedstone.getInstance().getData();
+    }
+
+    private static URLogic getLogic() {
+        return UnRedstone.getInstance().getLogic();
     }
 }

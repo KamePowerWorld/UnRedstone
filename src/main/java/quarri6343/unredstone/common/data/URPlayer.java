@@ -23,7 +23,7 @@ public class URPlayer {
      */
     private final ItemStack[] lastInventory;
 
-    public URPlayer(@Nonnull Player entity){
+    public URPlayer(@Nonnull Player entity) {
         this.entity = entity;
         this.lastGameMode = entity.getGameMode();
         this.lastInventory = entity.getInventory().getContents();
@@ -32,7 +32,7 @@ public class URPlayer {
     /**
      * プレイヤーの状態をチーム参加前に戻す
      */
-    public void restoreStats(){
+    public void restoreStats() {
         entity.setGameMode(lastGameMode);
         entity.getInventory().setContents(lastInventory);
     }

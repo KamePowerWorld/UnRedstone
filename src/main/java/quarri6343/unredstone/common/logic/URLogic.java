@@ -33,6 +33,7 @@ public class URLogic {
 
     public GameStatus gameStatus = GameStatus.INACTIVE;
     public World gameWorld = null;
+    private BukkitTask gameBeginRunnable;
     private BukkitTask gameRunnable;
 
     /**
@@ -45,7 +46,7 @@ public class URLogic {
             gameMaster.sendMessage("ゲームが進行中です！");
             return;
         }
-        
+
         GlobalTeamHandler.assignPlayersInJoinArea();
 
         if (!GlobalTeamHandler.areTeamsValid(gameMaster)) {
@@ -55,6 +56,13 @@ public class URLogic {
 
         gameWorld = gameMaster.getWorld();
         gameStatus = GameStatus.ACTIVE;
+        gameBeginRunnable = new GameBeginRunnable(this::onGameBegin).runTaskTimer(UnRedstone.getInstance(), 0, 1);
+    }
+
+    /**
+     * ゲームが実際に始まった時に行う処理
+     */
+    private void onGameBegin() {
         for (int i = 0; i < getData().teams.getTeamsLength(); i++) {
             URTeam team = getData().teams.getTeam(i);
             if (team.getPlayersSize() == 0)
@@ -104,8 +112,10 @@ public class URLogic {
                 sender.sendMessage("ゲームが始まっていません！");
             return;
         }
-        
-        if(gameRunnable != null)
+
+        if (gameBeginRunnable != null)
+            gameBeginRunnable.cancel();
+        if (gameRunnable != null)
             gameRunnable.cancel();
 
         for (int i = 0; i < getData().teams.getTeamsLength(); i++) {
@@ -120,10 +130,10 @@ public class URLogic {
         } else if (gameResult == GameResult.FAIL) {
             displayGameFailureTitle();
         }
-        
-        if(hasResultScene)
+
+        if (hasResultScene)
             new GameEndRunnable(() -> gameStatus = URLogic.GameStatus.INACTIVE).runTaskTimer(UnRedstone.getInstance(), gameResultSceneLength, 1);
-        else 
+        else
             new GameEndRunnable(() -> gameStatus = URLogic.GameStatus.INACTIVE).run();
     }
 

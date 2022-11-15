@@ -44,7 +44,7 @@ public class CommandForceJoin extends CommandBase {
         URTeam team = data.teams.getTeambyName(data.adminSelectedTeam);
         if (team == null)
             return true;
-        
+
         GlobalTeamHandler.addPlayerToTeam(player, team);
         sender.sendMessage(arguments[0] + "をチーム" + data.adminSelectedTeam + "に加入させました");
         return true;

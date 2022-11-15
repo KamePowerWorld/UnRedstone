@@ -27,7 +27,7 @@ public class Heat {
             return true;
         }
     }
-    
+
     public TextComponent getHeatAsBar() {
         int stage = value / ((max - min) / heatBarLength);
         TextComponent.Builder heatBar = Component.text();

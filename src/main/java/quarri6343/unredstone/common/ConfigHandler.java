@@ -24,17 +24,18 @@ public class ConfigHandler {
         JavaPlugin plugin = UnRedstone.getInstance();
         plugin.saveDefaultConfig();
         FileConfiguration config = plugin.getConfig();
-        
+
         loadTeams(config);
         loadMisc(config);
     }
 
     /**
      * コンフィグからチームをロードする
+     *
      * @param config コンフィグ
      */
     @ParametersAreNonnullByDefault
-    private void loadTeams(FileConfiguration config){
+    private void loadTeams(FileConfiguration config) {
         URData data = UnRedstone.getInstance().getData();
         data.teams.clearTeam();
         for (int i = 0; i < Integer.MAX_VALUE; i++) {
@@ -43,7 +44,7 @@ public class ConfigHandler {
             if (teamName == null || teamColor == null) {
                 break;
             }
-            
+
             data.teams.addTeam(teamName, teamColor);
             URTeam newTeam = data.teams.getTeam(i);
             newTeam.setStartLocation(config.getLocation("team.startLocation." + i));
@@ -55,19 +56,20 @@ public class ConfigHandler {
 
     /**
      * コンフィグからその他データをロードする
+     *
      * @param config コンフィグ
      */
     @ParametersAreNonnullByDefault
-    private void loadMisc(FileConfiguration config){
+    private void loadMisc(FileConfiguration config) {
         URData data = UnRedstone.getInstance().getData();
-        
+
         int maxHoldableItems = config.getInt("maxHoldableItems");
-        if(maxHoldableItems < 1)
+        if (maxHoldableItems < 1)
             maxHoldableItems = 1;
         data.maxHoldableItems.set(maxHoldableItems);
-        
+
         int craftingCost = config.getInt("crafingCost");
-        if(craftingCost < 1)
+        if (craftingCost < 1)
             craftingCost = 1;
         data.craftingCost.set(craftingCost);
 
@@ -92,10 +94,11 @@ public class ConfigHandler {
 
     /**
      * メインクラスがロードしているチームクラスをコンフィグに保存する
+     *
      * @param config コンフィグ
      */
     @ParametersAreNonnullByDefault
-    private void saveTeams(FileConfiguration config){
+    private void saveTeams(FileConfiguration config) {
         URData data = UnRedstone.getInstance().getData();
         for (int i = 0; i < data.teams.getTeamsLength(); i++) {
             config.set("team.name." + i, data.teams.getTeam(i).name);
@@ -106,9 +109,9 @@ public class ConfigHandler {
             config.set("team.joinLocation2." + i, data.teams.getTeam(i).joinLocation2);
         }
     }
-    
+
     @ParametersAreNonnullByDefault
-    private void saveMisc(FileConfiguration config){
+    private void saveMisc(FileConfiguration config) {
         URData data = UnRedstone.getInstance().getData();
         config.set("maxHoldableItems", data.maxHoldableItems.get());
         config.set("crafingCost", data.craftingCost.get());

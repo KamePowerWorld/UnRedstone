@@ -1,7 +1,6 @@
 package quarri6343.unredstone.common.logic;
 
 import org.bukkit.scheduler.BukkitRunnable;
-import quarri6343.unredstone.UnRedstone;
 import quarri6343.unredstone.common.GlobalTeamHandler;
 
 /**
@@ -9,8 +8,8 @@ import quarri6343.unredstone.common.GlobalTeamHandler;
  */
 public class GameEndRunnable extends BukkitRunnable {
     private final Runnable additionalAction;
-    
-    public GameEndRunnable(Runnable additionalAction){
+
+    public GameEndRunnable(Runnable additionalAction) {
         this.additionalAction = additionalAction;
     }
     

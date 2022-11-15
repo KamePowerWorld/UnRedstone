@@ -20,14 +20,19 @@ public class URData {
     /**
      * 線路一本を作るのに必要な原木と丸石の数
      */
-    public final RangedInt craftingCost = new RangedInt(2 , 1, 64);
+    public final RangedInt craftingCost = new RangedInt(2, 1, 64);
 
     /**
      * 試合中人数補正のためプレイヤーに任意で付与する補正バフの強度
      */
-    public final RangedInt buffStrength = new RangedInt(0, 0,5);
+    public final RangedInt buffStrength = new RangedInt(0, 0, 5);
 
     public final URTeams teams = new URTeams();
+
+    /**
+     * ゲームが始まるまでのカウントダウンの長さ
+     */
+    public static final int gameBeginCountdownLength = 100;
 
     /**
      * ゲームのリザルトシーンの長さ

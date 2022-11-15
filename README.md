@@ -1,4 +1,4 @@
 # UnRedstone
-MinecraftでUnRailedを遊びたい！ので作りました
 
+Minecraft上でUnrailed!風のミニゲームを遊ぶことができます
 

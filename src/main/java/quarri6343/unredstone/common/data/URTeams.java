@@ -56,7 +56,8 @@ public class URTeams {
      * @param index チームのインデックス
      * @return チーム
      */
-    public @Nonnull URTeam getTeam(int index) {
+    public @Nonnull
+    URTeam getTeam(int index) {
         return teams.get(index);
     }
 

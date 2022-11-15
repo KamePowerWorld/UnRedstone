@@ -23,7 +23,7 @@ public class UnRedstoneUtils {
     public static final BlockFace[] axis = {BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST};
     public static final Material[] woods = {Material.OAK_LOG, Material.ACACIA_LOG, Material.BIRCH_LOG, Material.DARK_OAK_LOG, Material.JUNGLE_LOG, Material.JUNGLE_LOG};
     public static final InventoryType[] whiteListedInventories = {InventoryType.PLAYER, InventoryType.CHEST, InventoryType.CRAFTING, InventoryType.WORKBENCH};
-    
+
     /**
      * プラグインマネージャからコマンドマップを取得する
      *
@@ -110,17 +110,19 @@ public class UnRedstoneUtils {
 
     /**
      * インベントリが所持制限を適用されないかどうか
+     *
      * @param type インベントリの種類
      */
-    public static boolean isInventoryTypeWhiteListed(InventoryType type){
+    public static boolean isInventoryTypeWhiteListed(InventoryType type) {
         return Arrays.stream(whiteListedInventories).filter(inventoryType -> type == inventoryType).findFirst().orElse(null) != null;
     }
 
     /**
      * 所持制限があるアイテムの種類であるかどうか
+     *
      * @param type アイテムの種類
      */
-    public static boolean isItemTypeBlackListed(Material type){
+    public static boolean isItemTypeBlackListed(Material type) {
         return Arrays.stream(woods).filter(material -> type == material).findFirst().orElse(null) != null
                 || type == Material.COBBLESTONE || type == Material.RAIL;
     }
