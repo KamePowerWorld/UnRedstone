@@ -33,6 +33,8 @@ public class Locomotive {
             throw new IllegalArgumentException();
         }
 
+        entity.setCustomNameVisible(true);
+        ((InventoryHolder)entity).getInventory().addItem(new ItemStack(Material.BUCKET));
         this.entity = entity;
     }
 
@@ -127,5 +129,10 @@ public class Locomotive {
                 }
             }
         }
+    }
+    
+    public void removeEntitySafely(){
+        ((InventoryHolder)entity).getInventory().clear();
+        entity.remove();
     }
 }

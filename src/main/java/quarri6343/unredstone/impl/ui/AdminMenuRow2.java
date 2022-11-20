@@ -98,7 +98,7 @@ public class AdminMenuRow2 {
      * @param event
      */
     private static void onResetTeamSettingsButton(InventoryClickEvent event) {
-        if (getLogic().gameStatus == URLogic.GameStatus.ACTIVE) {
+        if (getLogic().gameStatus != URLogic.GameStatus.INACTIVE) {
             event.getWhoClicked().sendMessage(gameRunningText);
             return;
         }

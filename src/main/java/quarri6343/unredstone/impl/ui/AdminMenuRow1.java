@@ -85,10 +85,6 @@ public class AdminMenuRow1 {
             return teamNotSelectedText;
         }
 
-        if (getLogic().gameStatus == URLogic.GameStatus.ACTIVE) {
-            return gameRunningText;
-        }
-
         return getLocDesc(team.getStartLocation());
     }
 
@@ -99,10 +95,6 @@ public class AdminMenuRow1 {
         URTeam team = getData().teams.getTeambyName(getData().adminSelectedTeam);
         if (team == null) {
             return teamNotSelectedText;
-        }
-
-        if (getLogic().gameStatus == URLogic.GameStatus.ACTIVE) {
-            return gameRunningText;
         }
 
         return getLocDesc(team.getEndLocation());
@@ -118,7 +110,7 @@ public class AdminMenuRow1 {
             return;
         }
 
-        if (getLogic().gameStatus == URLogic.GameStatus.ACTIVE) {
+        if (getLogic().gameStatus != URLogic.GameStatus.INACTIVE) {
             event.getWhoClicked().sendMessage(gameRunningText);
             return;
         }
@@ -144,7 +136,7 @@ public class AdminMenuRow1 {
             return;
         }
 
-        if (getLogic().gameStatus == URLogic.GameStatus.ACTIVE) {
+        if (getLogic().gameStatus != URLogic.GameStatus.INACTIVE) {
             event.getWhoClicked().sendMessage(gameRunningText);
             return;
         }
@@ -164,7 +156,7 @@ public class AdminMenuRow1 {
      * チームを削除するボタンを押したときのイベント
      */
     private static void onRemoveTeamButton(InventoryClickEvent event) {
-        if (getLogic().gameStatus == URLogic.GameStatus.ACTIVE) {
+        if (getLogic().gameStatus != URLogic.GameStatus.INACTIVE) {
             event.getWhoClicked().sendMessage(gameRunningText);
             return;
         }
@@ -190,7 +182,7 @@ public class AdminMenuRow1 {
      * @return チーム削除ボタンの説明文
      */
     private static TextComponent getRemoveTeamDesc() {
-        if (getLogic().gameStatus == URLogic.GameStatus.ACTIVE) {
+        if (getLogic().gameStatus != URLogic.GameStatus.INACTIVE) {
             return gameRunningText;
         }
 

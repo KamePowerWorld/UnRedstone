@@ -45,16 +45,16 @@ public final class UnRedstone extends JavaPlugin {
     public void onDisable() {
         config.saveConfig();
         
-        if(logic.gameStatus == URLogic.GameStatus.ACTIVE){
+        if (logic.gameStatus != URLogic.GameStatus.INACTIVE) {
             logic.endGame(null, null, URLogic.GameResult.FAIL, false);
         }
     }
-    
-    public URData getData(){
+
+    public URData getData() {
         return data;
     }
-    
-    public URLogic getLogic(){
+
+    public URLogic getLogic() {
         return logic;
     }
 }

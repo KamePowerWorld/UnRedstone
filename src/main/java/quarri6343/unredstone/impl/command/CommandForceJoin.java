@@ -10,6 +10,7 @@ import quarri6343.unredstone.api.CommandBase;
 import quarri6343.unredstone.common.GlobalTeamHandler;
 import quarri6343.unredstone.common.data.URData;
 import quarri6343.unredstone.common.data.URTeam;
+import quarri6343.unredstone.common.logic.URLogic;
 
 /**
  * プレイヤーを強制的にチームに参加させるコマンド。ゲーム中も実行可能
@@ -47,6 +48,11 @@ public class CommandForceJoin extends CommandBase {
 
         GlobalTeamHandler.addPlayerToTeam(player, team);
         sender.sendMessage(arguments[0] + "をチーム" + data.adminSelectedTeam + "に加入させました");
+        
+        if(UnRedstone.getInstance().getLogic().gameStatus == URLogic.GameStatus.ACTIVE){
+            team.setUpGameEnvforPlayer(player);
+        }
+        
         return true;
     }
 }

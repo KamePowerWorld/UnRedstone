@@ -79,7 +79,7 @@ public class AdminMenuRow3 {
     private static TextComponent getCanTerminateGameDesc() {
         return getLogic().gameStatus == URLogic.GameStatus.ACTIVE ?
                 Component.text("強制終了可能").color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false)
-                : Component.text("進行中のゲームはありません").color(NamedTextColor.RED).decoration(TextDecoration.ITALIC, false);
+                : Component.text("強制終了できるゲームはありません").color(NamedTextColor.RED).decoration(TextDecoration.ITALIC, false);
     }
 
     private static void onSetMaxHoldableItemsButton(InventoryClickEvent event) {

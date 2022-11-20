@@ -4,12 +4,14 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.data.Rail;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -23,8 +25,7 @@ import quarri6343.unredstone.utils.UnRedstoneUtils;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
-import static quarri6343.unredstone.common.data.URData.*;
-import static quarri6343.unredstone.utils.UnRedstoneUtils.randomizeLocation;
+import static quarri6343.unredstone.common.data.URData.gameResultSceneLength;
 
 /**
  * ゲームの進行を司るクラス
@@ -35,6 +36,7 @@ public class URLogic {
     public World gameWorld = null;
     private BukkitTask gameBeginRunnable;
     private BukkitTask gameRunnable;
+    private BukkitTask gameEndRunnable;
 
     /**
      * ゲームを開始する
@@ -42,7 +44,7 @@ public class URLogic {
      * @param gameMaster ゲームを開始した人
      */
     public void startGame(@NotNull Player gameMaster) {
-        if (gameStatus == GameStatus.ACTIVE) {
+        if (gameStatus != GameStatus.INACTIVE) {
             gameMaster.sendMessage("ゲームが進行中です！");
             return;
         }
@@ -55,7 +57,7 @@ public class URLogic {
         }
 
         gameWorld = gameMaster.getWorld();
-        gameStatus = GameStatus.ACTIVE;
+        gameStatus = GameStatus.BEGINNING;
         gameBeginRunnable = new GameBeginRunnable(this::onGameBegin).runTaskTimer(UnRedstone.getInstance(), 0, 1);
     }
 
@@ -71,17 +73,15 @@ public class URLogic {
             setUpRail(team.getStartLocation());
             setUpRail(team.getEndLocation());
             Entity locomotive = gameWorld.spawnEntity(team.getStartLocation().clone().add(0, 1, 0), EntityType.MINECART_CHEST);
-            locomotive.setCustomNameVisible(true);
             team.locomotive = new Locomotive(locomotive);
 
             for (int j = 0; j < team.getPlayersSize(); j++) {
-                team.getPlayer(j).teleport(randomizeLocation(team.getStartLocation()));
-                team.getPlayer(j).setGameMode(GameMode.SURVIVAL);
-                team.getPlayer(j).getInventory().setContents(new ItemStack[]{});
+                team.setUpGameEnvforPlayer(team.getPlayer(j));
             }
         }
         Bukkit.getOnlinePlayers().forEach(player -> player.showTitle(Title.title(Component.text("ゲームスタート"), Component.empty())));
 
+        gameStatus = GameStatus.ACTIVE;
         gameRunnable = new GameRunnable(urTeam -> endGame(null, urTeam, URLogic.GameResult.SUCCESS, true)).runTaskTimer(UnRedstone.getInstance(), 0, 1);
     }
 
@@ -117,12 +117,14 @@ public class URLogic {
             gameBeginRunnable.cancel();
         if (gameRunnable != null)
             gameRunnable.cancel();
+        if (gameEndRunnable != null)
+            gameEndRunnable.cancel();
 
         for (int i = 0; i < getData().teams.getTeamsLength(); i++) {
             if (getData().teams.getTeam(i).locomotive == null)
                 continue;
 
-            getData().teams.getTeam(i).locomotive.entity.remove();
+            getData().teams.getTeam(i).locomotive.removeEntitySafely();
             getData().teams.getTeam(i).locomotive = null;
         }
         if (gameResult == GameResult.SUCCESS) {
@@ -131,10 +133,11 @@ public class URLogic {
             displayGameFailureTitle();
         }
 
+        gameStatus = GameStatus.ENDING;
         if (hasResultScene)
-            new GameEndRunnable(() -> gameStatus = URLogic.GameStatus.INACTIVE).runTaskTimer(UnRedstone.getInstance(), gameResultSceneLength, 1);
+            gameEndRunnable = new GameEndRunnable(() -> gameStatus = URLogic.GameStatus.INACTIVE, true).runTaskTimer(UnRedstone.getInstance(), gameResultSceneLength, 1);
         else
-            new GameEndRunnable(() -> gameStatus = URLogic.GameStatus.INACTIVE).run();
+            new GameEndRunnable(() -> gameStatus = URLogic.GameStatus.INACTIVE, false).run();
     }
 
     /**
@@ -171,7 +174,9 @@ public class URLogic {
      * ゲームの状態(進行中/始まっていない)
      */
     public enum GameStatus {
+        BEGINNING,
         ACTIVE,
+        ENDING,
         INACTIVE
     }
 

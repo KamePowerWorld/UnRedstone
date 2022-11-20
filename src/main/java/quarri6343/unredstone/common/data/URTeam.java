@@ -3,12 +3,16 @@ package quarri6343.unredstone.common.data;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+
+import static quarri6343.unredstone.utils.UnRedstoneUtils.randomizeLocation;
 
 /**
  * UnRedstoneを共に攻略するチームのデータクラス
@@ -72,6 +76,21 @@ public class URTeam {
             return true;
 
         return location.distance(startLocation) >= 1;
+    }
+
+    /**
+     * チームに所属しているプレイヤーの環境をゲーム開始に適した状態に変更する
+     * @param player チームに所属しているプレイヤー
+     */
+    public void setUpGameEnvforPlayer(Player player){
+        if(!containsPlayer(player))
+            return;
+        
+        player.teleport(randomizeLocation(locomotive.entity.getLocation()));
+        player.setGameMode(GameMode.SURVIVAL);
+        player.getInventory().setContents(new ItemStack[]{});
+        player.setSaturation(5f);
+        player.setFoodLevel(20);
     }
 
     public void setStartLocation(Location location) {
