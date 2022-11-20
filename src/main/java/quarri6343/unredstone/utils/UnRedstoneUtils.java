@@ -21,7 +21,7 @@ import java.util.Random;
 public class UnRedstoneUtils {
 
     public static final BlockFace[] axis = {BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST};
-    public static final Material[] woods = {Material.OAK_LOG, Material.ACACIA_LOG, Material.BIRCH_LOG, Material.DARK_OAK_LOG, Material.JUNGLE_LOG, Material.JUNGLE_LOG};
+    public static final Material[] woods = {Material.OAK_LOG, Material.ACACIA_LOG, Material.BIRCH_LOG, Material.DARK_OAK_LOG, Material.JUNGLE_LOG, Material.JUNGLE_LOG, Material.SPRUCE_LOG};
     public static final InventoryType[] whiteListedInventories = {InventoryType.PLAYER, InventoryType.CHEST, InventoryType.CRAFTING, InventoryType.WORKBENCH};
 
     /**
