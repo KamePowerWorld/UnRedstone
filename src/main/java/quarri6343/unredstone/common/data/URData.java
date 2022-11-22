@@ -68,4 +68,9 @@ public class URData {
      * プレイヤーにヘッドライトを配る周期
      */
     public static final int headLightInterval = 5;
+
+    /**
+     * リスポーン周辺にプラグインによる保護を適用する際の範囲
+     */
+    public static final int respawnProtectionRange = 5;
 }

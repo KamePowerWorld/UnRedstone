@@ -11,8 +11,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import quarri6343.unredstone.UnRedstone;
-import quarri6343.unredstone.api.RangedInt;
+import quarri6343.unredstone.common.GlobalTeamHandler;
 import quarri6343.unredstone.common.data.URData;
+import quarri6343.unredstone.common.data.URTeam;
 import quarri6343.unredstone.common.logic.URLogic;
 import quarri6343.unredstone.utils.ItemCreator;
 
@@ -44,6 +45,12 @@ public class AdminMenuRow3 {
         GuiItem setBuffStrengthButton = new GuiItem(setBuffStrengthItem,
                 AdminMenuRow3::onSetBuffStrengthButton);
         gui.setItem(20, setBuffStrengthButton);
+
+        ItemStack placeBeaconItem = new ItemCreator(Material.BEACON).setName(Component.text("チームのスタート地点と終了地点に目印としてビーコンを設置する")
+                .color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false)).create();
+        GuiItem placeBeaconButton = new GuiItem(placeBeaconItem,
+                AdminMenuRow3::onPlaceBeaconButton);
+        gui.setItem(21, placeBeaconButton);
 
         GuiItem closeButton = new GuiItem(new ItemCreator(Material.BARRIER).setName(Component.text("閉じる")).create(),
                 event -> gui.close(event.getWhoClicked()));
@@ -92,5 +99,26 @@ public class AdminMenuRow3 {
 
     private static void onSetBuffStrengthButton(InventoryClickEvent event){
         UINumberConfiguration.openUI((Player) event.getWhoClicked(),getData().buffStrength);
+    }
+    
+    private static void onPlaceBeaconButton(InventoryClickEvent event){
+        URTeam team = getData().teams.getTeambyName(getData().adminSelectedTeam);
+        if(team == null){
+            event.getWhoClicked().sendMessage(Component.text("チームが選択されていません").color(NamedTextColor.RED));
+            return;
+        }
+        
+        if(team.getStartLocation() == null){
+            event.getWhoClicked().sendMessage(Component.text("チームの開始地点が存在しません").color(NamedTextColor.RED));
+            return;
+        }
+
+        if(team.getEndLocation() == null){
+            event.getWhoClicked().sendMessage(Component.text("チームの終了地点が存在しません").color(NamedTextColor.RED));
+            return;
+        }
+
+        GlobalTeamHandler.placeBeaconBelowTeamLocations(team);
+        event.getWhoClicked().sendMessage(Component.text("ビーコンを設置しました"));
     }
 }

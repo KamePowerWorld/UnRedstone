@@ -96,7 +96,11 @@ public class URLogic {
         Rail rail = (Rail) (gameWorld.getBlockAt(location).getBlockData());
         rail.setShape(UnRedstoneUtils.yawToRailShape(location.getYaw()));
         gameWorld.setBlockData(location, rail);
-        gameWorld.setType(location.clone().subtract(0, 1, 0), Material.DIRT);
+        
+        Location belowPoint = location.clone().subtract(0, 1, 0);
+        if(gameWorld.getBlockAt(belowPoint).isReplaceable() || gameWorld.getBlockAt(belowPoint).getType().isAir()){
+            gameWorld.setType(belowPoint, Material.DIRT);
+        }
     }
 
     /**

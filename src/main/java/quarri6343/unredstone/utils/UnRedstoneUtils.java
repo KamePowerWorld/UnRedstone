@@ -25,6 +25,11 @@ public class UnRedstoneUtils {
     public static final InventoryType[] whiteListedInventories = {InventoryType.PLAYER, InventoryType.CHEST, InventoryType.CRAFTING, InventoryType.WORKBENCH};
 
     /**
+     * スタート、終了地点付近でこれらのブロックが壊されるのを禁止する
+     */
+    public static final Material[] blocksToProtectNearStartLocation = {Material.BEACON, Material.IRON_BLOCK};
+
+    /**
      * プラグインマネージャからコマンドマップを取得する
      *
      * @return 取得したコマンドマップ
@@ -125,5 +130,26 @@ public class UnRedstoneUtils {
     public static boolean isItemTypeBlackListed(Material type) {
         return Arrays.stream(woods).filter(material -> type == material).findFirst().orElse(null) != null
                 || type == Material.COBBLESTONE || type == Material.RAIL;
+    }
+
+    /**
+     * namedTextColorをマイクラのガラスの種類に変換する
+     *
+     * @param color NamedTextColorのString版
+     * @return ガラスの種類
+     */
+    public static Material namedTextColorToGlassType(String color) {
+        return switch (color) {
+            case "yellow", "gold" -> Material.YELLOW_STAINED_GLASS;
+            case "aqua", "dark_aqua" -> Material.CYAN_STAINED_GLASS;
+            case "black" -> Material.BLACK_STAINED_GLASS;
+            case "blue", "dark_blue" -> Material.BLUE_STAINED_GLASS;
+            case "gray", "dark_gray" -> Material.GRAY_STAINED_GLASS;
+            case "dark_green", "green" -> Material.GREEN_STAINED_GLASS;
+            case "light_purple", "dark_purple" -> Material.PURPLE_STAINED_GLASS;
+            case "dark_red", "red" -> Material.RED_STAINED_GLASS;
+            case "white" -> Material.WHITE_STAINED_GLASS;
+            default -> null;
+        };
     }
 }

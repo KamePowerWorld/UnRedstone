@@ -183,11 +183,46 @@ public class GlobalTeamHandler {
         }
     }
 
+    /**
+     * 全てのチームの全てのプレイヤーにポーション効果を配る
+     *
+     * @param type
+     * @param duration
+     * @param level
+     */
     public static void giveEffectToPlayers(PotionEffectType type, int duration, int level) {
         for (int i = 0; i < getData().teams.getTeamsLength(); i++) {
             URTeam team = getData().teams.getTeam(i);
             for (int j = 0; j < team.getPlayersSize(); j++) {
                 team.getPlayer(j).addPotionEffect(new PotionEffect(type, duration, level - 1, false, false));
+            }
+        }
+    }
+
+    /**
+     * チームの開始/終了地点直下にビーコンを置く
+     *
+     * @param team
+     */
+    public static void placeBeaconBelowTeamLocations(URTeam team) {
+        Location startLocation = team.getStartLocation();
+        Location endLocation = team.getEndLocation();
+        if (startLocation == null || endLocation == null)
+            throw new IllegalArgumentException();
+
+        startLocation.getWorld().setType(startLocation.clone().add(0, -1, 0), UnRedstoneUtils.namedTextColorToGlassType(team.color));
+        startLocation.getWorld().setType(startLocation.clone().add(0, -2, 0), Material.BEACON);
+        for (int i = -1; i <= 1; i++) {
+            for (int j = -1; j <= 1; j++) {
+                startLocation.getWorld().setType(startLocation.clone().add(i, -3, j), Material.IRON_BLOCK);
+            }
+        }
+
+        endLocation.getWorld().setType(endLocation.clone().add(0, -1, 0), UnRedstoneUtils.namedTextColorToGlassType(team.color));
+        endLocation.getWorld().setType(endLocation.clone().add(0, -2, 0), Material.BEACON);
+        for (int i = -1; i <= 1; i++) {
+            for (int j = -1; j <= 1; j++) {
+                endLocation.getWorld().setType(endLocation.clone().add(i, -3, j), Material.IRON_BLOCK);
             }
         }
     }

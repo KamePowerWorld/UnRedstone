@@ -3,10 +3,11 @@ package quarri6343.unredstone.common;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.Entity;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.StorageMinecart;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDropItemEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.inventory.*;
@@ -23,8 +24,6 @@ import quarri6343.unredstone.common.data.URTeam;
 import quarri6343.unredstone.common.logic.URLogic;
 import quarri6343.unredstone.impl.ui.UIAdminMenu;
 import quarri6343.unredstone.utils.UnRedstoneUtils;
-
-import java.util.Arrays;
 
 import static quarri6343.unredstone.utils.UnRedstoneUtils.isInventoryTypeWhiteListed;
 import static quarri6343.unredstone.utils.UnRedstoneUtils.isItemTypeBlackListed;
@@ -301,6 +300,50 @@ public class EventHandler implements Listener {
             if (team != null) {
                 event.getPlayer().getInventory().setItemInMainHand(new ItemStack(Material.BUCKET));
                 team.locomotive.extinguish();
+            }
+        }
+    }
+
+    @org.bukkit.event.EventHandler
+    public void onPlayerBreakBlock(BlockBreakEvent event) {
+        preventInteractBlockNearLocation(event);
+    }
+
+    /**
+     * ゲームのスタート・ゴール地点周辺で壊されてはいけないブロックが壊されることを阻止する
+     */
+    private void preventInteractBlockNearLocation(BlockBreakEvent event) {
+        if (UnRedstone.getInstance().getLogic().gameStatus == URLogic.GameStatus.INACTIVE)
+            return;
+
+        if (event.getPlayer().isOp())
+            return;
+
+        Block block = event.getBlock();
+        for (int i = 0; i < getData().teams.getTeamsLength(); i++) {
+            if (getData().teams.getTeam(i).getStartLocation().distance(block.getLocation()) > URData.respawnProtectionRange
+                    && getData().teams.getTeam(i).getEndLocation().distance(block.getLocation()) > URData.respawnProtectionRange)
+                continue;
+
+            for (Material material : UnRedstoneUtils.blocksToProtectNearStartLocation) {
+                if (block.getType() == material) {
+                    event.getPlayer().sendMessage(Component.text("スタート/ゴール地点の保護対象ブロックです"));
+                    event.setCancelled(true);
+                    return;
+                }
+            }
+
+            if (getData().teams.getTeam(i).getStartLocation().getBlock().equals(block)
+                    || getData().teams.getTeam(i).getStartLocation().clone().subtract(0, 1, 0).getBlock().equals(event.getBlock())) {
+                event.getPlayer().sendMessage(Component.text("スタート地点は壊せません"));
+                event.setCancelled(true);
+                return;
+            }
+            if (getData().teams.getTeam(i).getEndLocation().getBlock().equals(block)
+                    || getData().teams.getTeam(i).getEndLocation().clone().subtract(0, 1, 0).getBlock().equals(event.getBlock())) {
+                event.getPlayer().sendMessage(Component.text("ゴール地点は壊せません"));
+                event.setCancelled(true);
+                return;
             }
         }
     }
