@@ -1,5 +1,7 @@
 package quarri6343.unredstone.common;
 
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -301,6 +303,8 @@ public class EventHandler implements Listener {
             if (team != null) {
                 event.getPlayer().getInventory().setItemInMainHand(new ItemStack(Material.BUCKET));
                 team.locomotive.extinguish();
+                event.getPlayer().playSound(Sound.sound(Key.key("entity.player.swim"), Sound.Source.BLOCK, 1f, 1f));
+                event.setCancelled(true);
             }
         }
     }
