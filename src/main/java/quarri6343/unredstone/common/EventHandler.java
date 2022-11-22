@@ -182,8 +182,9 @@ public class EventHandler implements Listener {
             return;
 
         Material resultMaterial = event.getRecipe().getResult().getType();
-        if (resultMaterial == Material.CHEST || resultMaterial == Material.TRAPPED_CHEST) {
-            event.getWhoClicked().sendMessage(Component.text("あれ？チェストってどうやって作るんだっけ？"));
+        if (resultMaterial == Material.CHEST || resultMaterial == Material.TRAPPED_CHEST
+                || resultMaterial == Material.BARREL) {
+            event.getWhoClicked().sendMessage(Component.text("あれ？どうやって作るんだっけ？"));
             event.setCancelled(true);
         }
     }

@@ -104,7 +104,7 @@ public class Locomotive {
      * トロッコに溜まった熱の表示を更新する
      */
     private void updateHeatDisplay() {
-        entity.customName(Component.text("熱:").color(NamedTextColor.WHITE).append(heat.getHeatAsBar()));
+        entity.customName(Component.text("熱:").color(NamedTextColor.WHITE).append(heat.getHeatAsString()));
     }
 
     /**

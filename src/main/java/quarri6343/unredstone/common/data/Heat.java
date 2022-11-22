@@ -28,7 +28,15 @@ public class Heat {
         }
     }
 
-    public TextComponent getHeatAsBar() {
+    /**
+     * 現在の蓄熱状況を文字列として取得する
+     * @return 蓄熱状況
+     */
+    public TextComponent getHeatAsString() {
+        if(value == max){
+            return Component.text("水バケツで右クリック").color(NamedTextColor.RED);
+        }
+        
         int stage = value / ((max - min) / heatBarLength);
         TextComponent.Builder heatBar = Component.text();
         for (int i = 0; i < stage; i++) {
