@@ -6,7 +6,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import quarri6343.unredstone.common.EventHandler;
+import quarri6343.unredstone.common.PlayerEventHandler;
 import quarri6343.unredstone.api.CommandBase;
 import quarri6343.unredstone.utils.ItemCreator;
 
@@ -23,7 +23,7 @@ public class CommandUnRedstone extends CommandBase {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @Nullable String[] arguments) {
-        ((Player) sender).getInventory().addItem(new ItemCreator(Material.STICK).setName(Component.text(EventHandler.menuItemName)).create());
+        ((Player) sender).getInventory().addItem(new ItemCreator(Material.STICK).setName(Component.text(PlayerEventHandler.menuItemName)).create());
         return true;
     }
 }

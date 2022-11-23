@@ -10,15 +10,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.StorageMinecart;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockDropItemEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.event.vehicle.VehicleDestroyEvent;
-import org.bukkit.event.world.PortalCreateEvent;
 import org.bukkit.inventory.ItemStack;
 import quarri6343.unredstone.UnRedstone;
 import quarri6343.unredstone.common.data.URData;
@@ -30,11 +27,11 @@ import quarri6343.unredstone.utils.UnRedstoneUtils;
 import static quarri6343.unredstone.utils.UnRedstoneUtils.isInventoryTypeWhiteListed;
 import static quarri6343.unredstone.utils.UnRedstoneUtils.isItemTypeBlackListed;
 
-public class EventHandler implements Listener {
+public class PlayerEventHandler implements Listener {
 
     public static final String menuItemName = "UnRedstone管理メニュー";
 
-    public EventHandler() {
+    public PlayerEventHandler() {
         UnRedstone.getInstance().getServer().getPluginManager().registerEvents(this, UnRedstone.getInstance());
     }
 
@@ -57,47 +54,8 @@ public class EventHandler implements Listener {
     }
 
     @org.bukkit.event.EventHandler
-    public void onVehicleDestroy(VehicleDestroyEvent event) {
-        processLocomotiveDestruction(event);
-    }
-
-    /**
-     * トロッコが破壊された場合、チームの初期地点に位置をリセットする
-     */
-    private void processLocomotiveDestruction(VehicleDestroyEvent event) {
-        if (UnRedstone.getInstance().getLogic().gameStatus == URLogic.GameStatus.INACTIVE) {
-            return;
-        }
-
-        URTeam team = getData().teams.getTeambyLocomotive(event.getVehicle());
-        if (team != null) {
-            event.setCancelled(true);
-            event.getVehicle().teleport(team.getStartLocation().clone().add(0, 1, 0));
-        }
-    }
-
-    @org.bukkit.event.EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         GlobalTeamHandler.removePlayerFromTeam(event.getPlayer());
-    }
-
-    @org.bukkit.event.EventHandler
-    public void onBlockDropItem(BlockDropItemEvent event) {
-        stopRailDrop(event);
-    }
-
-    /**
-     * バランス崩壊防止のためにレールを壊したときドロップさせないようにする
-     */
-    private void stopRailDrop(BlockDropItemEvent event) {
-        if (UnRedstone.getInstance().getLogic().gameStatus == URLogic.GameStatus.INACTIVE) {
-            return;
-        }
-
-        if (event.getItems().stream().filter
-                (item -> item.getItemStack().getType() == Material.RAIL).findAny().orElse(null) != null) {
-            event.setCancelled(true);
-        }
     }
 
     @org.bukkit.event.EventHandler
@@ -157,21 +115,6 @@ public class EventHandler implements Listener {
     }
 
     @org.bukkit.event.EventHandler
-    public void onPortalCreate(PortalCreateEvent event) {
-        stopPortalCreate(event);
-    }
-
-    /**
-     * トロッコがネザーやエンドに行くのを防ぐ
-     */
-    private void stopPortalCreate(PortalCreateEvent event) {
-        if (UnRedstone.getInstance().getLogic().gameStatus == URLogic.GameStatus.INACTIVE)
-            return;
-
-        event.setCancelled(true);
-    }
-
-    @org.bukkit.event.EventHandler
     public void onCraftItem(CraftItemEvent event) {
         stopChestCrafting(event);
     }
@@ -189,10 +132,6 @@ public class EventHandler implements Listener {
             event.getWhoClicked().sendMessage(Component.text("あれ？どうやって作るんだっけ？"));
             event.setCancelled(true);
         }
-    }
-
-    private URData getData() {
-        return UnRedstone.getInstance().getData();
     }
 
     @org.bukkit.event.EventHandler
@@ -311,18 +250,22 @@ public class EventHandler implements Listener {
 
     @org.bukkit.event.EventHandler
     public void onPlayerBreakBlock(BlockBreakEvent event) {
-        preventInteractBlockNearLocation(event);
+        if(stopInteractBlockNearLocation(event))
+            return;
+        
+        stopInteractPassedRails(event);
     }
 
     /**
      * ゲームのスタート・ゴール地点周辺で壊されてはいけないブロックが壊されることを阻止する
+     * @return 阻止されたかどうか
      */
-    private void preventInteractBlockNearLocation(BlockBreakEvent event) {
+    private boolean stopInteractBlockNearLocation(BlockBreakEvent event) {
         if (UnRedstone.getInstance().getLogic().gameStatus == URLogic.GameStatus.INACTIVE)
-            return;
+            return false;
 
         if (event.getPlayer().isOp())
-            return;
+            return false;
 
         Block block = event.getBlock();
         for (int i = 0; i < getData().teams.getTeamsLength(); i++) {
@@ -334,7 +277,7 @@ public class EventHandler implements Listener {
                 if (block.getType() == material) {
                     event.getPlayer().sendMessage(Component.text("スタート/ゴール地点の保護対象ブロックです"));
                     event.setCancelled(true);
-                    return;
+                    return true;
                 }
             }
 
@@ -342,14 +285,45 @@ public class EventHandler implements Listener {
                     || getData().teams.getTeam(i).getStartLocation().clone().subtract(0, 1, 0).getBlock().equals(event.getBlock())) {
                 event.getPlayer().sendMessage(Component.text("スタート地点は壊せません"));
                 event.setCancelled(true);
-                return;
+                return true;
             }
             if (getData().teams.getTeam(i).getEndLocation().getBlock().equals(block)
                     || getData().teams.getTeam(i).getEndLocation().clone().subtract(0, 1, 0).getBlock().equals(event.getBlock())) {
                 event.getPlayer().sendMessage(Component.text("ゴール地点は壊せません"));
                 event.setCancelled(true);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * トロッコが既に通過した場所のレールが壊されることを防ぐ
+     * @param event
+     */
+    private void stopInteractPassedRails(BlockBreakEvent event){
+        if (UnRedstone.getInstance().getLogic().gameStatus == URLogic.GameStatus.INACTIVE)
+            return;
+
+        if (event.getPlayer().isOp())
+            return;
+        
+        if(event.getBlock().getType() != Material.RAIL)
+            return;
+
+        for (int i = 0; i < getData().teams.getTeamsLength(); i++) {
+            if(getData().teams.getTeam(i).locomotive == null)
+                continue;
+            
+            if(getData().teams.getTeam(i).locomotive.isLocationPassed(event.getBlock().getLocation())){
+                event.getPlayer().sendMessage(Component.text("通過済みの線路は壊せません"));
+                event.setCancelled(true);
                 return;
             }
         }
+    }
+
+    private URData getData() {
+        return UnRedstone.getInstance().getData();
     }
 }

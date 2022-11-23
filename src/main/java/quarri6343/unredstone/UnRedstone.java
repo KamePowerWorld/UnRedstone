@@ -2,7 +2,8 @@ package quarri6343.unredstone;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import quarri6343.unredstone.common.ConfigHandler;
-import quarri6343.unredstone.common.EventHandler;
+import quarri6343.unredstone.common.MiscEventHandler;
+import quarri6343.unredstone.common.PlayerEventHandler;
 import quarri6343.unredstone.common.data.URData;
 import quarri6343.unredstone.common.logic.URLogic;
 import quarri6343.unredstone.impl.command.CommandForceJoin;
@@ -38,7 +39,8 @@ public final class UnRedstone extends JavaPlugin {
         new CommandUnRedstone();
         new CommandForceJoin();
         new CommandForceLeave();
-        new EventHandler();
+        new PlayerEventHandler();
+        new MiscEventHandler();
     }
 
     @Override

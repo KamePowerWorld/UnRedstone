@@ -2,6 +2,7 @@ package quarri6343.unredstone.common.data;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -13,6 +14,8 @@ import org.bukkit.inventory.ItemStack;
 
 import javax.annotation.Nonnull;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import static quarri6343.unredstone.utils.UnRedstoneUtils.woods;
@@ -24,6 +27,7 @@ public class Locomotive {
 
     public final Entity entity;
     public final Heat heat = new Heat();
+    private final List<Location> passedLocations = new ArrayList<>();
 
     private static final int burnRadius = 4;
     private static final int burnChance = 5;
@@ -34,7 +38,7 @@ public class Locomotive {
         }
 
         entity.setCustomNameVisible(true);
-        ((InventoryHolder)entity).getInventory().addItem(new ItemStack(Material.BUCKET));
+        ((InventoryHolder) entity).getInventory().addItem(new ItemStack(Material.BUCKET));
         this.entity = entity;
     }
 
@@ -130,9 +134,45 @@ public class Locomotive {
             }
         }
     }
-    
-    public void removeEntitySafely(){
-        ((InventoryHolder)entity).getInventory().clear();
+
+    public void removeEntitySafely() {
+        ((InventoryHolder) entity).getInventory().clear();
         entity.remove();
+    }
+
+    /**
+     * トロッコが通過した座標を記録する。既に通過していた場合は記録しない
+     *
+     * @param location 通過した座標
+     */
+    public void addPassedLocation(Location location) {
+        Location blockPos = location.toBlockLocation();
+        for (Location passedLocation : passedLocations) {
+            if (passedLocation.getX() == blockPos.getX()
+                    && passedLocation.getY() == blockPos.getY()
+                    && passedLocation.getZ() == blockPos.getZ()) {
+                return;
+            }
+        }
+        passedLocations.add(blockPos);
+    }
+    
+    public boolean isLocationPassed(Location location){
+        Location blockPos = location.toBlockLocation();
+        for (Location passedLocation : passedLocations) {
+            if (passedLocation.getX() == blockPos.getX()
+                    && passedLocation.getY() == blockPos.getY()
+                    && passedLocation.getZ() == blockPos.getZ()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * トロッコが通過した座標を消去する
+     */
+    public void clearPassedLocation(){
+        passedLocations.clear();
     }
 }
