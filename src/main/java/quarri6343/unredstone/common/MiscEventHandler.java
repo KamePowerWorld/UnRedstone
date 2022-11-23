@@ -1,11 +1,12 @@
 package quarri6343.unredstone.common;
 
-import io.papermc.paper.event.entity.EntityMoveEvent;
+import io.papermc.paper.event.block.BlockBreakBlockEvent;
 import org.bukkit.Material;
-import org.bukkit.entity.EntityType;
+import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockDropItemEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.vehicle.VehicleDestroyEvent;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
 import org.bukkit.event.world.PortalCreateEvent;
@@ -75,24 +76,46 @@ public class MiscEventHandler implements Listener {
 
         event.setCancelled(true);
     }
-    
+
     @EventHandler
-    public void onVehicleMove(VehicleMoveEvent event){
+    public void onVehicleMove(VehicleMoveEvent event) {
         processLocomotiveMovement(event);
     }
 
     /**
-     * トロッコに通過したブロックを記憶させる
+     * トロッコが移動時の処理を行う
      */
-    private void processLocomotiveMovement(VehicleMoveEvent event){
+    private void processLocomotiveMovement(VehicleMoveEvent event) {
         if (UnRedstone.getInstance().getLogic().gameStatus == URLogic.GameStatus.INACTIVE)
             return;
 
         URTeam team = getData().teams.getTeambyLocomotive(event.getVehicle());
-        if(team == null)
+        if (team == null)
             return;
 
-        team.locomotive.addPassedLocation(event.getFrom());
+        if (event.getTo().getBlock().getType() == Material.RAIL
+                || event.getTo().getBlock().getType() == Material.POWERED_RAIL
+                || event.getTo().getBlock().getType() == Material.DETECTOR_RAIL) {
+            team.locomotive.addPassedLocation(event.getFrom());
+        } else{
+            team.locomotive.entity.teleport(event.getFrom());
+        }
+    }
+    
+    @EventHandler
+    private void onEntityExplode(EntityExplodeEvent event){
+        stopRailBreakFromExplosion(event);
+    }
+
+    /**
+     * レールが爆発で破壊されることを阻止する
+     */
+    private void stopRailBreakFromExplosion(EntityExplodeEvent event){
+        if (UnRedstone.getInstance().getLogic().gameStatus == URLogic.GameStatus.INACTIVE)
+            return;
+
+        event.blockList().stream().filter(block -> block.getType() == Material.RAIL
+        || block.getType() == Material.POWERED_RAIL || block.getType() == Material.DETECTOR_RAIL).findAny().ifPresent(rail -> event.setCancelled(true));
     }
 
     private URData getData() {

@@ -103,6 +103,10 @@ public class URLogic {
         }
     }
 
+    public void endGame(){
+        endGame(null, null, GameResult.FAIL, false);
+    }
+    
     /**
      * ゲームを終了する
      *

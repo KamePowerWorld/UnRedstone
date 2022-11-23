@@ -141,7 +141,7 @@ public class Locomotive {
     }
 
     /**
-     * トロッコが通過した座標を記録する。既に通過していた場合は記録しない
+     * トロッコが通過した座標を記録する
      *
      * @param location 通過した座標
      */
@@ -156,7 +156,12 @@ public class Locomotive {
         }
         passedLocations.add(blockPos);
     }
-    
+
+    /**
+     * トロッコが座標を通過したか判定する
+     * @param location 判定したい座標
+     * @return 通過したかどうか
+     */
     public boolean isLocationPassed(Location location){
         Location blockPos = location.toBlockLocation();
         for (Location passedLocation : passedLocations) {
@@ -170,7 +175,7 @@ public class Locomotive {
     }
 
     /**
-     * トロッコが通過した座標を消去する
+     * トロッコが通過した座標を全て消去する
      */
     public void clearPassedLocation(){
         passedLocations.clear();

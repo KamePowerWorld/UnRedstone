@@ -48,7 +48,7 @@ public final class UnRedstone extends JavaPlugin {
         config.saveConfig();
         
         if (logic.gameStatus != URLogic.GameStatus.INACTIVE) {
-            logic.endGame(null, null, URLogic.GameResult.FAIL, false);
+            getLogic().endGame();
         }
     }
 

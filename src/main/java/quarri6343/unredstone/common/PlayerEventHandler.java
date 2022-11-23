@@ -116,19 +116,19 @@ public class PlayerEventHandler implements Listener {
 
     @org.bukkit.event.EventHandler
     public void onCraftItem(CraftItemEvent event) {
-        stopChestCrafting(event);
+        stopSpecialCrafting(event);
     }
 
     /**
-     * バランス崩壊を防ぐためチェストをクラフトさせない
+     * バランス崩壊を防ぐため何種類かのアイテムをクラフトさせない
      */
-    private void stopChestCrafting(CraftItemEvent event) {
+    private void stopSpecialCrafting(CraftItemEvent event) {
         if (UnRedstone.getInstance().getLogic().gameStatus == URLogic.GameStatus.INACTIVE)
             return;
 
         Material resultMaterial = event.getRecipe().getResult().getType();
         if (resultMaterial == Material.CHEST || resultMaterial == Material.TRAPPED_CHEST
-                || resultMaterial == Material.BARREL) {
+                || resultMaterial == Material.BARREL || resultMaterial == Material.PISTON) {
             event.getWhoClicked().sendMessage(Component.text("あれ？どうやって作るんだっけ？"));
             event.setCancelled(true);
         }
