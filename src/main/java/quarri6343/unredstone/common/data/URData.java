@@ -73,4 +73,9 @@ public class URData {
      * リスポーン周辺にプラグインによる保護を適用する際の範囲
      */
     public static final int respawnProtectionRange = 5;
+
+    /**
+     * サイドバーを更新する周期
+     */
+    public static final int updateSidebarInterval = 20;
 }

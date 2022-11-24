@@ -17,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import quarri6343.unredstone.UnRedstone;
 import quarri6343.unredstone.common.GlobalTeamHandler;
+import quarri6343.unredstone.common.ProgressionSidebar;
 import quarri6343.unredstone.common.data.Locomotive;
 import quarri6343.unredstone.common.data.URData;
 import quarri6343.unredstone.common.data.URTeam;
@@ -82,6 +83,7 @@ public class URLogic {
         Bukkit.getOnlinePlayers().forEach(player -> player.showTitle(Title.title(Component.text("ゲームスタート"), Component.empty())));
 
         gameStatus = GameStatus.ACTIVE;
+        ProgressionSidebar.initialize();
         gameRunnable = new GameRunnable(urTeam -> endGame(null, urTeam, URLogic.GameResult.SUCCESS, true)).runTaskTimer(UnRedstone.getInstance(), 0, 1);
     }
 
@@ -142,6 +144,7 @@ public class URLogic {
         }
 
         gameStatus = GameStatus.ENDING;
+        ProgressionSidebar.destroy();
         if (hasResultScene)
             gameEndRunnable = new GameEndRunnable(() -> gameStatus = URLogic.GameStatus.INACTIVE, true).runTaskTimer(UnRedstone.getInstance(), gameResultSceneLength, 1);
         else

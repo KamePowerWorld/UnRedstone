@@ -5,6 +5,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import quarri6343.unredstone.UnRedstone;
 import quarri6343.unredstone.common.GlobalTeamHandler;
+import quarri6343.unredstone.common.ProgressionSidebar;
 import quarri6343.unredstone.common.data.URData;
 import quarri6343.unredstone.common.data.URTeam;
 import quarri6343.unredstone.utils.UnRedstoneUtils;
@@ -75,6 +76,10 @@ public class GameRunnable extends BukkitRunnable {
         if (count % giveBuffInterval == 0 && getData().buffStrength.get() > 0) {
             GlobalTeamHandler.giveEffectToPlayers(PotionEffectType.SPEED, giveBuffInterval * 2, getData().buffStrength.get());
             GlobalTeamHandler.giveEffectToPlayers(PotionEffectType.FAST_DIGGING, giveBuffInterval * 2, getData().buffStrength.get());
+        }
+
+        if (count % updateSidebarInterval == 0) {
+            ProgressionSidebar.update();
         }
     }
 
