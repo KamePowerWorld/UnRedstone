@@ -18,7 +18,7 @@ public class GameEndRunnable extends BukkitRunnable {
     @Override
     public void run() {
         GlobalTeamHandler.teleportTeamToLobby();
-        GlobalTeamHandler.resetTeams();
+        GlobalTeamHandler.resetTeams(true);
         additionalAction.run();
         if(isScheduled)
             cancel();

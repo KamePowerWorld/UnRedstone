@@ -16,7 +16,9 @@ public class MCTeams {
         Team team = getBoard().getTeam(urTeam.name);
         if (team == null)
             team = createMinecraftTeam(urTeam);
-        team.addPlayer(player);
+
+        if (!team.hasPlayer(player))
+            team.addPlayer(player);
     }
 
     /**
@@ -52,6 +54,9 @@ public class MCTeams {
             return;
 
         team.removePlayer(player);
+
+        if(team.getPlayers().size() == 0)
+            team.unregister();
     }
 
     private static Scoreboard getBoard() {

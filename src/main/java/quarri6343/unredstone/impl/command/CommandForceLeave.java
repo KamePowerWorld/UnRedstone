@@ -12,6 +12,7 @@ import quarri6343.unredstone.api.CommandBase;
 import quarri6343.unredstone.common.GlobalTeamHandler;
 import quarri6343.unredstone.common.data.URData;
 import quarri6343.unredstone.common.data.URTeam;
+import quarri6343.unredstone.common.logic.URLogic;
 
 /**
  * プレイヤーを強制的にチームから外すコマンド。ゲーム中も実行可能
@@ -24,22 +25,34 @@ public class CommandForceLeave extends CommandBase {
         super(commandName, 1, 1, true);
     }
 
+    private static URData getData(){
+        return UnRedstone.getInstance().getData();
+    }
+
+    private static URLogic getLogic(){
+        return UnRedstone.getInstance().getLogic();
+    }
+
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @Nullable String[] arguments) {
+        if (getLogic().gameStatus != URLogic.GameStatus.ACTIVE){
+            sender.sendMessage("このコマンドはゲーム中にしか実行できません");
+            return true;
+        }
+
         Player player = Bukkit.getPlayer(arguments[0]);
         if (player == null) {
             sender.sendMessage("その名前のプレイヤーは存在しません");
             return true;
         }
 
-        URData data = UnRedstone.getInstance().getData();
-        URTeam team = data.teams.getTeambyPlayer(player);
+        URTeam team = getData().teams.getTeambyPlayer(player);
         if (team == null) {
             sender.sendMessage(Component.text("プレイヤー" + arguments[0] + "はチームに所属していません").color(NamedTextColor.RED));
             return true;
         }
 
-        GlobalTeamHandler.removePlayerFromTeam(player);
+        GlobalTeamHandler.removePlayerFromTeam(player, true);
         sender.sendMessage(arguments[0] + "をチーム" + team.name + "から離脱させました");
         return true;
     }

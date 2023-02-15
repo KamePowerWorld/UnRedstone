@@ -22,11 +22,23 @@ public class CommandForceJoin extends CommandBase {
     public CommandForceJoin() {
         super(commandName, 1, 1, true);
     }
+    
+    private static URData getData(){
+        return UnRedstone.getInstance().getData();
+    }
+
+    private static URLogic getLogic(){
+        return UnRedstone.getInstance().getLogic();
+    }
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @Nullable String[] arguments) {
-        URData data = UnRedstone.getInstance().getData();
-        if (data.adminSelectedTeam.isEmpty()) {
+        if (getLogic().gameStatus != URLogic.GameStatus.ACTIVE){
+            sender.sendMessage("このコマンドはゲーム中にしか実行できません");
+            return true;
+        }
+
+        if (getData().adminSelectedTeam.isEmpty()) {
             sender.sendMessage("まずGUIで加入させたいチームを選択してください");
             return true;
         }
@@ -37,22 +49,20 @@ public class CommandForceJoin extends CommandBase {
             return true;
         }
 
-        if (data.teams.getTeambyPlayer(player) != null) {
-            GlobalTeamHandler.removePlayerFromTeam(player);
+        if (getData().teams.getTeambyPlayer(player) != null) {
+            GlobalTeamHandler.removePlayerFromTeam(player, true);
             sender.sendMessage(arguments[0] + "が既にチームに入っていたので離脱させました");
         }
 
-        URTeam team = data.teams.getTeambyName(data.adminSelectedTeam);
+        URTeam team = getData().teams.getTeambyName(getData().adminSelectedTeam);
         if (team == null)
             return true;
 
         GlobalTeamHandler.addPlayerToTeam(player, team);
-        sender.sendMessage(arguments[0] + "をチーム" + data.adminSelectedTeam + "に加入させました");
-        
-        if(UnRedstone.getInstance().getLogic().gameStatus == URLogic.GameStatus.ACTIVE){
-            team.setUpGameEnvforPlayer(player);
-        }
-        
+        sender.sendMessage(arguments[0] + "をチーム" + getData().adminSelectedTeam + "に加入させました");
+
+        team.setUpGameEnvforPlayer(player);
+
         return true;
     }
 }

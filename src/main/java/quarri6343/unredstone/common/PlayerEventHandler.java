@@ -55,7 +55,7 @@ public class PlayerEventHandler implements Listener {
 
     @org.bukkit.event.EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-        GlobalTeamHandler.removePlayerFromTeam(event.getPlayer());
+        GlobalTeamHandler.removePlayerFromTeam(event.getPlayer(), true);
     }
 
     @org.bukkit.event.EventHandler

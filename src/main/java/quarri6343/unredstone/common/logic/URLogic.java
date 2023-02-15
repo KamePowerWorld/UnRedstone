@@ -35,10 +35,15 @@ public class URLogic {
 
     public GameStatus gameStatus = GameStatus.INACTIVE;
     public World gameWorld = null;
+    private BukkitTask gameInactiveRunnable;
     private BukkitTask gameBeginRunnable;
     private BukkitTask gameRunnable;
     private BukkitTask gameEndRunnable;
 
+    public URLogic(){
+        gameInactiveRunnable = new GameInactiveRunnable().runTaskTimer(UnRedstone.getInstance(), 0 ,1);
+    }
+    
     /**
      * ゲームを開始する
      *
@@ -53,10 +58,11 @@ public class URLogic {
         GlobalTeamHandler.assignPlayersInJoinArea();
 
         if (!GlobalTeamHandler.areTeamsValid(gameMaster)) {
-            GlobalTeamHandler.resetTeams();
             return;
         }
 
+        if(gameInactiveRunnable != null)
+            gameInactiveRunnable.cancel();
         gameWorld = gameMaster.getWorld();
         gameStatus = GameStatus.BEGINNING;
         gameBeginRunnable = new GameBeginRunnable(this::onGameBegin).runTaskTimer(UnRedstone.getInstance(), 0, 1);
@@ -146,7 +152,11 @@ public class URLogic {
         gameStatus = GameStatus.ENDING;
         ProgressionSidebar.destroy();
         if (hasResultScene)
-            gameEndRunnable = new GameEndRunnable(() -> gameStatus = URLogic.GameStatus.INACTIVE, true).runTaskTimer(UnRedstone.getInstance(), gameResultSceneLength, 1);
+            gameEndRunnable = new GameEndRunnable(() -> {
+                gameStatus = GameStatus.INACTIVE;
+                gameInactiveRunnable = new GameInactiveRunnable().runTaskTimer(UnRedstone.getInstance(), 0 ,1);
+            }, true)
+                    .runTaskTimer(UnRedstone.getInstance(), gameResultSceneLength, 1);
         else
             new GameEndRunnable(() -> gameStatus = URLogic.GameStatus.INACTIVE, false).run();
     }

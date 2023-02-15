@@ -78,4 +78,9 @@ public class URData {
      * サイドバーを更新する周期
      */
     public static final int updateSidebarInterval = 20;
+
+    /**
+     * ゲーム開始前に自動的にプレイヤーをチームに割り当てる周期
+     */
+    public static final int assignTeamLength = 20;
 }

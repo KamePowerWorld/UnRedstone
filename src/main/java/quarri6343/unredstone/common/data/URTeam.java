@@ -80,12 +80,13 @@ public class URTeam {
 
     /**
      * チームに所属しているプレイヤーの環境をゲーム開始に適した状態に変更する
+     *
      * @param player チームに所属しているプレイヤー
      */
-    public void setUpGameEnvforPlayer(Player player){
-        if(!containsPlayer(player))
+    public void setUpGameEnvforPlayer(Player player) {
+        if (!containsPlayer(player))
             return;
-        
+
         player.teleport(randomizeLocation(locomotive.entity.getLocation()));
         player.setGameMode(GameMode.SURVIVAL);
         player.getInventory().setContents(new ItemStack[]{});
@@ -108,27 +109,30 @@ public class URTeam {
     }
 
     public void addPlayer(Player player) {
-        players.add(new URPlayer(player));
+        if(!containsPlayer(player))
+            players.add(new URPlayer(player));
     }
 
     public Player getPlayer(int index) {
         return players.get(index).entity;
     }
 
-    public void removePlayer(Player player) {
+    public void removePlayer(Player player, boolean restoreStats) {
         URPlayer playerToRemove = players.stream().filter(urPlayer -> urPlayer.entity.equals(player)).findFirst().orElse(null);
         if (playerToRemove == null) {
             return;
         }
 
-        playerToRemove.restoreStats();
+        if (restoreStats)
+            playerToRemove.restoreStats();
         players.remove(playerToRemove);
     }
 
-    public void removeAllPlayer() {
-        for (URPlayer player : players) {
-            player.restoreStats();
-        }
+    public void removeAllPlayer(boolean restoreStats) {
+        if (restoreStats)
+            for (URPlayer player : players) {
+                player.restoreStats();
+            }
         players.clear();
     }
 
