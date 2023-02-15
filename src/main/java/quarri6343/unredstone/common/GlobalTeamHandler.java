@@ -132,31 +132,6 @@ public class GlobalTeamHandler {
     }
 
     /**
-     * 参加エリアにいるプレイヤーをチームに割り当てる
-     */
-    public static void assignPlayersInJoinArea() {
-        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-            for (int i = 0; i < getData().teams.getTeamsLength(); i++) {
-                if (getData().teams.getTeam(i).containsPlayer(onlinePlayer)) {
-                    return;
-                }
-            }
-
-            for (int i = 0; i < getData().teams.getTeamsLength(); i++) {
-                URTeam team = getData().teams.getTeam(i);
-
-                if (team.joinLocation1 == null || team.joinLocation2 == null)
-                    continue;
-
-                if (UnRedstoneUtils.isPlayerInArea(onlinePlayer, team.joinLocation1, team.joinLocation2)) {
-                    addPlayerToTeam(onlinePlayer, team);
-                    break;
-                }
-            }
-        }
-    }
-
-    /**
      * チーム中のプレイヤーが指定アイテムを持ちすぎていた場合、ドロップさせる
      */
     public static void dropExcessiveItems(Material material, int maxHoldableItems) {

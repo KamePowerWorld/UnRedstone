@@ -40,12 +40,6 @@ public class AdminMenuRow3 {
                 AdminMenuRow3::onSetCraftingCostButton);
         gui.setItem(19, setCraftingCostButton);
 
-        ItemStack setBuffStrengthItem = new ItemCreator(Material.POTION).setName(Component.text("ゲームの展開速度変更のためプレイヤーに付与するバフの強度"))
-                .setLore(Component.text("現在: " + getData().buffStrength.get()).decoration(TextDecoration.ITALIC, false)).create();
-        GuiItem setBuffStrengthButton = new GuiItem(setBuffStrengthItem,
-                AdminMenuRow3::onSetBuffStrengthButton);
-        gui.setItem(20, setBuffStrengthButton);
-
         ItemStack placeBeaconItem = new ItemCreator(Material.BEACON).setName(Component.text("チームのスタート地点と終了地点に目印としてビーコンを設置する")
                 .color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false)).create();
         GuiItem placeBeaconButton = new GuiItem(placeBeaconItem,
@@ -95,10 +89,6 @@ public class AdminMenuRow3 {
     
     private static void onSetCraftingCostButton(InventoryClickEvent event){
         UINumberConfiguration.openUI((Player) event.getWhoClicked(),getData().craftingCost);
-    }
-
-    private static void onSetBuffStrengthButton(InventoryClickEvent event){
-        UINumberConfiguration.openUI((Player) event.getWhoClicked(),getData().buffStrength);
     }
     
     private static void onPlaceBeaconButton(InventoryClickEvent event){

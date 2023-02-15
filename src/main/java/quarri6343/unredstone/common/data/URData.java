@@ -22,11 +22,6 @@ public class URData {
      */
     public final RangedInt craftingCost = new RangedInt(2, 1, 64);
 
-    /**
-     * 試合中人数補正のためプレイヤーに任意で付与する補正バフの強度
-     */
-    public final RangedInt buffStrength = new RangedInt(0, 0, 5);
-
     public final URTeams teams = new URTeams();
 
     /**
@@ -43,11 +38,6 @@ public class URData {
      * ゲームがプレイヤーのインベントリを確認する周期
      */
     public static final int checkInventoryInterval = 20;
-
-    /**
-     * ゲームがプレイヤーにバフを付与する周期
-     */
-    public static final int giveBuffInterval = 20;
 
     /**
      * トロッコがレールをクラフトする周期

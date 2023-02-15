@@ -73,11 +73,6 @@ public class GameRunnable extends BukkitRunnable {
             GlobalTeamHandler.dropExcessiveItems(Material.COBBLESTONE, maxHoldableItems);
         }
 
-        if (count % giveBuffInterval == 0 && getData().buffStrength.get() > 0) {
-            GlobalTeamHandler.giveEffectToPlayers(PotionEffectType.SPEED, giveBuffInterval * 2, getData().buffStrength.get());
-            GlobalTeamHandler.giveEffectToPlayers(PotionEffectType.FAST_DIGGING, giveBuffInterval * 2, getData().buffStrength.get());
-        }
-
         if (count % updateSidebarInterval == 0) {
             ProgressionSidebar.update();
         }

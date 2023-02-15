@@ -55,8 +55,6 @@ public class URLogic {
             return;
         }
 
-        GlobalTeamHandler.assignPlayersInJoinArea();
-
         if (!GlobalTeamHandler.areTeamsValid(gameMaster)) {
             return;
         }
