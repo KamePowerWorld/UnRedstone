@@ -12,10 +12,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.inventory.*;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import quarri6343.unredstone.UnRedstone;
 import quarri6343.unredstone.common.data.URData;
@@ -59,7 +56,7 @@ public class PlayerEventHandler implements Listener {
     }
 
     @org.bukkit.event.EventHandler
-    public void onEntityPickupItem(EntityPickupItemEvent event) {
+    public void onPlayerAttemptToPickUpItem(PlayerAttemptPickupItemEvent event) {
         stopPickUpItems(event, Material.RAIL);
         for (Material wood : UnRedstoneUtils.woods) {
             stopPickUpItems(event, wood);
@@ -70,21 +67,18 @@ public class PlayerEventHandler implements Listener {
     /**
      * プレイヤーが持てる上限を超えてアイテムを拾わないようにする
      */
-    private void stopPickUpItems(EntityPickupItemEvent event, Material material) {
+    private void stopPickUpItems(PlayerAttemptPickupItemEvent event, Material material) {
         if (UnRedstone.getInstance().getLogic().gameStatus == URLogic.GameStatus.INACTIVE)
             return;
 
         if (!(event.getItem().getItemStack().getType() == material))
             return;
 
-        if (!(event.getEntity() instanceof Player))
-            return;
-
         int itemsInInv = 0;
-        for (ItemStack itemStack : ((Player) event.getEntity()).getInventory().all(material).values()) {
+        for (ItemStack itemStack : ((Player) event.getPlayer()).getInventory().all(material).values()) {
             itemsInInv += itemStack.getAmount();
         }
-        ItemStack offHandItem = ((Player) event.getEntity()).getInventory().getItemInOffHand();
+        ItemStack offHandItem = ((Player) event.getPlayer()).getInventory().getItemInOffHand();
         if (offHandItem.getType() == material)
             itemsInInv += offHandItem.getAmount();
 
@@ -95,13 +89,16 @@ public class PlayerEventHandler implements Listener {
         int itemsToAdd = getData().maxHoldableItems.get() - itemsInInv;
 
         if (itemsToAdd > 0) {
-            ((Player) event.getEntity()).getInventory().addItem(new ItemStack(material, itemsToAdd));
+            event.getPlayer().getInventory().addItem(new ItemStack(material, itemsToAdd));
+        }
+        else {
+            return;
         }
 
         int itemsToDrop = event.getItem().getItemStack().getAmount() - itemsToAdd;
 
         if (itemsToDrop > 0) {
-            event.getEntity().getWorld().dropItemNaturally(event.getEntity().getLocation(), new ItemStack(material, itemsToDrop));
+            event.getPlayer().getWorld().dropItemNaturally(event.getPlayer().getLocation(), new ItemStack(material, itemsToDrop));
         }
 
         event.getItem().setItemStack(new ItemStack(Material.AIR));
