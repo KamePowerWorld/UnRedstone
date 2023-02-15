@@ -31,8 +31,8 @@ public class UIAdminSelectTeam {
         URData data = UnRedstone.getInstance().getData();
         if (data.teams.getTeamsLength() == 0) {
             GuiItem closeButton = new GuiItem(new ItemCreator(Material.BARRIER)
-                    .setName(Component.text("まず/create team {チーム名} {チームの色}でチームを作ってください").color(NamedTextColor.WHITE)).create(),
-                    event -> gui.close(event.getWhoClicked()));
+                    .setName(Component.text("閉じる").color(NamedTextColor.WHITE)).create(),
+                    event -> UIAdminMenu.openUI((Player) event.getWhoClicked()));
             gui.setItem(22, closeButton);
         } else {
             for (int i = 0; i < data.teams.getTeamsLength(); i++) {

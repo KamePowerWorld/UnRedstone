@@ -3,6 +3,7 @@ package quarri6343.unredstone.common;
 import io.papermc.paper.event.block.BlockBreakBlockEvent;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockDropItemEvent;
@@ -93,9 +94,18 @@ public class MiscEventHandler implements Listener {
         if (team == null)
             return;
 
-        if (event.getTo().getBlock().getType() == Material.RAIL
-                || event.getTo().getBlock().getType() == Material.POWERED_RAIL
-                || event.getTo().getBlock().getType() == Material.DETECTOR_RAIL) {
+        Material toType = event.getTo().getBlock().getType();
+        Material upType = event.getTo().getBlock().getRelative(BlockFace.UP).getType();
+        Material downType = event.getTo().getBlock().getRelative(BlockFace.DOWN).getType();
+        if (toType == Material.RAIL
+                || toType == Material.POWERED_RAIL
+                || toType == Material.DETECTOR_RAIL
+                || upType == Material.RAIL
+                || upType == Material.POWERED_RAIL
+                || upType == Material.DETECTOR_RAIL
+                || downType == Material.RAIL
+                || downType == Material.POWERED_RAIL
+                || downType == Material.DETECTOR_RAIL) {
             team.locomotive.addPassedLocation(event.getFrom());
         } else{
             team.locomotive.entity.teleport(event.getFrom());
