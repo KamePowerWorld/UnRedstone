@@ -43,6 +43,7 @@ public class ProgressionSidebar {
             return;
         
         objective.unregister();
+        objective = null;
     }
 
     private static Scoreboard getBoard() {

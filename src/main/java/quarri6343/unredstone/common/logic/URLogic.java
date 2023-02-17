@@ -72,8 +72,6 @@ public class URLogic {
     private void onGameBegin() {
         for (int i = 0; i < getData().teams.getTeamsLength(); i++) {
             URTeam team = getData().teams.getTeam(i);
-            if (team.getPlayersSize() == 0)
-                continue;
 
             setUpRail(team.getStartLocation());
             setUpRail(team.getEndLocation());

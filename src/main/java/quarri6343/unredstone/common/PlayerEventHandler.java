@@ -52,6 +52,16 @@ public class PlayerEventHandler implements Listener {
 
     @org.bukkit.event.EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
+        removePlayerFromTeam(event);
+    }
+    
+    private void removePlayerFromTeam(PlayerQuitEvent event){
+        URTeam team = getData().teams.getTeambyPlayer(event.getPlayer());
+        if(team == null)
+            return;
+
+        Location centerLocation = UnRedstoneUtils.getCenterLocation(team.joinLocation1, team.joinLocation2);
+        event.getPlayer().teleport(centerLocation);
         GlobalTeamHandler.removePlayerFromTeam(event.getPlayer(), true);
     }
 
