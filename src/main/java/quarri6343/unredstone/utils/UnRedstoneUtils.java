@@ -62,27 +62,6 @@ public class UnRedstoneUtils {
     }
 
     /**
-     * プレイヤーがx,z空間上で範囲内にいるか判定する
-     *
-     * @param player    プレイヤー
-     * @param location1 範囲の始点
-     * @param location2 範囲の終点
-     * @return 範囲内にいるか
-     */
-    @ParametersAreNonnullByDefault
-    public static boolean isPlayerInArea(Player player, Location location1, Location location2) {
-        double playerX = player.getLocation().getX();
-        double playerZ = player.getLocation().getZ();
-
-        boolean isXInRange = Math.min(location1.getX(), location2.getX()) <= playerX
-                && Math.max(location1.getX(), location2.getX()) >= playerX;
-        boolean isZInRange = Math.min(location1.getZ(), location2.getZ()) <= playerZ
-                && Math.max(location1.getZ(), location2.getZ()) >= playerZ;
-
-        return isXInRange && isZInRange;
-    }
-
-    /**
      * ある範囲のx,z空間内の中心点を見つける
      *
      * @param location1 範囲の始点

@@ -36,15 +36,10 @@ public class URLogic {
 
     public GameStatus gameStatus = GameStatus.INACTIVE;
     public World gameWorld = null;
-    private BukkitTask gameInactiveRunnable;
     private BukkitTask gameBeginRunnable;
     private BukkitTask gameRunnable;
     private BukkitTask gameEndRunnable;
 
-    public URLogic(){
-        gameInactiveRunnable = new GameInactiveRunnable().runTaskTimer(UnRedstone.getInstance(), 0 ,1);
-    }
-    
     /**
      * ゲームを開始する
      *
@@ -60,8 +55,6 @@ public class URLogic {
             return;
         }
 
-        if(gameInactiveRunnable != null)
-            gameInactiveRunnable.cancel();
         gameWorld = gameMaster.getWorld();
         gameStatus = GameStatus.BEGINNING;
         MCScores.setGameStatus(gameStatus);

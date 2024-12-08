@@ -49,24 +49,6 @@ public class AdminMenuRow2 {
         });
         gui.setItem(11, forceLeaveButton);
 
-        ItemStack setJoinLocation1Item = new ItemCreator(Material.STRUCTURE_BLOCK).setName(Component.text("チーム" + getData().adminSelectedTeam + "の参加エリアの始点を選ぶ"))
-                .addLore(getSetJoinLocation1ButtonStats()).addLore(setJoinLocationButtonGuide).create();
-        GuiItem setJoinLocation1Button = new GuiItem(setJoinLocation1Item,
-                event -> {
-                    onSetJoinLocationButton(event, true);
-                    UIAdminMenu.openUI((Player) event.getWhoClicked());
-                });
-        gui.setItem(13, setJoinLocation1Button);
-
-        ItemStack setJoinLocation2Item = new ItemCreator(Material.STRUCTURE_BLOCK).setName(Component.text("チーム" + getData().adminSelectedTeam + "の参加エリアの終点を選ぶ"))
-                .setLore(getSetJoinLocation2ButtonStats()).addLore(setJoinLocationButtonGuide).create();
-        GuiItem setJoinLocation2Button = new GuiItem(setJoinLocation2Item,
-                event -> {
-                    onSetJoinLocationButton(event, false);
-                    UIAdminMenu.openUI((Player) event.getWhoClicked());
-                });
-        gui.setItem(15, setJoinLocation2Button);
-
         ItemStack resetTeamSettingsItem = new ItemCreator(Material.PUFFERFISH).setName(Component.text("チーム" + getData().adminSelectedTeam + "の設定をリセットする")).create();
         GuiItem resetTeamSettingsButton = new GuiItem(resetTeamSettingsItem,
                 event -> {
@@ -74,23 +56,6 @@ public class AdminMenuRow2 {
                     UIAdminMenu.openUI((Player) event.getWhoClicked());
                 });
         gui.setItem(17, resetTeamSettingsButton);
-    }
-
-    private static TextComponent getSetJoinLocation1ButtonStats() {
-        if (getData().teams.getTeambyName(getData().adminSelectedTeam) == null) {
-            return teamNotSelectedText;
-        }
-
-        return getLocDesc(getData().teams.getTeambyName(getData().adminSelectedTeam).joinLocation1);
-    }
-
-    private static TextComponent getSetJoinLocation2ButtonStats() {
-        URTeam selectedTeam = getData().teams.getTeambyName(getData().adminSelectedTeam);
-        if (selectedTeam == null) {
-            return teamNotSelectedText;
-        }
-
-        return getLocDesc(selectedTeam.joinLocation2);
     }
 
     /**
@@ -111,28 +76,6 @@ public class AdminMenuRow2 {
 
         team.setStartLocation(null);
         team.setEndLocation(null);
-        team.joinLocation1 = null;
-        team.joinLocation2 = null;
         event.getWhoClicked().sendMessage(Component.text("チーム" + team.name + "の設定をリセットしました"));
-    }
-
-    /**
-     * チーム加入地点を設定するボタンの挙動
-     * @param isLocation1 チーム加入地点1かどうか
-     */
-    private static void onSetJoinLocationButton(InventoryClickEvent event, boolean isLocation1) {
-        URTeam selectedTeam = getData().teams.getTeambyName(getData().adminSelectedTeam);
-        if (selectedTeam == null) {
-            event.getWhoClicked().sendMessage(teamNotSelectedText);
-            return;
-        }
-
-        if (isLocation1) {
-            selectedTeam.joinLocation1 = event.getWhoClicked().getLocation();
-            event.getWhoClicked().sendMessage(Component.text("チーム" + getData().adminSelectedTeam + "の参加エリアの始点を" + UIUtility.locationBlockPostoString(event.getWhoClicked().getLocation()) + "に設定しました"));
-        } else {
-            selectedTeam.joinLocation2 = event.getWhoClicked().getLocation();
-            event.getWhoClicked().sendMessage(Component.text("チーム" + getData().adminSelectedTeam + "の参加エリアの終点を" + UIUtility.locationBlockPostoString(event.getWhoClicked().getLocation()) + "に設定しました"));
-        }
     }
 }

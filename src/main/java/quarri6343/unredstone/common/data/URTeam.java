@@ -25,8 +25,6 @@ public class URTeam {
     private Location startLocation;
     private Location endLocation;
 
-    public Location joinLocation1;
-    public Location joinLocation2;
     public Locomotive locomotive;
 
     private final List<URPlayer> players = new ArrayList<>();

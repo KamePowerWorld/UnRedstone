@@ -61,22 +61,6 @@ public class GlobalTeamHandler {
         return UnRedstoneUtils.randomizeLocation(locomotive.getLocation());
     }
 
-    /**
-     * チームメンバーをチームに加入した位置にテレポートさせる
-     */
-    public static void teleportTeamToLobby() {
-        for (int i = 0; i < getData().teams.getTeamsLength(); i++) {
-            URTeam team = getData().teams.getTeam(i);
-            if (team.joinLocation1 == null || team.joinLocation2 == null)
-                continue;
-
-            Location centerLocation = UnRedstoneUtils.getCenterLocation(team.joinLocation1, team.joinLocation2);
-            for (int j = 0; j < team.getPlayersSize(); j++) {
-                team.getPlayer(j).teleport(centerLocation);
-            }
-        }
-    }
-
     public static void resetTeams(boolean restoreStats) {
         MCTeams.deleteMinecraftTeams();
         getData().teams.disbandTeams(restoreStats);

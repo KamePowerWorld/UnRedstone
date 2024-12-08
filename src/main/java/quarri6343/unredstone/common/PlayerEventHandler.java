@@ -60,8 +60,6 @@ public class PlayerEventHandler implements Listener {
         if(team == null)
             return;
 
-        Location centerLocation = UnRedstoneUtils.getCenterLocation(team.joinLocation1, team.joinLocation2);
-        event.getPlayer().teleport(centerLocation);
         GlobalTeamHandler.removePlayerFromTeam(event.getPlayer(), true);
     }
 

@@ -49,8 +49,6 @@ public class ConfigHandler {
             URTeam newTeam = data.teams.getTeam(i);
             newTeam.setStartLocation(config.getLocation("team.startLocation." + i));
             newTeam.setEndLocation(config.getLocation("team.endLocation." + i));
-            newTeam.joinLocation1 = config.getLocation("team.joinLocation1." + i);
-            newTeam.joinLocation2 = config.getLocation("team.joinLocation2." + i);
         }
     }
 
@@ -102,8 +100,6 @@ public class ConfigHandler {
             config.set("team.color." + i, data.teams.getTeam(i).color);
             config.set("team.startLocation." + i, data.teams.getTeam(i).getStartLocation());
             config.set("team.endLocation." + i, data.teams.getTeam(i).getEndLocation());
-            config.set("team.joinLocation1." + i, data.teams.getTeam(i).joinLocation1);
-            config.set("team.joinLocation2." + i, data.teams.getTeam(i).joinLocation2);
         }
     }
 
