@@ -1,7 +1,6 @@
 package quarri6343.unredstone.common.logic;
 
 import org.bukkit.scheduler.BukkitRunnable;
-import quarri6343.unredstone.common.GlobalTeamHandler;
 
 /**
  * ゲーム終了後時間を空けて行いたい処理
@@ -14,13 +13,11 @@ public class GameEndRunnable extends BukkitRunnable {
         this.additionalAction = additionalAction;
         this.isScheduled = isScheduled;
     }
-    
+
     @Override
     public void run() {
-        GlobalTeamHandler.teleportTeamToLobby();
-        GlobalTeamHandler.resetTeams(true);
         additionalAction.run();
-        if(isScheduled)
+        if (isScheduled)
             cancel();
     }
 }

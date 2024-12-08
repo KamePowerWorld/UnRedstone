@@ -5,6 +5,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import quarri6343.unredstone.common.MCTeams;
 
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -37,7 +38,9 @@ public class URTeams {
             throw new IllegalArgumentException();
         }
 
-        teams.add(new URTeam(name, color));
+        URTeam team = new URTeam(name, color);
+        teams.add(team);
+        MCTeams.createMinecraftTeam(team);
     }
 
     /**

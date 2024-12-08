@@ -8,26 +8,62 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scoreboard.Team;
 import quarri6343.unredstone.UnRedstone;
 import quarri6343.unredstone.common.data.URData;
 import quarri6343.unredstone.common.data.URTeam;
 import quarri6343.unredstone.common.logic.URLogic;
 import quarri6343.unredstone.utils.UnRedstoneUtils;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 /**
  * UR,MC両方のチームクラスに対する処理を行う
  */
 public class GlobalTeamHandler {
+    private final Map<UUID, Team> playerTeams = new HashMap<>();
+
+    public GlobalTeamHandler() {
+        // 毎ティックプレイヤーのチームの変更を監視
+        Bukkit.getScheduler().runTaskTimer(UnRedstone.getInstance(), this::updatePlayerTeams, 0, 1);
+    }
 
     /**
-     * プレイヤーをUR, MC両方のチームに入れる
-     *
-     * @param player プレイヤー
-     * @param team   入れたいURチーム
+     * プレイヤーのチームを更新する
      */
-    public static void addPlayerToTeam(Player player, URTeam team) {
-        team.addPlayer(player);
-        MCTeams.addPlayerToMCTeam(player, team);
+    public void updatePlayerTeams() {
+        Collection<? extends Player> players = Bukkit.getOnlinePlayers();
+        for (Player player : players) {
+            Team newTeam = player.getScoreboard().getPlayerTeam(player);
+            Team oldTeam = playerTeams.get(player.getUniqueId());
+            // チームが変わった場合、スコアボードのチームに合わせる (nullの場合は削除)
+            // その際、URTeamにも追加する
+            if (newTeam != oldTeam) {
+                // まず元いたチームから抜ける
+                if (oldTeam != null) {
+                    URData data = UnRedstone.getInstance().getData();
+                    URTeam urTeam = data.teams.getTeambyName(oldTeam.getName());
+                    if (urTeam != null) {
+                        urTeam.removePlayer(player, newTeam != null);
+                    }
+                }
+
+                // 新しいチームに入る
+                if (newTeam != null) {
+                    URData data = UnRedstone.getInstance().getData();
+                    URTeam urTeam = data.teams.getTeambyName(newTeam.getName());
+                    if (urTeam == null) {
+                        urTeam.addPlayer(player);
+                    }
+                }
+
+                // プレイヤーのチームを更新
+                playerTeams.put(player.getUniqueId(), newTeam);
+            }
+        }
     }
 
     /**
@@ -38,7 +74,6 @@ public class GlobalTeamHandler {
         if (team != null) {
             team.removePlayer(player, restoreStats);
         }
-        MCTeams.removePlayerFromMCTeam(player);
 
         if (getLogic().gameStatus == URLogic.GameStatus.ACTIVE && countAllPlayers() == 0) {
             getLogic().endGame(null, null, URLogic.GameResult.FAIL, true);
@@ -59,11 +94,6 @@ public class GlobalTeamHandler {
         Entity locomotive = team.locomotive.entity;
 
         return UnRedstoneUtils.randomizeLocation(locomotive.getLocation());
-    }
-
-    public static void resetTeams(boolean restoreStats) {
-        MCTeams.deleteMinecraftTeams();
-        getData().teams.disbandTeams(restoreStats);
     }
 
     /**

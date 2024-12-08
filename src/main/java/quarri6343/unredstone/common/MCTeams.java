@@ -8,52 +8,31 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 import quarri6343.unredstone.common.data.URTeam;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-
 public class MCTeams {
-
-    public static void addPlayerToMCTeam(Player player, URTeam urTeam) {
-        Team team = getBoard().getTeam(urTeam.name);
-        if (team == null)
-            team = createMinecraftTeam(urTeam);
-
-        if (!team.hasPlayer(player))
-            team.addPlayer(player);
-    }
 
     /**
      * 新しいminecraftのチームを作る
      */
-    private static Team createMinecraftTeam(URTeam urTeam) {
-        Team team = getBoard().registerNewTeam(urTeam.name);
-        team.color(NamedTextColor.NAMES.value(urTeam.color));
-        team.displayName(Component.text(urTeam.name).color(NamedTextColor.NAMES.value(urTeam.color)));
-        team.setAllowFriendlyFire(false);
+    public static Team createMinecraftTeam(URTeam urTeam) {
+        Team team = getBoard().getTeam(urTeam.name);
+
+        if (team == null) {
+            team = getBoard().registerNewTeam(urTeam.name);
+            team.color(NamedTextColor.NAMES.value(urTeam.color));
+            team.displayName(Component.text(urTeam.name).color(NamedTextColor.NAMES.value(urTeam.color)));
+            team.setAllowFriendlyFire(false);
+        }
 
         return team;
     }
 
     /**
-     * minecraftのチームを全て解散させる
-     */
-    public static void deleteMinecraftTeams() {
-        for (int i = 0; i < getBoard().getTeams().size(); i++) {
-            getBoard().getTeams().forEach(team -> team.unregister());
-        }
-    }
-
-    /**
-     * プレイヤーをチームから外す
+     * プレイヤーのチームを取得
      *
-     * @param player プレイヤー名
+     * @return チーム
      */
-    @ParametersAreNonnullByDefault
-    public static void removePlayerFromMCTeam(Player player) {
-        Team team = getBoard().getPlayerTeam(player);
-        if (team == null)
-            return;
-
-        team.removePlayer(player);
+    public static Team getPlayerTeam(Player player) {
+        return getBoard().getEntryTeam(player.getName());
     }
 
     private static Scoreboard getBoard() {
