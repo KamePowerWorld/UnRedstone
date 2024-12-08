@@ -8,6 +8,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -54,8 +55,17 @@ public class AdminMenuRow1 {
                 .addLore(getSetStartButtonStats()).addLore(setStartButtonGuide).create();
         setStartButton = new GuiItem(setStartItem,
                 event -> {
-                    onSetStartButton(event);
-                    UIAdminMenu.openUI((Player) event.getWhoClicked());
+                    Player clickedPlayer = (Player) event.getWhoClicked();
+
+                    URTeam team = getData().teams.getTeambyName(getData().adminSelectedTeam);
+                    if (team == null) {
+                        clickedPlayer.sendMessage(teamNotSelectedText);
+                        return;
+                    }
+
+                    if (onSetStartButton(clickedPlayer, team, clickedPlayer.getLocation())) {
+                        UIAdminMenu.openUI(clickedPlayer);
+                    }
                 });
         gui.setItem(4, setStartButton);
 
@@ -64,8 +74,17 @@ public class AdminMenuRow1 {
                 .addLore(getSetEndButtonStats()).addLore(setEndButtonGuide).create();
         setEndButton = new GuiItem(setEndItem,
                 event -> {
-                    onSetEndButton(event);
-                    UIAdminMenu.openUI((Player) event.getWhoClicked());
+                    Player clickedPlayer = (Player) event.getWhoClicked();
+
+                    URTeam team = getData().teams.getTeambyName(getData().adminSelectedTeam);
+                    if (team == null) {
+                        clickedPlayer.sendMessage(teamNotSelectedText);
+                        return;
+                    }
+
+                    if (onSetEndButton(clickedPlayer, team, clickedPlayer.getLocation())) {
+                        UIAdminMenu.openUI(clickedPlayer);
+                    }
                 });
         gui.setItem(6, setEndButton);
 
@@ -103,59 +122,45 @@ public class AdminMenuRow1 {
     /**
      * 初期位置を設定するボタンを押したときのイベント
      */
-    private static void onSetStartButton(InventoryClickEvent event) {
-        URTeam team = getData().teams.getTeambyName(getData().adminSelectedTeam);
-        if (team == null) {
-            event.getWhoClicked().sendMessage(teamNotSelectedText);
-            return;
-        }
-
+    public static boolean onSetStartButton(CommandSender sender, URTeam team, Location location) {
         if (getLogic().gameStatus != URLogic.GameStatus.INACTIVE) {
-            event.getWhoClicked().sendMessage(gameRunningText);
-            return;
+            sender.sendMessage(gameRunningText);
+            return false;
         }
 
-        Location startLocation = event.getWhoClicked().getLocation();
-        if (!team.isStartLocationValid(startLocation)) {
-            event.getWhoClicked().sendMessage(Component.text("終了位置と近すぎます"));
-            return;
+        if (!team.isStartLocationValid(location)) {
+            sender.sendMessage(Component.text("終了位置と近すぎます"));
+            return false;
         }
 
-        team.setStartLocation(startLocation);
-        event.getWhoClicked().sendMessage(Component.text("開始地点を" + UIUtility.locationBlockPostoString(startLocation) + "に設定しました"));
-        UIAdminMenu.openUI((Player) event.getWhoClicked());
+        team.setStartLocation(location);
+        sender.sendMessage(Component.text("開始地点を" + UIUtility.locationBlockPostoString(location) + "に設定しました"));
+        return true;
     }
 
     /**
      * 終了位置を設定するボタンを押したときのイベント
      */
-    private static void onSetEndButton(InventoryClickEvent event) {
-        URTeam team = getData().teams.getTeambyName(getData().adminSelectedTeam);
-        if (team == null) {
-            event.getWhoClicked().sendMessage(teamNotSelectedText);
-            return;
-        }
-
+    public static boolean onSetEndButton(CommandSender sender, URTeam team, Location location) {
         if (getLogic().gameStatus != URLogic.GameStatus.INACTIVE) {
-            event.getWhoClicked().sendMessage(gameRunningText);
-            return;
+            sender.sendMessage(gameRunningText);
+            return false;
         }
 
-        Location endLocation = event.getWhoClicked().getLocation();
-        if (!team.isEndLocationValid(endLocation)) {
-            event.getWhoClicked().sendMessage(Component.text("開始位置と近すぎます"));
-            return;
+        if (!team.isEndLocationValid(location)) {
+            sender.sendMessage(Component.text("開始位置と近すぎます"));
+            return false;
         }
 
-        team.setEndLocation(endLocation);
-        event.getWhoClicked().sendMessage(Component.text("終了地点を" + UIUtility.locationBlockPostoString(endLocation) + "に設定しました"));
-        UIAdminMenu.openUI((Player) event.getWhoClicked());
+        team.setEndLocation(location);
+        sender.sendMessage(Component.text("終了地点を" + UIUtility.locationBlockPostoString(location) + "に設定しました"));
+        return true;
     }
 
     /**
      * チームを削除するボタンを押したときのイベント
      */
-    private static void onRemoveTeamButton(InventoryClickEvent event) {
+    public static void onRemoveTeamButton(InventoryClickEvent event) {
         if (getLogic().gameStatus != URLogic.GameStatus.INACTIVE) {
             event.getWhoClicked().sendMessage(gameRunningText);
             return;
@@ -170,7 +175,7 @@ public class AdminMenuRow1 {
         if (team == null)
             return;
 
-        for (int i = 0; i < team.getPlayersSize(); i ++){
+        for (int i = 0; i < team.getPlayersSize(); i++) {
             GlobalTeamHandler.removePlayerFromTeam(team.getPlayer(i), false);
         }
         getData().teams.removeTeam(getData().adminSelectedTeam);

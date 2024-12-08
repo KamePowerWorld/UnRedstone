@@ -4,7 +4,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import quarri6343.unredstone.common.*;
 import quarri6343.unredstone.common.data.URData;
 import quarri6343.unredstone.common.logic.URLogic;
-import quarri6343.unredstone.impl.command.CommandUnRedstone;
+import quarri6343.unredstone.impl.command.*;
 
 public final class UnRedstone extends JavaPlugin {
 
@@ -33,6 +33,11 @@ public final class UnRedstone extends JavaPlugin {
         config.loadConfig();
         logic = new URLogic();
         new CommandUnRedstone();
+        new CommandStart();
+        new CommandEnd();
+        new CommandSetStartPos();
+        new CommandSetEndPos();
+        new CommandPlaceBeacon();
         new PlayerEventHandler();
         new MiscEventHandler();
         MCScores.setupObjective();
@@ -42,7 +47,7 @@ public final class UnRedstone extends JavaPlugin {
     @Override
     public void onDisable() {
         config.saveConfig();
-        
+
         if (logic.gameStatus != URLogic.GameStatus.INACTIVE) {
             getLogic().endGame();
         }

@@ -7,6 +7,7 @@ import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -42,8 +43,17 @@ public class AdminMenuRow3 {
 
         ItemStack placeBeaconItem = new ItemCreator(Material.BEACON).setName(Component.text("チームのスタート地点と終了地点に目印としてビーコンを設置する")
                 .color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false)).create();
-        GuiItem placeBeaconButton = new GuiItem(placeBeaconItem,
-                AdminMenuRow3::onPlaceBeaconButton);
+        GuiItem placeBeaconButton = new GuiItem(placeBeaconItem, event -> {
+            Player clickedPlayer = (Player) event.getWhoClicked();
+
+            URTeam team = getData().teams.getTeambyName(getData().adminSelectedTeam);
+            if(team == null){
+                event.getWhoClicked().sendMessage(Component.text("チームが選択されていません").color(NamedTextColor.RED));
+                return;
+            }
+
+            onPlaceBeaconButton(clickedPlayer, team);
+        });
         gui.setItem(21, placeBeaconButton);
 
         GuiItem closeButton = new GuiItem(new ItemCreator(Material.BARRIER).setName(Component.text("閉じる")).create(),
@@ -52,14 +62,16 @@ public class AdminMenuRow3 {
 
         GuiItem startButton = new GuiItem(new ItemCreator(Material.GREEN_WOOL).setName(Component.text("ゲームを開始")).setLore(getCanStartGameDesc()).create(),
                 event -> {
-                    getLogic().startGame((Player) event.getWhoClicked());
-                    UIAdminMenu.openUI((Player) event.getWhoClicked());
+                    Player clickedPlayer = (Player) event.getWhoClicked();
+                    getLogic().startGame(clickedPlayer, clickedPlayer.getWorld());
+                    UIAdminMenu.openUI(clickedPlayer);
                 });
         gui.setItem(24, startButton);
         GuiItem endButton = new GuiItem(new ItemCreator(Material.RED_WOOL).setName(Component.text("ゲームを強制終了")).setLore(getCanTerminateGameDesc()).create(),
                 event -> {
-                    getLogic().endGame((Player) event.getWhoClicked(), null, URLogic.GameResult.FAIL, true);
-                    UIAdminMenu.openUI((Player) event.getWhoClicked());
+                    Player clickedPlayer = (Player) event.getWhoClicked();
+                    getLogic().endGame(clickedPlayer, null, URLogic.GameResult.FAIL, true);
+                    UIAdminMenu.openUI(clickedPlayer);
                 });
         gui.setItem(26, endButton);
     }
@@ -91,24 +103,18 @@ public class AdminMenuRow3 {
         UINumberConfiguration.openUI((Player) event.getWhoClicked(),getData().craftingCost);
     }
     
-    private static void onPlaceBeaconButton(InventoryClickEvent event){
-        URTeam team = getData().teams.getTeambyName(getData().adminSelectedTeam);
-        if(team == null){
-            event.getWhoClicked().sendMessage(Component.text("チームが選択されていません").color(NamedTextColor.RED));
-            return;
-        }
-        
+    public static void onPlaceBeaconButton(CommandSender sender, URTeam team){
         if(team.getStartLocation() == null){
-            event.getWhoClicked().sendMessage(Component.text("チームの開始地点が存在しません").color(NamedTextColor.RED));
+            sender.sendMessage(Component.text("チームの開始地点が存在しません").color(NamedTextColor.RED));
             return;
         }
 
         if(team.getEndLocation() == null){
-            event.getWhoClicked().sendMessage(Component.text("チームの終了地点が存在しません").color(NamedTextColor.RED));
+            sender.sendMessage(Component.text("チームの終了地点が存在しません").color(NamedTextColor.RED));
             return;
         }
 
         GlobalTeamHandler.placeBeaconBelowTeamLocations(team);
-        event.getWhoClicked().sendMessage(Component.text("ビーコンを設置しました"));
+        sender.sendMessage(Component.text("ビーコンを設置しました"));
     }
 }

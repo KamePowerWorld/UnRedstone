@@ -9,6 +9,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.data.Rail;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -45,17 +46,17 @@ public class URLogic {
      *
      * @param gameMaster ゲームを開始した人
      */
-    public void startGame(@NotNull Player gameMaster) {
+    public void startGame(@NotNull CommandSender sender, @NotNull World world) {
         if (gameStatus != GameStatus.INACTIVE) {
-            gameMaster.sendMessage("ゲームが進行中です！");
+            sender.sendMessage("ゲームが進行中です！");
             return;
         }
 
-        if (!GlobalTeamHandler.areTeamsValid(gameMaster)) {
+        if (!GlobalTeamHandler.areTeamsValid(sender)) {
             return;
         }
 
-        gameWorld = gameMaster.getWorld();
+        gameWorld = world;
         gameStatus = GameStatus.BEGINNING;
         MCScores.setGameStatus(gameStatus);
         gameBeginRunnable = new GameBeginRunnable(this::onGameBegin).runTaskTimer(UnRedstone.getInstance(), 0, 1);

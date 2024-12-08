@@ -3,6 +3,7 @@ package quarri6343.unredstone.common;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -99,7 +100,7 @@ public class GlobalTeamHandler {
      * @param gameMaster ゲーム開始者
      * @return ゲームを開始できるか
      */
-    public static boolean areTeamsValid(Player gameMaster) {
+    public static boolean areTeamsValid(CommandSender gameMaster) {
         if (getData().teams.getTeamsLength() == 0) {
             gameMaster.sendMessage("チームが存在しません!");
             return false;
