@@ -1,10 +1,7 @@
 package quarri6343.unredstone;
 
 import org.bukkit.plugin.java.JavaPlugin;
-import quarri6343.unredstone.common.ConfigHandler;
-import quarri6343.unredstone.common.MCScores;
-import quarri6343.unredstone.common.MiscEventHandler;
-import quarri6343.unredstone.common.PlayerEventHandler;
+import quarri6343.unredstone.common.*;
 import quarri6343.unredstone.common.data.URData;
 import quarri6343.unredstone.common.logic.URLogic;
 import quarri6343.unredstone.impl.command.CommandUnRedstone;
@@ -39,6 +36,7 @@ public final class UnRedstone extends JavaPlugin {
         new PlayerEventHandler();
         new MiscEventHandler();
         MCScores.setupObjective();
+        new GlobalTeamHandler();
     }
 
     @Override

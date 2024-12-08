@@ -15,10 +15,7 @@ import quarri6343.unredstone.common.data.URTeam;
 import quarri6343.unredstone.common.logic.URLogic;
 import quarri6343.unredstone.utils.UnRedstoneUtils;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * UR,MC両方のチームクラスに対する処理を行う
@@ -41,7 +38,7 @@ public class GlobalTeamHandler {
             Team oldTeam = playerTeams.get(player.getUniqueId());
             // チームが変わった場合、スコアボードのチームに合わせる (nullの場合は削除)
             // その際、URTeamにも追加する
-            if (newTeam != oldTeam) {
+            if (!Objects.equals(newTeam, oldTeam)) {
                 // まず元いたチームから抜ける
                 if (oldTeam != null) {
                     URData data = UnRedstone.getInstance().getData();
@@ -55,7 +52,7 @@ public class GlobalTeamHandler {
                 if (newTeam != null) {
                     URData data = UnRedstone.getInstance().getData();
                     URTeam urTeam = data.teams.getTeambyName(newTeam.getName());
-                    if (urTeam == null) {
+                    if (urTeam != null) {
                         urTeam.addPlayer(player);
                     }
                 }
