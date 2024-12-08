@@ -36,8 +36,6 @@ public final class UnRedstone extends JavaPlugin {
         config.loadConfig();
         logic = new URLogic();
         new CommandUnRedstone();
-        new CommandForceJoin();
-        new CommandForceLeave();
         new PlayerEventHandler();
         new MiscEventHandler();
         MCScores.setupObjective();

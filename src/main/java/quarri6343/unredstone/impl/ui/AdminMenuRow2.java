@@ -21,10 +21,6 @@ import static quarri6343.unredstone.utils.UIUtility.*;
 import static quarri6343.unredstone.utils.UIUtility.teamNotSelectedText;
 
 public class AdminMenuRow2 {
-    private static final TextComponent joinTeamButtonGuide = Component.text("コマンド/forcejoin {プレイヤー名}を使用してください")
-            .color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false);
-    private static final TextComponent leaveTeamButtonGuide = Component.text("コマンド/forceleave {プレイヤー名}を使用してください")
-            .color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false);
     private static final TextComponent setJoinLocationButtonGuide = Component.text("ゲームが始まった時このエリア内にいる人は選択中のチームに参加できます")
             .color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false);
 
@@ -37,18 +33,6 @@ public class AdminMenuRow2 {
     }
     
     public static void addElements(PaginatedGui gui, Player player){
-        ItemStack forceJoinItem = new ItemCreator(Material.GREEN_BANNER).setName(Component.text("選択中のチームにプレイヤーを強制加入させる"))
-                .setLore(joinTeamButtonGuide).create();
-        GuiItem forceJoinButton = new GuiItem(forceJoinItem, event -> {
-        });
-        gui.setItem(9, forceJoinButton);
-
-        ItemStack forceLeaveItem = new ItemCreator(Material.RED_BANNER).setName(Component.text("プレイヤーをチームから外す"))
-                .setLore(leaveTeamButtonGuide).create();
-        GuiItem forceLeaveButton = new GuiItem(forceLeaveItem, event -> {
-        });
-        gui.setItem(11, forceLeaveButton);
-
         ItemStack resetTeamSettingsItem = new ItemCreator(Material.PUFFERFISH).setName(Component.text("チーム" + getData().adminSelectedTeam + "の設定をリセットする")).create();
         GuiItem resetTeamSettingsButton = new GuiItem(resetTeamSettingsItem,
                 event -> {
