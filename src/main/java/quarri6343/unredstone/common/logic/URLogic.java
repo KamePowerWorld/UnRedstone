@@ -17,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import quarri6343.unredstone.UnRedstone;
 import quarri6343.unredstone.common.GlobalTeamHandler;
+import quarri6343.unredstone.common.MCScores;
 import quarri6343.unredstone.common.ProgressionSidebar;
 import quarri6343.unredstone.common.data.Locomotive;
 import quarri6343.unredstone.common.data.URData;
@@ -63,6 +64,7 @@ public class URLogic {
             gameInactiveRunnable.cancel();
         gameWorld = gameMaster.getWorld();
         gameStatus = GameStatus.BEGINNING;
+        MCScores.setGameStatus(gameStatus);
         gameBeginRunnable = new GameBeginRunnable(this::onGameBegin).runTaskTimer(UnRedstone.getInstance(), 0, 1);
     }
 
@@ -85,6 +87,7 @@ public class URLogic {
         Bukkit.getOnlinePlayers().forEach(player -> player.showTitle(Title.title(Component.text("ゲームスタート"), Component.empty())));
 
         gameStatus = GameStatus.ACTIVE;
+        MCScores.setGameStatus(gameStatus);
         ProgressionSidebar.initialize();
         gameRunnable = new GameRunnable(urTeam -> endGame(null, urTeam, URLogic.GameResult.SUCCESS, true)).runTaskTimer(UnRedstone.getInstance(), 0, 1);
     }
@@ -100,17 +103,17 @@ public class URLogic {
         Rail rail = (Rail) (gameWorld.getBlockAt(location).getBlockData());
         rail.setShape(UnRedstoneUtils.yawToRailShape(location.getYaw()));
         gameWorld.setBlockData(location, rail);
-        
+
         Location belowPoint = location.clone().subtract(0, 1, 0);
-        if(gameWorld.getBlockAt(belowPoint).isReplaceable() || gameWorld.getBlockAt(belowPoint).getType().isAir()){
+        if (gameWorld.getBlockAt(belowPoint).isReplaceable() || gameWorld.getBlockAt(belowPoint).getType().isAir()) {
             gameWorld.setType(belowPoint, Material.DIRT);
         }
     }
 
-    public void endGame(){
+    public void endGame() {
         endGame(null, null, GameResult.FAIL, false);
     }
-    
+
     /**
      * ゲームを終了する
      *
@@ -146,15 +149,19 @@ public class URLogic {
         }
 
         gameStatus = GameStatus.ENDING;
+        MCScores.setGameStatus(gameStatus);
         ProgressionSidebar.destroy();
         if (hasResultScene)
             gameEndRunnable = new GameEndRunnable(() -> {
                 gameStatus = GameStatus.INACTIVE;
-                gameInactiveRunnable = new GameInactiveRunnable().runTaskTimer(UnRedstone.getInstance(), 0 ,1);
+                MCScores.setGameStatus(gameStatus);
             }, true)
                     .runTaskTimer(UnRedstone.getInstance(), gameResultSceneLength, 1);
         else
-            new GameEndRunnable(() -> gameStatus = URLogic.GameStatus.INACTIVE, false).run();
+            new GameEndRunnable(() -> {
+                gameStatus = URLogic.GameStatus.INACTIVE;
+                MCScores.setGameStatus(gameStatus);
+            }, false).run();
     }
 
     /**
