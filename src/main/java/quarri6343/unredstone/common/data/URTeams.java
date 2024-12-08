@@ -110,13 +110,4 @@ public class URTeams {
     public void clearTeam() {
         teams.clear();
     }
-
-    /**
-     * チームのプレイヤーを解散させる
-     */
-    public void disbandTeams(boolean restoreStats) {
-        for (int i = 0; i < getTeamsLength(); i++) {
-            getTeam(i).removeAllPlayer(restoreStats);
-        }
-    }
 }

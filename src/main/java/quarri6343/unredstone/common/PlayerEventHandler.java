@@ -59,8 +59,6 @@ public class PlayerEventHandler implements Listener {
         URTeam team = getData().teams.getTeambyPlayer(event.getPlayer());
         if(team == null)
             return;
-
-        GlobalTeamHandler.removePlayerFromTeam(event.getPlayer(), true);
     }
 
     @org.bukkit.event.EventHandler

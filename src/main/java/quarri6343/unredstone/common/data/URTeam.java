@@ -27,7 +27,7 @@ public class URTeam {
 
     public Locomotive locomotive;
 
-    private final List<URPlayer> players = new ArrayList<>();
+    private final List<Player> players = new ArrayList<>();
 
     public URTeam(String name, String color) {
         if (name.isEmpty()) {
@@ -108,30 +108,15 @@ public class URTeam {
 
     public void addPlayer(Player player) {
         if(!containsPlayer(player))
-            players.add(new URPlayer(player));
+            players.add(player);
     }
 
     public Player getPlayer(int index) {
-        return players.get(index).entity;
+        return players.get(index);
     }
 
-    public void removePlayer(Player player, boolean restoreStats) {
-        URPlayer playerToRemove = players.stream().filter(urPlayer -> urPlayer.entity.equals(player)).findFirst().orElse(null);
-        if (playerToRemove == null) {
-            return;
-        }
-
-        if (restoreStats)
-            playerToRemove.restoreStats();
-        players.remove(playerToRemove);
-    }
-
-    public void removeAllPlayer(boolean restoreStats) {
-        if (restoreStats)
-            for (URPlayer player : players) {
-                player.restoreStats();
-            }
-        players.clear();
+    public void removePlayer(Player player) {
+        players.remove(player);
     }
 
     public int getPlayersSize() {
@@ -139,10 +124,10 @@ public class URTeam {
     }
 
     public boolean containsPlayer(Player player) {
-        return players.stream().filter(urPlayer -> urPlayer.entity.equals(player)).findFirst().orElse(null) != null;
+        return players.contains(player);
     }
 
     public List<TextComponent> playerNamesToText() {
-        return players.stream().map(player1 -> Component.text(player1.entity.getName()).color(NamedTextColor.YELLOW)).toList();
+        return players.stream().map(player1 -> Component.text(player1.getName()).color(NamedTextColor.YELLOW)).toList();
     }
 }

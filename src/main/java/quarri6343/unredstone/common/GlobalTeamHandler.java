@@ -45,7 +45,7 @@ public class GlobalTeamHandler {
                     URData data = UnRedstone.getInstance().getData();
                     URTeam urTeam = data.teams.getTeambyName(oldTeam.getName());
                     if (urTeam != null) {
-                        urTeam.removePlayer(player, newTeam != null);
+                        urTeam.removePlayer(player);
                     }
                 }
 
@@ -61,20 +61,6 @@ public class GlobalTeamHandler {
                 // プレイヤーのチームを更新
                 playerTeams.put(player.getUniqueId(), newTeam);
             }
-        }
-    }
-
-    /**
-     * プレイヤーをUR, MC両方のチームから退出させる
-     */
-    public static void removePlayerFromTeam(Player player, boolean restoreStats) {
-        URTeam team = getData().teams.getTeambyPlayer(player);
-        if (team != null) {
-            team.removePlayer(player, restoreStats);
-        }
-
-        if (getLogic().gameStatus == URLogic.GameStatus.ACTIVE && countAllPlayers() == 0) {
-            getLogic().endGame(null, null, URLogic.GameResult.FAIL, true);
         }
     }
 
