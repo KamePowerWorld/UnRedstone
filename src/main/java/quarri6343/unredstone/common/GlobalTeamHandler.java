@@ -55,6 +55,9 @@ public class GlobalTeamHandler {
                     URTeam urTeam = data.teams.getTeambyName(newTeam.getName());
                     if (urTeam != null) {
                         urTeam.addPlayer(player);
+                        if (UnRedstone.getInstance().getLogic().gameStatus == URLogic.GameStatus.ACTIVE) {
+                            urTeam.setUpGameEnvforPlayer(player);
+                        }
                     }
                 }
 

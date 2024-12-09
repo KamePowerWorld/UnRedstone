@@ -124,7 +124,7 @@ public class URTeam {
     }
 
     public boolean containsPlayer(Player player) {
-        return players.contains(player);
+        return players.stream().filter(urPlayer -> urPlayer.equals(player)).findFirst().orElse(null) != null;
     }
 
     public List<TextComponent> playerNamesToText() {
